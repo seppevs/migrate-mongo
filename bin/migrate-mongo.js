@@ -20,7 +20,7 @@ program
   .action(function (description) {
     migrateMongo.create(description, function (err, filename) {
       if (err) return handleError(err);
-      console.log('Created: ' + filename);
+      console.log('Created: migrations/' + filename);
     });
   });
 
