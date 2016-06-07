@@ -45,7 +45,7 @@ $ migrate-mongo create populate_with_known_animals
 Created: migrations/20160607214038-populate_with_known_animals.js
 ````
 
-A new migration file is created, with content:
+A new migration file is created:
 ````javascript
 'use strict';
 
