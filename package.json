@@ -1,0 +1,27 @@
+{
+  "name": "migrate-mongo",
+  "version": "0.1.0",
+  "description": "A migration framework for Mongodb in Node",
+  "main": "lib/migrate-mongo.js",
+  "bin": {
+    "migrate-mongo": "migrate/migrate-mongo.js"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "Sebastian Van Sande",
+  "license": "MIT",
+  "preferGlobal": true,
+  "dependencies": {
+    "async": "^1.5.2",
+    "commander": "2.9.0",
+    "lodash": "^4.13.1",
+    "moment": "^2.13.0"
+  },
+  "devDependencies": {
+    "chai": "3.5.0",
+    "mocha": "2.5.3",
+    "proxyquire": "1.7.9",
+    "sinon": "1.17.4"
+  }
+}
