@@ -8,19 +8,19 @@ $ npm install -g migrate-node
 
 ## Quickstart
 ### Initialize a new project
-Create a directory where you want to store your migrations for your mongo database (eg. 'animals' here):
+Create a directory where you want to store your migrations for your mongo database (eg. 'animals' here) and cd into it
 ````bash
 $ mkdir animals-migrations
+$ cd animals-migrations
 ````
 
-Now, cd into it and initialize a new migrate-mongo project
+Initialize a new migrate-mongo project
 ````bash
-$ cd animals-migrations
 $ migrate-mongo init
 Initialization successful. Please edit the generated config.js file
 ````
 
-This command did two things: 1) create a sample config.js file and 2) create a 'migrations' directory
+The above command did two things: 1) create a sample config.js file and 2) create a 'migrations' directory
 
 Edit the config.js dir, it contains some default values you can edit:
 ````javascript
