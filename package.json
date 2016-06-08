@@ -18,11 +18,11 @@
     "commander": "2.9.0",
     "lodash": "^4.13.1",
     "moment": "^2.13.0",
-    "mongodb": "^2.1.21"
+    "mongodb": "^2.1.21",
+    "fs-extra": "^0.30.0"
   },
   "devDependencies": {
     "chai": "3.5.0",
-    "fs-extra": "^0.30.0",
     "mocha": "2.5.3",
     "proxyquire": "1.7.9",
     "sinon": "1.17.4"
