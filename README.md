@@ -8,10 +8,10 @@ $ npm install -g migrate-node
 
 ## Quickstart
 ### Initialize a new project
-Create a directory where you want to store your migrations for your mongo database (eg. 'animals' here) and cd into it
+Create a directory where you want to store your migrations for your mongo database (eg. 'albums' here) and cd into it
 ````bash
-$ mkdir animals-migrations
-$ cd animals-migrations
+$ mkdir albums-migrations
+$ cd albums-migrations
 ````
 
 Initialize a new migrate-mongo project
@@ -41,11 +41,11 @@ module.exports = {
 ### Creating a migration
 Run this command
 ````bash
-$ migrate-mongo create populate_with_known_animals
-Created: migrations/20160607214038-populate_with_known_animals.js
+$ migrate-mongo create blacklist_the_beatles
+Created: migrations/20160608155948-blacklist_the_beatles.js
 ````
 
-A new migration file is created:
+A new migration file is created in the 'migrations' directory:
 ````javascript
 'use strict';
 
@@ -68,7 +68,70 @@ Edit this content so it actually performs changes to your database. Don't forget
 The ````db```` object contains [the official mongodb db object](https://www.npmjs.com/package/mongodb)
 
 An example:
+````javascript
+'use strict';
 
+module.exports = {
+
+  up: function (db, next) {
+    db.collection('albums').update({artist: 'The Beatles'}, {$set: {blacklisted: true}}, next);
+  },
+
+  down: function (db, next) {
+    db.collection('albums').update({artist: 'The Beatles'}, {$set: {blacklisted: false}}, next);
+  }
+};
+````
+
+### Checking the status of the migrations
+At any time, you can check which migrations are applied (or not)
+
+````bash
+$ migrate-mongo status
+┌─────────────────────────────────────────┬──────────┐
+│ Filename                                │ Migrated │
+├─────────────────────────────────────────┼──────────┤
+│ 20160608155948-blacklist_the_beatles.js │ false    │
+└─────────────────────────────────────────┴──────────┘
+````
+
+### Migrate your database UP
+This command will apply ALL pending migrations
+````bash
+$ migrate-mongo up
+MIGRATED UP: 20160608155948-blacklist_the_beatles.js
+````
+
+If an an error occurred, it will stop and won't continue with the rest of the pending migrations
+
+If we check the status again, we can see the last migration was successfully applied:
+````bash
+$ migrate-mongo status
+┌─────────────────────────────────────────┬──────────┐
+│ Filename                                │ Migrated │
+├─────────────────────────────────────────┼──────────┤
+│ 20160608155948-blacklist_the_beatles.js │ true     │
+└─────────────────────────────────────────┴──────────┘
+````
+
+
+### Migrate down
+With this command we will revert (only) the last applied migration
+
+````bash
+$ migrate-mongo down
+MIGRATED DOWN: 20160608155948-blacklist_the_beatles.js
+````
+
+If we check the status again, we see that the reverted migration is pending again:
+````bash
+$ migrate-mongo status
+┌─────────────────────────────────────────┬──────────┐
+│ Filename                                │ Migrated │
+├─────────────────────────────────────────┼──────────┤
+│ 20160608155948-blacklist_the_beatles.js │ false    │
+└─────────────────────────────────────────┴──────────┘
+````
 
 ### Getting help
 ````
