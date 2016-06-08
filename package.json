@@ -1,6 +1,6 @@
 {
   "name": "migrate-mongo",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A migration framework for Mongodb in Node",
   "main": "lib/migrate-mongo.js",
   "bin": {
