@@ -1,5 +1,5 @@
 # migrate-mongo
-A migration framework for Mongodb in Node
+A migration framework for MongoDB in Node
 
 ## Installation
 ````bash
@@ -65,7 +65,7 @@ module.exports = {
 ````
 
 Edit this content so it actually performs changes to your database. Don't forget to write the down part as well.
-The ````db```` object contains [the official mongodb db object](https://www.npmjs.com/package/mongodb)
+The ````db```` object contains [the official MongoDB db object](https://www.npmjs.com/package/mongodb)
 
 An example:
 
