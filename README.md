@@ -33,7 +33,8 @@ module.exports = {
   changelogCollectionName: 'changelog',
 
   mongodb: {
-    url: 'mongodb://localhost:27017' // the connection url to mongodb
+    // TODO edit this connection url to your MongoDB database:
+    url: 'mongodb://localhost:27017/YOURDATABASENAME'
   }
 };
 ````
