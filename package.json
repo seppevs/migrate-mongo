@@ -11,6 +11,10 @@
   },
   "author": "Sebastian Van Sande",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/seppevs/migrate-mongo.git"
+  },
   "preferGlobal": true,
   "dependencies": {
     "async": "^1.5.2",
