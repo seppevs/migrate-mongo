@@ -39,7 +39,9 @@ module.exports = {
 ````
 
 ### Creating a migration
-Run this command
+To create a new migration, just run the ````migrate-mongo create [description]```` command.
+
+For example:
 ````bash
 $ migrate-mongo create blacklist_the_beatles
 Created: migrations/20160608155948-blacklist_the_beatles.js
@@ -88,11 +90,12 @@ At any time, you can check which migrations are applied (or not)
 
 ````bash
 $ migrate-mongo status
-┌─────────────────────────────────────────┬──────────┐
-│ Filename                                │ Migrated │
-├─────────────────────────────────────────┼──────────┤
-│ 20160608155948-blacklist_the_beatles.js │ false    │
-└─────────────────────────────────────────┴──────────┘
+┌─────────────────────────────────────────┬────────────┐
+│ Filename                                │ Applied At │
+├─────────────────────────────────────────┼────────────┤
+│ 20160608155948-blacklist_the_beatles.js │ PENDING    │
+└─────────────────────────────────────────┴────────────┘
+
 ````
 
 ### Migrate your database UP
@@ -107,11 +110,11 @@ If an an error occurred, it will stop and won't continue with the rest of the pe
 If we check the status again, we can see the last migration was successfully applied:
 ````bash
 $ migrate-mongo status
-┌─────────────────────────────────────────┬──────────┐
-│ Filename                                │ Migrated │
-├─────────────────────────────────────────┼──────────┤
-│ 20160608155948-blacklist_the_beatles.js │ true     │
-└─────────────────────────────────────────┴──────────┘
+┌─────────────────────────────────────────┬──────────────────────────┐
+│ Filename                                │ Applied At               │
+├─────────────────────────────────────────┼──────────────────────────┤
+│ 20160608155948-blacklist_the_beatles.js │ 2016-06-08T20:13:30.415Z │
+└─────────────────────────────────────────┴──────────────────────────┘
 ````
 
 
@@ -126,11 +129,11 @@ MIGRATED DOWN: 20160608155948-blacklist_the_beatles.js
 If we check the status again, we see that the reverted migration is pending again:
 ````bash
 $ migrate-mongo status
-┌─────────────────────────────────────────┬──────────┐
-│ Filename                                │ Migrated │
-├─────────────────────────────────────────┼──────────┤
-│ 20160608155948-blacklist_the_beatles.js │ false    │
-└─────────────────────────────────────────┴──────────┘
+┌─────────────────────────────────────────┬────────────┐
+│ Filename                                │ Applied At │
+├─────────────────────────────────────────┼────────────┤
+│ 20160608155948-blacklist_the_beatles.js │ PENDING    │
+└─────────────────────────────────────────┴────────────┘
 ````
 
 ### Getting help
@@ -151,5 +154,3 @@ Usage: migrate-mongo [options] [command]
 
     -h, --help  output usage information
 ````
-
-
