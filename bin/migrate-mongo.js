@@ -7,7 +7,6 @@ var database = require('../lib/env/database');
 
 var Table = require('cli-table');
 
-
 program
   .command('init')
   .description('initialize a new migration project')
@@ -88,8 +87,7 @@ function handleError(err) {
 }
 
 function printStatusTable(statusItems) {
-  var table = new Table();
-  var table = new Table({head: ["Filename", "Migrated"]});
+  var table = new Table({head: ["Filename", "Applied At"]});
   statusItems.forEach(function (item) {
     table.push(_.values(item));
   });
