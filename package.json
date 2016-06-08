@@ -4,7 +4,7 @@
   "description": "A migration framework for Mongodb in Node",
   "main": "lib/migrate-mongo.js",
   "bin": {
-    "migrate-mongo": "migrate/migrate-mongo.js"
+    "migrate-mongo": "bin/migrate-mongo.js"
   },
   "scripts": {
     "test": "mocha"
