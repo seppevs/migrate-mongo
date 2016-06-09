@@ -1,9 +1,28 @@
 # migrate-mongo
-A migration framework for MongoDB in Node
+A database migration tool for MongoDB in Node.
 
 ## Installation
 ````bash
 $ npm install -g migrate-mongo
+````
+
+## Usage
+````
+$ migrate-mongo
+Usage: migrate-mongo [options] [command]
+
+
+  Commands:
+
+    init                  initialize a new migration project
+    create [description]  create a new database migration with the provided description
+    up                    run all unapplied database migrations
+    down                  undo the last applied database migration
+    status                print the changelog of the database
+
+  Options:
+
+    -h, --help  output usage information
 ````
 
 ## Quickstart
@@ -135,23 +154,4 @@ $ migrate-mongo status
 ├─────────────────────────────────────────┼────────────┤
 │ 20160608155948-blacklist_the_beatles.js │ PENDING    │
 └─────────────────────────────────────────┴────────────┘
-````
-
-### Getting help
-````
-$ migrate-mongo
-Usage: migrate-mongo [options] [command]
-
-
-  Commands:
-
-    init                  initialize a new migration project
-    create [description]  create a new database migration with the provided description
-    up                    run all unapplied database migrations
-    down                  undo the last applied database migration
-    status                print the changelog of the database
-
-  Options:
-
-    -h, --help  output usage information
 ````
