@@ -13,7 +13,7 @@ program
   .action(function () {
     migrateMongo.init(function (err) {
       if (err) return handleError(err);
-      console.log('Initialization successful. Please edit the generated config.js file')
+      console.log('Initialization successful. Please edit the generated config.js file');
     });
   });
 
@@ -34,7 +34,7 @@ program
     database.connect(function (err, db) {
       if (err) return handleError(err);
       migrateMongo.up(db, function (err, migrated) {
-        migrated.forEach(function(migratedItem) {
+        migrated.forEach(function (migratedItem) {
           console.log('MIGRATED UP: ' + migratedItem);
         });
 
@@ -51,7 +51,7 @@ program
     database.connect(function (err, db) {
       if (err) return handleError(err);
       migrateMongo.down(db, function (err, migrated) {
-        migrated.forEach(function(migratedItem) {
+        migrated.forEach(function (migratedItem) {
           console.log('MIGRATED DOWN: ' + migratedItem);
         });
 
@@ -87,7 +87,7 @@ function handleError(err) {
 }
 
 function printStatusTable(statusItems) {
-  var table = new Table({head: ["Filename", "Applied At"]});
+  var table = new Table({head: ['Filename', 'Applied At']});
   statusItems.forEach(function (item) {
     table.push(_.values(item));
   });

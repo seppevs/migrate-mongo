@@ -24,37 +24,37 @@ describe('create', function () {
       'fs-extra': fs
     });
   });
-  
+
   it('should yield an error when called without a description', function (done) {
     create(null, function (err) {
-      expect(err.message).to.equal('Missing parameter: description')
+      expect(err.message).to.equal('Missing parameter: description');
       done();
     });
   });
-  
+
   it('should check that the migrations directory exists', function (done) {
     create('my_description', function () {
       expect(migrationsDir.shouldExist.called).to.equal(true);
       done();
     });
   });
-  
-  it('should yield an error when the migrations directory does not exist', function(done) {
+
+  it('should yield an error when the migrations directory does not exist', function (done) {
     migrationsDir.shouldExist.yields(new Error('migrations directory does not exist'));
     create('my_description', function (err) {
       expect(err.message).to.equal('migrations directory does not exist');
       done();
     });
   });
-  
-  it('should check that the config file exists', function(done) {
+
+  it('should check that the config file exists', function (done) {
     create('my_description', function () {
       expect(configFile.shouldExist.called).to.equal(true);
       done();
     });
   });
 
-  it('should yield an error when config file does not exist', function(done) {
+  it('should yield an error when config file does not exist', function (done) {
     configFile.shouldExist.yields(new Error('config file does not exist'));
     create('my_description', function (err) {
       expect(err.message).to.equal('config file does not exist');
@@ -62,7 +62,7 @@ describe('create', function () {
     });
   });
 
-  it('should create a new migration file and yield the filename', function(done) {
+  it('should create a new migration file and yield the filename', function (done) {
     var clock = sinon.useFakeTimers(new Date('2016-06-09T08:07:00.077Z').getTime());
     create('my_description', function (err, filename) {
       expect(fs.copy.called).to.equal(true);
@@ -75,8 +75,8 @@ describe('create', function () {
       done();
     });
   });
-  
-  it('should replace spaces in the description with underscores', function(done) {
+
+  it('should replace spaces in the description with underscores', function (done) {
     var clock = sinon.useFakeTimers(new Date('2016-06-09T08:07:00.077Z').getTime());
     create('my spaced description', function () {
       expect(fs.copy.called).to.equal(true);
@@ -86,10 +86,10 @@ describe('create', function () {
         .to.equal(path.join(process.cwd(), 'migrations', '20160609080700-my_spaced_description.js'));
       clock.restore();
       done();
-    }); 
+    });
   });
-  
-  it('should yield errors that occurred when copying the file', function(done) {
+
+  it('should yield errors that occurred when copying the file', function (done) {
     fs.copy.yields(new Error('Copy failed'));
     create('my_description', function (err) {
       expect(err.message).to.equal('Copy failed');
@@ -102,7 +102,7 @@ describe('create', function () {
     mockedMigrationsDir.shouldExist = sinon.stub().yields();
     return mockedMigrationsDir;
   }
-  
+
   function mockConfigFile() {
     var mockedConfigFile = {};
     mockedConfigFile.shouldExist = sinon.stub().yields();

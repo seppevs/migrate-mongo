@@ -44,7 +44,7 @@ describe('down', function () {
   it('should yield an error when there is nothing to downgrade', function (done) {
     status.yields(null, [
       {fileName: '20160609113224-some_migration.js', appliedAt: 'PENDING'}
-    ])
+    ]);
     down(db, function (err) {
       expect(err.message).to.equal('No more items to downgrade');
       done();
@@ -53,7 +53,8 @@ describe('down', function () {
 
   it('should load the last applied migration', function (done) {
     down(db, function (err) {
-      expect(migrationsDir.loadMigration.getCall(0).args[0]).to.equal('20160609113225-last_migration.js')
+      expect(migrationsDir.loadMigration.getCall(0).args[0])
+        .to.equal('20160609113225-last_migration.js');
       done();
     });
   });
@@ -65,10 +66,10 @@ describe('down', function () {
     });
   });
 
-  it('should yield an error when an error occurred during the downgrade', function(done) {
+  it('should yield an error when an error occurred during the downgrade', function (done) {
     migration.down.yields(new Error('Invalid syntax'));
     down(db, function (err) {
-      expect(err.message).to.equal('Could not migrate down 20160609113225-last_migration.js: Invalid syntax')
+      expect(err.message).to.equal('Could not migrate down 20160609113225-last_migration.js: Invalid syntax');
       done();
     });
   });
@@ -89,7 +90,7 @@ describe('down', function () {
     });
   });
 
-  it('should yield a list of downgraded items', function(done) {
+  it('should yield a list of downgraded items', function (done) {
     down(db, function (err, items) {
       expect(items).to.deep.equal(['20160609113225-last_migration.js']);
       done();

@@ -70,10 +70,12 @@ describe('up', function () {
       expect(changelogCollection.insert.called).to.equal(true);
       expect(changelogCollection.insert.callCount).to.equal(2);
       expect(changelogCollection.insert.getCall(0).args[0])
-        .to.deep.equal({
-        appliedAt: new Date('2016-06-09T08:07:00.077Z'),
-        fileName: '20160607173840-first_pending_migration.js'
-      });
+        .to.deep.equal(
+        {
+          appliedAt: new Date('2016-06-09T08:07:00.077Z'),
+          fileName: '20160607173840-first_pending_migration.js'
+        }
+      );
       clock.restore();
       done();
     });
@@ -92,7 +94,7 @@ describe('up', function () {
   it('should stop migrating when an error occurred and yield the error + a list successful migrated', function (done) {
     secondPendingMigration.up.yields(new Error('Nope'));
     up(db, function (err, upgradedFileNames) {
-      expect(err.message).to.deep.equal('Could not migrate up 20160608060209-second_pending_migration.js: Nope')
+      expect(err.message).to.deep.equal('Could not migrate up 20160608060209-second_pending_migration.js: Nope');
       expect(upgradedFileNames).to.deep.equal(['20160607173840-first_pending_migration.js']);
       done();
     });
@@ -101,7 +103,7 @@ describe('up', function () {
   it('should yield an error + items already migrated when unable to update the changelog', function (done) {
     changelogCollection.insert.onSecondCall().yields(new Error('Kernel panic'));
     up(db, function (err, upgradedFileNames) {
-      expect(err.message).to.deep.equal('Could not update changelog: Kernel panic')
+      expect(err.message).to.deep.equal('Could not update changelog: Kernel panic');
       expect(upgradedFileNames).to.deep.equal(['20160607173840-first_pending_migration.js']);
       done();
     });
