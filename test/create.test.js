@@ -6,7 +6,7 @@ var path = require('path');
 
 var proxyquire = require('proxyquire');
 
-describe('create()', function () {
+describe('create', function () {
 
   // under test:
   var create;
@@ -18,7 +18,7 @@ describe('create()', function () {
     migrationsDir = mockMigrationsDir();
     configFile = mockConfigFile();
     fs = mockFs();
-    create = proxyquire('../../lib/actions/create', {
+    create = proxyquire('../lib/actions/create', {
       '../env/migrationsDir': migrationsDir,
       '../env/configFile': configFile,
       'fs-extra': fs
@@ -67,7 +67,7 @@ describe('create()', function () {
     create('my_description', function (err, filename) {
       expect(fs.copy.called).to.equal(true);
       expect(fs.copy.getCall(0).args[0])
-        .to.equal(path.join(__dirname, '../../samples/migration.js'));
+        .to.equal(path.join(__dirname, '../samples/migration.js'));
       expect(fs.copy.getCall(0).args[1])
         .to.equal(path.join(process.cwd(), 'migrations', '20160609080700-my_description.js'));
       expect(filename).to.equal('20160609080700-my_description.js');
@@ -81,7 +81,7 @@ describe('create()', function () {
     create('my spaced description', function () {
       expect(fs.copy.called).to.equal(true);
       expect(fs.copy.getCall(0).args[0])
-        .to.equal(path.join(__dirname, '../../samples/migration.js'));
+        .to.equal(path.join(__dirname, '../samples/migration.js'));
       expect(fs.copy.getCall(0).args[1])
         .to.equal(path.join(process.cwd(), 'migrations', '20160609080700-my_spaced_description.js'));
       clock.restore();
