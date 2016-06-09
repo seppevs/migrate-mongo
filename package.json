@@ -7,7 +7,7 @@
     "migrate-mongo": "bin/migrate-mongo.js"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "./node_modules/mocha/bin/mocha --recursive"
   },
   "author": "Sebastian Van Sande",
   "license": "MIT",
