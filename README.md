@@ -1,6 +1,8 @@
 # migrate-mongo
 A database migration tool for MongoDB in Node.
 
+[![Build Status](http://img.shields.io/travis/seppevs/migrate-mongo.svg?style=flat)](https://travis-ci.org/seppevs/migrate-mongo) [![NPM](http://img.shields.io/npm/v/migrate-mongo.svg?style=flat)](https://www.npmjs.org/package/migrate-mongo) [![Downloads](http://img.shields.io/npm/dm/migrate-mongo.svg?style=flat)](https://www.npmjs.org/package/migrate-mongo)
+
 ## Installation
 ````bash
 $ npm install -g migrate-mongo
