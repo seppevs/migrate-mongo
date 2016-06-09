@@ -3,7 +3,7 @@ A migration framework for MongoDB in Node
 
 ## Installation
 ````bash
-$ npm install -g migrate-node
+$ npm install -g migrate-mongo
 ````
 
 ## Quickstart
