@@ -13,6 +13,9 @@
   },
   "author": "Sebastian Van Sande",
   "license": "MIT",
+  "keywords": [
+    "migrate mongo mongodb migrations database"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/seppevs/migrate-mongo.git"
