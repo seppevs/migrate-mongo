@@ -6,4 +6,4 @@ node_modules
 .idea
 
 # Istanbul test coverage
-.coverage
+coverage
