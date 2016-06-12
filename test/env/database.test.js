@@ -5,13 +5,13 @@ var sinon = require('sinon');
 var proxyquire = require('proxyquire');
 
 
-describe('database', function() {
+describe('database', function () {
 
   var database;
 
   var configFile, mongodb;
 
-  beforeEach(function() {
+  beforeEach(function () {
     configFile = mockConfigFile();
     mongodb = mockMongodb();
 
@@ -20,10 +20,10 @@ describe('database', function() {
       'mongodb': mongodb,
     });
   });
-  
-  describe('connect()', function() {
-    it('should connect MongoClient to the configured mongodb url', function(done) {
-      database.connect(function() {
+
+  describe('connect()', function () {
+    it('should connect MongoClient to the configured mongodb url', function (done) {
+      database.connect(function () {
         expect(mongodb.MongoClient.connect.called).to.equal(true);
         expect(mongodb.MongoClient.connect.getCall(0).args[0])
           .to.equal('mongodb://someserver:27017/testdb');
@@ -38,7 +38,7 @@ describe('database', function() {
       mongodb: {
         url: 'mongodb://someserver:27017/testdb'
       }
-    })
+    });
     return mockedConfigFile;
   }
 
