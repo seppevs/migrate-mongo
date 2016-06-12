@@ -8,6 +8,7 @@
   },
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha --recursive",
+    "test-coverage": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec ./test/*",
     "eslint": "./node_modules/eslint/bin/eslint.js ."
   },
   "author": "Sebastian Van Sande",
@@ -28,6 +29,8 @@
   },
   "devDependencies": {
     "chai": "3.5.0",
+    "coveralls": "^2.11.9",
+    "istanbul": "^0.4.3",
     "mocha": "2.5.3",
     "proxyquire": "1.7.9",
     "sinon": "1.17.4"
