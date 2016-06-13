@@ -61,9 +61,27 @@ describe('migrationsDir', function () {
   describe('getFileNames()', function () {
     it('should read the directory and yield the result', function (done) {
       var migrationsPath = path.join(process.cwd(), 'migrations');
-      fs.readdir.yields(null, ['file1', 'file2']);
+      fs.readdir.yields(null, ['file1.js', 'file2.js']);
       migrationsDir.getFileNames(function (err, files) {
-        expect(files).to.deep.equal(['file1', 'file2']);
+        expect(files).to.deep.equal(['file1.js', 'file2.js']);
+        done();
+      });
+    });
+
+    it('should list only .js files', function (done) {
+      var migrationsPath = path.join(process.cwd(), 'migrations');
+      fs.readdir.yields(null, ['file1.js', 'file2.js', '.keep']);
+      migrationsDir.getFileNames(function (err, files) {
+        expect(files).to.deep.equal(['file1.js', 'file2.js']);
+        done();
+      });
+    });
+
+    it('should yield errors that occurred while reading the dir', function (done) {
+      var migrationsPath = path.join(process.cwd(), 'migrations');
+      fs.readdir.yields(new Error('Could not read'));
+      migrationsDir.getFileNames(function (err) {
+        expect(err.message).to.equal('Could not read');
         done();
       });
     });
