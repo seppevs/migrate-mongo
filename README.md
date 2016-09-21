@@ -107,6 +107,28 @@ module.exports = {
 };
 ````
 
+The up/down implementation can use either callback-style or return a Promise.
+
+````javascript
+'use strict';
+
+module.exports = {
+
+  up: function (db) {
+    return db.collection('albums').update({artist: 'The Beatles'}, {$set: {blacklisted: true}});
+  },
+
+  down: function (db) {
+    return db.collection('albums').update({artist: 'The Beatles'}, {$set: {blacklisted: false}});
+  }
+};
+````
+
+Make sure the implementation matches the function signature.
+
+* `function up(db) { /* */ }` should return `Promise`
+* `function up(db, next) { /* */ }` should callback `next`
+
 ### Checking the status of the migrations
 At any time, you can check which migrations are applied (or not)
 
