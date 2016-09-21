@@ -29,11 +29,7 @@ describe('up', function () {
     migrationsDir = mockMigrationsDir();
     db = mockDb();
 
-    up = proxyquire('../lib/actions/up', {
-      './status': status,
-      '../env/configFile': configFile,
-      '../env/migrationsDir': migrationsDir
-    });
+    up = mockUp();
   });
 
   it('should fetch the status', function (done) {
@@ -60,6 +56,24 @@ describe('up', function () {
       expect(firstPendingMigration.up.called).to.equal(true);
       expect(secondPendingMigration.up.called).to.equal(true);
       sinon.assert.callOrder(firstPendingMigration.up, secondPendingMigration.up);
+      done();
+    });
+  });
+
+  it('should allow upgrades to return promises', function (done) {
+    firstPendingMigration = sinon.stub({ up: function (db) { /* arg required for function.length */ } });
+    secondPendingMigration = sinon.stub({ up: function (db) { /* arg required for function.length */ } });
+    firstPendingMigration.up.returns(Promise.resolve());
+    secondPendingMigration.up.returns(Promise.resolve());
+    migrationsDir = mockMigrationsDir();
+    up = mockUp();
+    up(db, function (err, upgradedFileNames) {
+      expect(firstPendingMigration.up.called).to.equal(true);
+      expect(secondPendingMigration.up.called).to.equal(true);
+      expect(upgradedFileNames).to.deep.equal([
+        '20160607173840-first_pending_migration.js',
+        '20160608060209-second_pending_migration.js'
+      ]);
       done();
     });
   });
@@ -143,9 +157,13 @@ describe('up', function () {
   }
 
   function mockMigration() {
-    return {
-      up: sinon.stub().yields()
-    };
+    var migration = sinon.stub({
+      up: function (db, cb) {
+        // args are required for function.length
+      },
+    });
+    migration.up.yields(null);
+    return migration;
   }
 
   function mockChangelogCollection() {
@@ -156,6 +174,14 @@ describe('up', function () {
 
   function mockConfig() {
     return {};
+  }
+
+  function mockUp() {
+    return proxyquire('../lib/actions/up', {
+      './status': status,
+      '../env/configFile': configFile,
+      '../env/migrationsDir': migrationsDir
+    });
   }
 
 });

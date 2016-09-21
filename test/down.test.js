@@ -26,12 +26,7 @@ describe('down', function () {
     configFile = mockConfigFile();
     migrationsDir = mockMigrationsDir();
     db = mockDb();
-
-    down = proxyquire('../lib/actions/down', {
-      './status': status,
-      '../env/configFile': configFile,
-      '../env/migrationsDir': migrationsDir
-    });
+    down = mockDown();
   });
 
   it('should fetch the status', function (done) {
@@ -60,6 +55,17 @@ describe('down', function () {
   });
 
   it('should downgrade the last applied migration', function (done) {
+    down(db, function (err) {
+      expect(migration.down.called).to.equal(true);
+      done();
+    });
+  });
+
+  it('should allow downgrade to return promise', function (done) {
+    migration = sinon.stub({ down: function (db) { /* arg required for function.length */ } });
+    migration.down.returns(Promise.resolve());
+    migrationsDir = mockMigrationsDir();
+    down = mockDown();
     down(db, function (err) {
       expect(migration.down.called).to.equal(true);
       done();
@@ -127,9 +133,13 @@ describe('down', function () {
   }
 
   function mockMigration() {
-    return {
-      down: sinon.stub().yields()
-    };
+    var migration = sinon.stub({
+      down: function (db, cb) {
+        // args are required for function.length
+      },
+    });
+    migration.down.yields(null);
+    return migration;
   }
 
   function mockChangelogCollection() {
@@ -140,6 +150,14 @@ describe('down', function () {
 
   function mockConfig() {
     return {};
+  }
+
+  function mockDown() {
+    return proxyquire('../lib/actions/down', {
+      './status': status,
+      '../env/configFile': configFile,
+      '../env/migrationsDir': migrationsDir
+    });
   }
 
 });
