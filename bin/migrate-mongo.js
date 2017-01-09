@@ -30,7 +30,9 @@ program
 program
   .command('up')
   .description('run all unapplied database migrations')
-  .action(function () {
+  .option('-f --file <file>', 'use a custom config file')
+  .action(function (options) {
+    global.options = options;
     database.connect(function (err, db) {
       if (err) return handleError(err);
       migrateMongo.up(db, function (err, migrated) {
@@ -47,7 +49,9 @@ program
 program
   .command('down')
   .description('undo the last applied database migration')
-  .action(function () {
+  .option('-f --file <file>', 'use a custom config file')
+  .action(function (options) {
+    global.options = options;
     database.connect(function (err, db) {
       if (err) return handleError(err);
       migrateMongo.down(db, function (err, migrated) {
@@ -64,7 +68,9 @@ program
 program
   .command('status')
   .description('print the changelog of the database')
-  .action(function () {
+  .option('-f --file <file>', 'use a custom config file')
+  .action(function (options) {
+    global.options = options;
     database.connect(function (err, db) {
       if (err) return handleError(err);
       migrateMongo.status(db, function (err, statusItems) {

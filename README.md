@@ -142,6 +142,20 @@ $ migrate-mongo status
 
 ````
 
+This action accepts an (optional) ````-f```` or ````--file```` option to provide a custom config file path:
+
+````bash
+$ migrate-mongo status -f '~/configs/albums-migrations.js'
+┌─────────────────────────────────────────┬────────────┐
+│ Filename                                │ Applied At │
+├─────────────────────────────────────────┼────────────┤
+│ 20160608155948-blacklist_the_beatles.js │ PENDING    │
+└─────────────────────────────────────────┴────────────┘
+
+````
+
+Default, it will look for a ````config.js```` config file in of the current directory.
+
 ### Migrate your database UP
 This command will apply ALL pending migrations
 ````bash
@@ -161,6 +175,8 @@ $ migrate-mongo status
 └─────────────────────────────────────────┴──────────────────────────┘
 ````
 
+This action accepts an (optional) ````-f```` or ````--file```` option to provide a custom config file path.
+Default, it will look for a ````config.js```` config file in of the current directory.
 
 ### Migrate down
 With this command we will revert (only) the last applied migration
@@ -179,3 +195,6 @@ $ migrate-mongo status
 │ 20160608155948-blacklist_the_beatles.js │ PENDING    │
 └─────────────────────────────────────────┴────────────┘
 ````
+
+This action accepts an (optional) ````-f```` or ````--file```` option to provide a custom config file path.
+Default, it will look for a ````config.js```` config file in of the current directory.

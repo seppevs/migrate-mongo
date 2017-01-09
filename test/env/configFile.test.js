@@ -68,6 +68,27 @@ describe('configFile', function () {
         done();
       }
     });
+
+    it('should be possible to read a custom, absolute config file path', function (done) {
+      global.options = {file: '/some/absoluete/path/to/a-config-file.js'}
+      try {
+        configFile.read();
+      } catch (err) {
+        expect(err.message).to.equal('Cannot find module \'' + global.options.file + '\'');
+        done();
+      }
+    });
+
+    it('should be possible to read a custom, relative config file path', function (done) {
+      global.options = {file: './a/relative/path/to/a-config-file.js'}
+      var configPath = path.join(process.cwd(), global.options.file);
+      try {
+        configFile.read();
+      } catch (err) {
+        expect(err.message).to.equal('Cannot find module \'' + configPath + '\'');
+        done();
+      }
+    });
   });
 
   function mockFs() {
