@@ -47,17 +47,9 @@ describe('create', function () {
     });
   });
 
-  it('should check that the config file exists', function (done) {
+  it('should not be necessary to have an config file present', function (done) {
     create('my_description', function () {
-      expect(configFile.shouldExist.called).to.equal(true);
-      done();
-    });
-  });
-
-  it('should yield an error when config file does not exist', function (done) {
-    configFile.shouldExist.yields(new Error('config file does not exist'));
-    create('my_description', function (err) {
-      expect(err.message).to.equal('config file does not exist');
+      expect(configFile.shouldExist.called).to.equal(false);
       done();
     });
   });
