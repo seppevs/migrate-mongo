@@ -75,12 +75,12 @@ A new migration file is created in the 'migrations' directory:
 
 module.exports = {
 
-  up: function (db, next) {
+  up(db, next) {
     // TODO write your migration here
     next();
   },
 
-  down: function (db, next) {
+  down(db, next) {
     // TODO write the statements to rollback your migration (if possible)
     next();
   }
@@ -97,11 +97,11 @@ An example:
 
 module.exports = {
 
-  up: function (db, next) {
+  up(db, next) {
     db.collection('albums').update({artist: 'The Beatles'}, {$set: {blacklisted: true}}, next);
   },
 
-  down: function (db, next) {
+  down(db, next) {
     db.collection('albums').update({artist: 'The Beatles'}, {$set: {blacklisted: false}}, next);
   }
 };
@@ -114,11 +114,11 @@ The up/down implementation can use either callback-style or return a Promise.
 
 module.exports = {
 
-  up: function (db) {
+  up(db) {
     return db.collection('albums').update({artist: 'The Beatles'}, {$set: {blacklisted: true}});
   },
 
-  down: function (db) {
+  down(db) {
     return db.collection('albums').update({artist: 'The Beatles'}, {$set: {blacklisted: false}});
   }
 };
