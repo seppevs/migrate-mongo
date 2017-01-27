@@ -1,15 +1,15 @@
 'use strict';
 
-var expect = require('chai').expect;
-var sinon = require('sinon');
-var proxyquire = require('proxyquire');
+const expect = require('chai').expect;
+const sinon = require('sinon');
+const proxyquire = require('proxyquire');
 
-var path = require('path');
+const path = require('path');
 
 describe('migrationsDir', function () {
 
-  var migrationsDir;
-  var fs;
+  let migrationsDir;
+  let fs;
 
   beforeEach(function () {
     fs = mockFs();
@@ -19,18 +19,17 @@ describe('migrationsDir', function () {
   describe('shouldExist()', function () {
     it('should not yield an error if the migrations dir exists', function (done) {
       fs.stat.yields(null);
-      migrationsDir.shouldExist(function (err) {
+      migrationsDir.shouldExist((err) => {
         expect(err).to.equal(undefined);
         done();
       });
     });
 
     it('should yield an error if the migrations dir does not exist', function (done) {
-      var migrationsPath = path.join(process.cwd(), 'migrations');
+      const migrationsPath = path.join(process.cwd(), 'migrations');
       fs.stat.yields(new Error('It does not exist'));
-      migrationsDir.shouldExist(function (err) {
-        expect(err.message)
-          .to.equal('migrations directory does not exist: ' + migrationsPath);
+      migrationsDir.shouldExist((err) => {
+        expect(err.message).to.equal('migrations directory does not exist: ' + migrationsPath);
         done();
       });
     });
@@ -38,21 +37,20 @@ describe('migrationsDir', function () {
 
   describe('shouldNotExist()', function () {
     it('should not yield an error if the migrations dir does not exist', function (done) {
-      var error = new Error('File does not exist');
+      const error = new Error('File does not exist');
       error.code = 'ENOENT';
       fs.stat.yields(error);
-      migrationsDir.shouldNotExist(function (err) {
+      migrationsDir.shouldNotExist((err) => {
         expect(err).to.equal(undefined);
         done();
       });
     });
 
     it('should yield an error if the migrations dir exists', function (done) {
-      var migrationsPath = path.join(process.cwd(), 'migrations');
+      const migrationsPath = path.join(process.cwd(), 'migrations');
       fs.stat.yields();
-      migrationsDir.shouldNotExist(function (err) {
-        expect(err.message)
-          .to.equal('migrations directory already exists: ' + migrationsPath);
+      migrationsDir.shouldNotExist((err) => {
+        expect(err.message).to.equal('migrations directory already exists: ' + migrationsPath);
         done();
       });
     });
@@ -60,27 +58,24 @@ describe('migrationsDir', function () {
 
   describe('getFileNames()', function () {
     it('should read the directory and yield the result', function (done) {
-      var migrationsPath = path.join(process.cwd(), 'migrations');
       fs.readdir.yields(null, ['file1.js', 'file2.js']);
-      migrationsDir.getFileNames(function (err, files) {
+      migrationsDir.getFileNames((err, files) => {
         expect(files).to.deep.equal(['file1.js', 'file2.js']);
         done();
       });
     });
 
     it('should list only .js files', function (done) {
-      var migrationsPath = path.join(process.cwd(), 'migrations');
       fs.readdir.yields(null, ['file1.js', 'file2.js', '.keep']);
-      migrationsDir.getFileNames(function (err, files) {
+      migrationsDir.getFileNames((err, files) => {
         expect(files).to.deep.equal(['file1.js', 'file2.js']);
         done();
       });
     });
 
     it('should yield errors that occurred while reading the dir', function (done) {
-      var migrationsPath = path.join(process.cwd(), 'migrations');
       fs.readdir.yields(new Error('Could not read'));
-      migrationsDir.getFileNames(function (err) {
+      migrationsDir.getFileNames((err) => {
         expect(err.message).to.equal('Could not read');
         done();
       });
@@ -89,7 +84,7 @@ describe('migrationsDir', function () {
 
   describe('loadMigration()', function () {
     it('should attempt to load the fileName in the migrations directory', function (done) {
-      var pathToMigration = path.join(process.cwd(), 'migrations', 'someFile.js');
+      const pathToMigration = path.join(process.cwd(), 'migrations', 'someFile.js');
       try {
         migrationsDir.loadMigration('someFile.js');
       } catch (err) {
@@ -100,10 +95,10 @@ describe('migrationsDir', function () {
   });
 
   function mockFs() {
-    var mockedFs = {};
-    mockedFs.stat = sinon.stub();
-    mockedFs.readdir = sinon.stub();
-    return mockedFs;
+    return {
+      stat: sinon.stub(),
+      readdir: sinon.stub()
+    };
   }
 
 });

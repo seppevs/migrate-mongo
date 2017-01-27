@@ -1,18 +1,15 @@
 'use strict';
 
-var expect = require('chai').expect;
-var sinon = require('sinon');
-var path = require('path');
+const expect = require('chai').expect;
+const sinon = require('sinon');
+const path = require('path');
 
-var proxyquire = require('proxyquire');
+const proxyquire = require('proxyquire');
 
 describe('create', function () {
 
-  // under test:
-  var create;
-
-  // mocked dependencies:
-  var migrationsDir, configFile, fs;
+  let create; // module under test
+  let migrationsDir, configFile, fs; // mocked dependencies
 
   beforeEach(function () {
     migrationsDir = mockMigrationsDir();
@@ -26,14 +23,14 @@ describe('create', function () {
   });
 
   it('should yield an error when called without a description', function (done) {
-    create(null, function (err) {
+    create(null, (err) => {
       expect(err.message).to.equal('Missing parameter: description');
       done();
     });
   });
 
   it('should check that the migrations directory exists', function (done) {
-    create('my_description', function () {
+    create('my_description', () => {
       expect(migrationsDir.shouldExist.called).to.equal(true);
       done();
     });
@@ -41,22 +38,22 @@ describe('create', function () {
 
   it('should yield an error when the migrations directory does not exist', function (done) {
     migrationsDir.shouldExist.yields(new Error('migrations directory does not exist'));
-    create('my_description', function (err) {
+    create('my_description', (err) => {
       expect(err.message).to.equal('migrations directory does not exist');
       done();
     });
   });
 
   it('should not be necessary to have an config file present', function (done) {
-    create('my_description', function () {
+    create('my_description', () => {
       expect(configFile.shouldExist.called).to.equal(false);
       done();
     });
   });
 
   it('should create a new migration file and yield the filename', function (done) {
-    var clock = sinon.useFakeTimers(new Date('2016-06-09T08:07:00.077Z').getTime());
-    create('my_description', function (err, filename) {
+    const clock = sinon.useFakeTimers(new Date('2016-06-09T08:07:00.077Z').getTime());
+    create('my_description', (err, filename) => {
       expect(fs.copy.called).to.equal(true);
       expect(fs.copy.getCall(0).args[0])
         .to.equal(path.join(__dirname, '../samples/migration.js'));
@@ -69,13 +66,13 @@ describe('create', function () {
   });
 
   it('should replace spaces in the description with underscores', function (done) {
-    var clock = sinon.useFakeTimers(new Date('2016-06-09T08:07:00.077Z').getTime());
-    create('my spaced description', function () {
+    const clock = sinon.useFakeTimers(new Date('2016-06-09T08:07:00.077Z').getTime());
+    create('this description contains spaces', () => {
       expect(fs.copy.called).to.equal(true);
       expect(fs.copy.getCall(0).args[0])
         .to.equal(path.join(__dirname, '../samples/migration.js'));
       expect(fs.copy.getCall(0).args[1])
-        .to.equal(path.join(process.cwd(), 'migrations', '20160609080700-my_spaced_description.js'));
+        .to.equal(path.join(process.cwd(), 'migrations', '20160609080700-this_description_contains_spaces.js'));
       clock.restore();
       done();
     });
@@ -83,28 +80,28 @@ describe('create', function () {
 
   it('should yield errors that occurred when copying the file', function (done) {
     fs.copy.yields(new Error('Copy failed'));
-    create('my_description', function (err) {
+    create('my_description', (err) => {
       expect(err.message).to.equal('Copy failed');
       done();
     });
   });
 
   function mockMigrationsDir() {
-    var mockedMigrationsDir = {};
-    mockedMigrationsDir.shouldExist = sinon.stub().yields();
-    return mockedMigrationsDir;
+    return {
+      shouldExist: sinon.stub().yields()
+    };
   }
 
   function mockConfigFile() {
-    var mockedConfigFile = {};
-    mockedConfigFile.shouldExist = sinon.stub().yields();
-    return mockedConfigFile;
+    return {
+      shouldExist: sinon.stub().yields()
+    };
   }
 
   function mockFs() {
-    var mockedFs = {};
-    mockedFs.copy = sinon.stub().yields();
-    return mockedFs;
+    return {
+      copy: sinon.stub().yields()
+    };
   }
 
 });

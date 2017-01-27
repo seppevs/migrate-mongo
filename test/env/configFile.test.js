@@ -1,15 +1,15 @@
 'use strict';
 
-var expect = require('chai').expect;
-var sinon = require('sinon');
-var proxyquire = require('proxyquire');
+const expect = require('chai').expect;
+const sinon = require('sinon');
+const proxyquire = require('proxyquire');
 
-var path = require('path');
+const path = require('path');
 
 describe('configFile', function () {
 
-  var configFile;
-  var fs;
+  let configFile; // module under test
+  let fs; // mocked dependencies
 
   beforeEach(function () {
     fs = mockFs();
@@ -19,16 +19,16 @@ describe('configFile', function () {
   describe('shouldExist()', function () {
     it('should not yield an error if the config file exists', function (done) {
       fs.stat.yields(null);
-      configFile.shouldExist(function (err) {
+      configFile.shouldExist((err) => {
         expect(err).to.equal(undefined);
         done();
       });
     });
 
     it('should yield an error if the config file does not exist', function (done) {
-      var configPath = path.join(process.cwd(), 'config.js');
+      const configPath = path.join(process.cwd(), 'config.js');
       fs.stat.yields(new Error('It does not exist'));
-      configFile.shouldExist(function (err) {
+      configFile.shouldExist((err) => {
         expect(err.message)
           .to.equal('config file does not exist: ' + configPath);
         done();
@@ -38,21 +38,20 @@ describe('configFile', function () {
 
   describe('shouldNotExist()', function () {
     it('should not yield an error if the config file does not exist', function (done) {
-      var error = new Error('File does not exist');
+      const error = new Error('File does not exist');
       error.code = 'ENOENT';
       fs.stat.yields(error);
-      configFile.shouldNotExist(function (err) {
+      configFile.shouldNotExist((err) => {
         expect(err).to.equal(undefined);
         done();
       });
     });
 
     it('should yield an error if the config file exists', function (done) {
-      var configPath = path.join(process.cwd(), 'config.js');
+      const configPath = path.join(process.cwd(), 'config.js');
       fs.stat.yields();
-      configFile.shouldNotExist(function (err) {
-        expect(err.message)
-          .to.equal('config file already exists: ' + configPath);
+      configFile.shouldNotExist((err) => {
+        expect(err.message).to.equal('config file already exists: ' + configPath);
         done();
       });
     });
@@ -60,7 +59,7 @@ describe('configFile', function () {
 
   describe('read()', function () {
     it('should attempt to read the config file', function (done) {
-      var configPath = path.join(process.cwd(), 'config.js');
+      const configPath = path.join(process.cwd(), 'config.js');
       try {
         configFile.read();
       } catch (err) {
@@ -70,7 +69,7 @@ describe('configFile', function () {
     });
 
     it('should be possible to read a custom, absolute config file path', function (done) {
-      global.options = {file: '/some/absoluete/path/to/a-config-file.js'}
+      global.options = {file: '/some/absoluete/path/to/a-config-file.js'};
       try {
         configFile.read();
       } catch (err) {
@@ -80,8 +79,8 @@ describe('configFile', function () {
     });
 
     it('should be possible to read a custom, relative config file path', function (done) {
-      global.options = {file: './a/relative/path/to/a-config-file.js'}
-      var configPath = path.join(process.cwd(), global.options.file);
+      global.options = {file: './a/relative/path/to/a-config-file.js'};
+      const configPath = path.join(process.cwd(), global.options.file);
       try {
         configFile.read();
       } catch (err) {
@@ -92,9 +91,9 @@ describe('configFile', function () {
   });
 
   function mockFs() {
-    var mockedFs = {};
-    mockedFs.stat = sinon.stub();
-    return mockedFs;
+    return {
+      stat: sinon.stub()
+    };
   }
 
 });

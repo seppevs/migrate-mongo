@@ -9,7 +9,7 @@
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha --recursive",
     "test-coverage": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec ./test/*",
-    "eslint": "./node_modules/eslint/bin/eslint.js ."
+    "lint": "eslint *.js lib/ test/"
   },
   "author": "Sebastian Van Sande",
   "license": "MIT",
@@ -34,6 +34,8 @@
   "devDependencies": {
     "chai": "3.5.0",
     "coveralls": "2.11.15",
+    "eslint": "3.14.1",
+    "eslint-plugin-mocha": "^4.8.0",
     "istanbul": "0.4.5",
     "mocha": "3.2.0",
     "proxyquire": "1.7.11",

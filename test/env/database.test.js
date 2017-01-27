@@ -1,15 +1,13 @@
 'use strict';
 
-var expect = require('chai').expect;
-var sinon = require('sinon');
-var proxyquire = require('proxyquire');
-
+const expect = require('chai').expect;
+const sinon = require('sinon');
+const proxyquire = require('proxyquire');
 
 describe('database', function () {
 
-  var database;
-
-  var configFile, mongodb;
+  let database; // module under test
+  let configFile, mongodb; // mocked dependencies
 
   beforeEach(function () {
     configFile = mockConfigFile();
@@ -23,7 +21,7 @@ describe('database', function () {
 
   describe('connect()', function () {
     it('should connect MongoClient to the configured mongodb url', function (done) {
-      database.connect(function () {
+      database.connect(() => {
         expect(mongodb.MongoClient.connect.called).to.equal(true);
         expect(mongodb.MongoClient.connect.getCall(0).args[0])
           .to.equal('mongodb://someserver:27017/testdb');
@@ -33,22 +31,21 @@ describe('database', function () {
   });
 
   function mockConfigFile() {
-    var mockedConfigFile = {};
-    mockedConfigFile.read = sinon.stub().returns({
-      mongodb: {
-        url: 'mongodb://someserver:27017/testdb'
-      }
-    });
-    return mockedConfigFile;
+    return {
+      read: sinon.stub().returns({
+        mongodb: {
+          url: 'mongodb://someserver:27017/testdb'
+        }
+      })
+    };
   }
 
   function mockMongodb() {
-    var mockedMongodb = {
+    return {
       MongoClient: {
         connect: sinon.stub().yields()
       }
     };
-    return mockedMongodb;
   }
 
 });

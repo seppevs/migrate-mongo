@@ -1,36 +1,30 @@
 'use strict';
 
-var expect = require('chai').expect;
-var sinon = require('sinon');
-var path = require('path');
+const expect = require('chai').expect;
+const sinon = require('sinon');
 
-var proxyquire = require('proxyquire');
+const proxyquire = require('proxyquire');
 
 describe('down', function () {
 
-  // under test:
-  var down;
-
-  // mocked dependencies:
-  var status, configFile, migrationsDir, db;
-
-  // test data
-  var migration, config, changelogCollection, statusItems;
+  let down; // module under test
+  let status, configFile, migrationsDir, db;  // mocked dependencies
+  let migration, changelogCollection; // test data
 
   beforeEach(function () {
     migration = mockMigration();
-    config = mockConfig();
     changelogCollection = mockChangelogCollection();
 
     status = mockStatus();
     configFile = mockConfigFile();
     migrationsDir = mockMigrationsDir();
     db = mockDb();
-    down = mockDown();
+
+    down = loadDownWithInjectedMocks();
   });
 
   it('should fetch the status', function (done) {
-    down(db, function () {
+    down(db, () => {
       expect(status.called).to.equal(true);
       done();
     });
@@ -38,35 +32,35 @@ describe('down', function () {
 
   it('should yield an error when there is nothing to downgrade', function (done) {
     status.yields(null, [
-      {fileName: '20160609113224-some_migration.js', appliedAt: 'PENDING'}
+      { fileName: '20160609113224-some_migration.js', appliedAt: 'PENDING' }
     ]);
-    down(db, function (err) {
+    down(db, (err) => {
       expect(err.message).to.equal('No more items to downgrade');
       done();
     });
   });
 
   it('should load the last applied migration', function (done) {
-    down(db, function (err) {
-      expect(migrationsDir.loadMigration.getCall(0).args[0])
-        .to.equal('20160609113225-last_migration.js');
+    down(db, () => {
+      expect(migrationsDir.loadMigration.getCall(0).args[0]).to.equal('20160609113225-last_migration.js');
       done();
     });
   });
 
   it('should downgrade the last applied migration', function (done) {
-    down(db, function (err) {
+    down(db, () => {
       expect(migration.down.called).to.equal(true);
       done();
     });
   });
 
+  /*eslint no-unused-vars: "off"*/
   it('should allow downgrade to return promise', function (done) {
     migration = sinon.stub({ down: function (db) { /* arg required for function.length */ } });
     migration.down.returns(Promise.resolve());
     migrationsDir = mockMigrationsDir();
-    down = mockDown();
-    down(db, function (err) {
+    down = loadDownWithInjectedMocks();
+    down(db, () => {
       expect(migration.down.called).to.equal(true);
       done();
     });
@@ -74,14 +68,14 @@ describe('down', function () {
 
   it('should yield an error when an error occurred during the downgrade', function (done) {
     migration.down.yields(new Error('Invalid syntax'));
-    down(db, function (err) {
+    down(db, (err) => {
       expect(err.message).to.equal('Could not migrate down 20160609113225-last_migration.js: Invalid syntax');
       done();
     });
   });
 
   it('should remove the entry of the downgraded migration from the changelog collection', function (done) {
-    down(db, function (err) {
+    down(db, () => {
       expect(changelogCollection.deleteOne.called).to.equal(true);
       expect(changelogCollection.deleteOne.callCount).to.equal(1);
       done();
@@ -90,14 +84,14 @@ describe('down', function () {
 
   it('should yield errors that occurred when deleting from the changelog collection', function (done) {
     changelogCollection.deleteOne.yields(new Error('Could not delete'));
-    down(db, function (err) {
+    down(db, (err) => {
       expect(err.message).to.equal('Could not update changelog: Could not delete');
       done();
     });
   });
 
   it('should yield a list of downgraded items', function (done) {
-    down(db, function (err, items) {
+    down(db, (err, items) => {
       expect(items).to.deep.equal(['20160609113225-last_migration.js']);
       done();
     });
@@ -113,9 +107,7 @@ describe('down', function () {
   function mockConfigFile() {
     return {
       shouldExist: sinon.stub().yields(),
-      read: sinon.stub().returns({
-        changelogCollectionName: 'changelog'
-      })
+      read: sinon.stub().returns({ changelogCollectionName: 'changelog' })
     };
   }
 
@@ -126,14 +118,14 @@ describe('down', function () {
   }
 
   function mockDb() {
-    var mocked = {};
-    mocked.collection = sinon.stub();
-    mocked.collection.withArgs('changelog').returns(changelogCollection);
-    return mocked;
+    const mock = {};
+    mock.collection = sinon.stub();
+    mock.collection.withArgs('changelog').returns(changelogCollection);
+    return mock;
   }
 
   function mockMigration() {
-    var migration = sinon.stub({
+    const migration = sinon.stub({
       down: function (db, cb) {
         // args are required for function.length
       },
@@ -148,11 +140,7 @@ describe('down', function () {
     };
   }
 
-  function mockConfig() {
-    return {};
-  }
-
-  function mockDown() {
+  function loadDownWithInjectedMocks() {
     return proxyquire('../lib/actions/down', {
       './status': status,
       '../env/configFile': configFile,
