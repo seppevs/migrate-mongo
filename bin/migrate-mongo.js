@@ -1,17 +1,16 @@
 #! /usr/bin/env node
 
-var program = require('commander');
-var _ = require('lodash');
-var migrateMongo = require('../lib/migrate-mongo');
-var database = require('../lib/env/database');
-
-var Table = require('cli-table');
+const program = require('commander');
+const _ = require('lodash');
+const Table = require('cli-table');
+const migrateMongo = require('../lib/migrate-mongo');
+const database = require('../lib/env/database');
 
 program
   .command('init')
   .description('initialize a new migration project')
   .action(function () {
-    migrateMongo.init(function (err) {
+    migrateMongo.init((err) => {
       if (err) return handleError(err);
       console.log('Initialization successful. Please edit the generated config.js file');
     });
@@ -20,8 +19,8 @@ program
 program
   .command('create [description]')
   .description('create a new database migration with the provided description')
-  .action(function (description) {
-    migrateMongo.create(description, function (err, filename) {
+  .action((description) =>{
+    migrateMongo.create(description, (err, filename) => {
       if (err) return handleError(err);
       console.log('Created: migrations/' + filename);
     });
@@ -31,15 +30,12 @@ program
   .command('up')
   .description('run all unapplied database migrations')
   .option('-f --file <file>', 'use a custom config file')
-  .action(function (options) {
+  .action((options) =>{
     global.options = options;
-    database.connect(function (err, db) {
+    database.connect((err, db) => {
       if (err) return handleError(err);
-      migrateMongo.up(db, function (err, migrated) {
-        migrated.forEach(function (migratedItem) {
-          console.log('MIGRATED UP: ' + migratedItem);
-        });
-
+      migrateMongo.up(db, (err, migrated) => {
+        migrated.forEach((migratedItem) => console.log(`MIGRATED UP: ${migratedItem}`));
         if (err) return handleError(err);
         process.exit(0);
       });
@@ -50,15 +46,12 @@ program
   .command('down')
   .description('undo the last applied database migration')
   .option('-f --file <file>', 'use a custom config file')
-  .action(function (options) {
+  .action((options) => {
     global.options = options;
-    database.connect(function (err, db) {
+    database.connect((err, db) => {
       if (err) return handleError(err);
-      migrateMongo.down(db, function (err, migrated) {
-        migrated.forEach(function (migratedItem) {
-          console.log('MIGRATED DOWN: ' + migratedItem);
-        });
-
+      migrateMongo.down(db, (err, migrated) => {
+        migrated.forEach(migratedItem => console.log('MIGRATED DOWN: ' + migratedItem));
         if (err) return handleError(err);
         process.exit(0);
       });
@@ -69,11 +62,11 @@ program
   .command('status')
   .description('print the changelog of the database')
   .option('-f --file <file>', 'use a custom config file')
-  .action(function (options) {
+  .action((options) => {
     global.options = options;
-    database.connect(function (err, db) {
+    database.connect((err, db) => {
       if (err) return handleError(err);
-      migrateMongo.status(db, function (err, statusItems) {
+      migrateMongo.status(db, (err, statusItems) => {
         if (err) return handleError(err);
         printStatusTable(statusItems);
         process.exit(0);
@@ -93,9 +86,7 @@ function handleError(err) {
 }
 
 function printStatusTable(statusItems) {
-  var table = new Table({head: ['Filename', 'Applied At']});
-  statusItems.forEach(function (item) {
-    table.push(_.values(item));
-  });
+  const table = new Table({head: ['Filename', 'Applied At']});
+  statusItems.forEach(item => table.push(_.values(item)));
   console.log(table.toString());
 }
