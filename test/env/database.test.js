@@ -20,11 +20,17 @@ describe('database', function () {
   });
 
   describe('connect()', function () {
-    it('should connect MongoClient to the configured mongodb url', function (done) {
+    it('should connect MongoClient to the configured mongodb url with the configured options', function (done) {
       database.connect(() => {
         expect(mongodb.MongoClient.connect.called).to.equal(true);
         expect(mongodb.MongoClient.connect.getCall(0).args[0])
           .to.equal('mongodb://someserver:27017/testdb');
+
+        expect(mongodb.MongoClient.connect.getCall(0).args[1])
+          .to.deep.equal({
+          connectTimeoutMS: 3600000, // 1 hour
+          socketTimeoutMS: 3600000, // 1 hour
+        });
         done();
       });
     });
@@ -34,7 +40,11 @@ describe('database', function () {
     return {
       read: sinon.stub().returns({
         mongodb: {
-          url: 'mongodb://someserver:27017/testdb'
+          url: 'mongodb://someserver:27017/testdb',
+          options: {
+            connectTimeoutMS: 3600000, // 1 hour
+            socketTimeoutMS: 3600000, // 1 hour
+          }
         }
       })
     };
