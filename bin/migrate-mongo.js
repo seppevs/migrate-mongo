@@ -5,6 +5,9 @@ const _ = require('lodash');
 const Table = require('cli-table');
 const migrateMongo = require('../lib/migrate-mongo');
 const database = require('../lib/env/database');
+const pkgjson = require('../package.json');
+
+program.version(pkgjson.version);
 
 program
   .command('init')
@@ -73,6 +76,7 @@ program
       });
     });
   });
+
 
 program.parse(process.argv);
 

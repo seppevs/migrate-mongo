@@ -18,13 +18,14 @@ Usage: migrate-mongo [options] [command]
 
     init                  initialize a new migration project
     create [description]  create a new database migration with the provided description
-    up                    run all unapplied database migrations
-    down                  undo the last applied database migration
-    status                print the changelog of the database
+    up [options]          run all unapplied database migrations
+    down [options]        undo the last applied database migration
+    status [options]      print the changelog of the database
 
   Options:
 
-    -h, --help  output usage information
+    -h, --help     output usage information
+    -V, --version  output the version number
 ````
 
 ## Quickstart
