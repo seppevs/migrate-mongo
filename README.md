@@ -42,35 +42,42 @@ $ migrate-mongo init
 Initialization successful. Please edit the generated config.js file
 ````
 
-The above command did two things: 1) create a sample config.js file and 2) create a 'migrations' directory
+The above command did two things: 
+1. create a sample 'config.js' file and 
+2. create a 'migrations' directory
 
-Edit the config.js dir, it contains some default values you can edit:
+Edit the config.js file. Make sure you change the mongodb url:
 ````javascript
 'use strict';
 
-// This is where you can configure migrate-mongo
+// In this file you can configure migrate-mongo
+
 module.exports = {
 
-  // The mongodb collection where the applied changes are stored:
-  changelogCollectionName: 'changelog',
-
   mongodb: {
-    // TODO edit this connection url to your MongoDB database:
+    // TODO You MUST edit this connection url to your MongoDB database:
     url: 'mongodb://localhost:27017/YOURDATABASENAME',
-    
-    // uncomment and edit to specify Mongo client connect options
+
+    // uncomment and edit to specify Mongo client connect options (eg. increase the timeouts)
     // see https://mongodb.github.io/node-mongodb-native/2.2/api/MongoClient.html
     //
     // options: {
     //   connectTimeoutMS: 3600000, // 1 hour
     //   socketTimeoutMS: 3600000, // 1 hour
     // }
-  }
+  },
+
+  // The migrations dir, can be an relative or absolute path. Only edit this when really necessary.
+  migrationsDir: 'migrations',
+
+  // The mongodb collection where the applied changes are stored. Only edit this when really necessary.
+  changelogCollectionName: 'changelog',
+
 };
 ````
 
-### Creating a migration
-To create a new migration, just run the ````migrate-mongo create [description]```` command.
+### Creating a new migration script
+To create a new database migration script, just run the ````migrate-mongo create [description]```` command.
 
 For example:
 ````bash
@@ -151,22 +158,9 @@ $ migrate-mongo status
 
 ````
 
-This action accepts an (optional) ````-f```` or ````--file```` option to provide a custom config file path:
 
-````bash
-$ migrate-mongo status -f '~/configs/albums-migrations.js'
-┌─────────────────────────────────────────┬────────────┐
-│ Filename                                │ Applied At │
-├─────────────────────────────────────────┼────────────┤
-│ 20160608155948-blacklist_the_beatles.js │ PENDING    │
-└─────────────────────────────────────────┴────────────┘
-
-````
-
-Default, it will look for a ````config.js```` config file in of the current directory.
-
-### Migrate your database UP
-This command will apply ALL pending migrations
+### Migrate up
+This command will apply all pending migrations
 ````bash
 $ migrate-mongo up
 MIGRATED UP: 20160608155948-blacklist_the_beatles.js
@@ -184,11 +178,8 @@ $ migrate-mongo status
 └─────────────────────────────────────────┴──────────────────────────┘
 ````
 
-This action accepts an (optional) ````-f```` or ````--file```` option to provide a custom config file path.
-Default, it will look for a ````config.js```` config file in of the current directory.
-
 ### Migrate down
-With this command we will revert (only) the last applied migration
+With this command, migrate-mongo will revert (only) the last applied migration
 
 ````bash
 $ migrate-mongo down
@@ -205,5 +196,18 @@ $ migrate-mongo status
 └─────────────────────────────────────────┴────────────┘
 ````
 
-This action accepts an (optional) ````-f```` or ````--file```` option to provide a custom config file path.
-Default, it will look for a ````config.js```` config file in of the current directory.
+## Using a custom config file
+All actions (except ```init```) accept an optional ````-f```` or ````--file```` option to specify a path to a custom config file.
+By default, migrate-mongo will look for a ````config.js```` config file in of the current directory.
+
+### Example:
+
+````bash
+$ migrate-mongo status -f '~/configs/albums-migrations.js'
+┌─────────────────────────────────────────┬────────────┐
+│ Filename                                │ Applied At │
+├─────────────────────────────────────────┼────────────┤
+│ 20160608155948-blacklist_the_beatles.js │ PENDING    │
+└─────────────────────────────────────────┴────────────┘
+
+````
