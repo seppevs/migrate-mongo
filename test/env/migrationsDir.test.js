@@ -9,11 +9,38 @@ const path = require('path');
 describe('migrationsDir', function () {
 
   let migrationsDir;
-  let fs;
+  let fs, configFile;
 
   beforeEach(function () {
     fs = mockFs();
-    migrationsDir = proxyquire('../../lib/env/migrationsDir', {'fs-extra': fs});
+    configFile = mockConfigFile();
+    migrationsDir = proxyquire('../../lib/env/migrationsDir', {
+      'fs-extra': fs,
+      './configFile': configFile,
+    });
+  });
+
+  describe('resolve()', function () {
+
+    it('should use the configured relative migrations dir when a config file is available', function () {
+      configFile.read.returns({
+        migrationsDir: 'custom-migrations-dir'
+      });
+      expect(migrationsDir.resolve()).to.equal(path.join(process.cwd(), 'custom-migrations-dir'));
+    });
+
+    it('should use the configured absolute migrations dir when a config file is available', function () {
+      configFile.read.returns({
+        migrationsDir: '/absolute/path/to/my/custom-migrations-dir'
+      });
+      expect(migrationsDir.resolve()).to.equal('/absolute/path/to/my/custom-migrations-dir');
+    });
+
+    it('should use the default migrations directory when unable to read the config file', function () {
+      configFile.read.throws(new Error('Cannot read config file'));
+      expect(migrationsDir.resolve()).to.equal(path.join(process.cwd(), 'migrations'));
+    });
+
   });
 
   describe('shouldExist()', function () {
@@ -98,6 +125,14 @@ describe('migrationsDir', function () {
     return {
       stat: sinon.stub(),
       readdir: sinon.stub()
+    };
+  }
+
+  function mockConfigFile() {
+    return {
+      read: sinon.stub().returns({
+        migrationsDir: 'migrations',
+      }),
     };
   }
 

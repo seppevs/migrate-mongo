@@ -6,6 +6,7 @@ const Table = require('cli-table');
 const migrateMongo = require('../lib/migrate-mongo');
 const database = require('../lib/env/database');
 const pkgjson = require('../package.json');
+const config = require('../lib/env/configFile');
 
 program.version(pkgjson.version);
 
@@ -23,10 +24,11 @@ program
   .command('create [description]')
   .description('create a new database migration with the provided description')
   .option('-f --file <file>', 'use a custom config file')
-  .action((description) =>{
+  .action((description, options) => {
+    global.options = options;
     migrateMongo.create(description, (err, filename) => {
       if (err) return handleError(err);
-      console.log('Created: migrations/' + filename);
+      console.log(`Created: ${config.read().migrationsDir}/${filename}`);
     });
   });
 
