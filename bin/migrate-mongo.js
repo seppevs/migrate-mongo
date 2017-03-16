@@ -22,6 +22,7 @@ program
 program
   .command('create [description]')
   .description('create a new database migration with the provided description')
+  .option('-f --file <file>', 'use a custom config file')
   .action((description) =>{
     migrateMongo.create(description, (err, filename) => {
       if (err) return handleError(err);
