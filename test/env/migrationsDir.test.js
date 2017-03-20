@@ -36,6 +36,12 @@ describe('migrationsDir', function () {
       expect(migrationsDir.resolve()).to.equal('/absolute/path/to/my/custom-migrations-dir');
     });
 
+    it('should use the default migrations directory when no migrationsDir is specified in the config file', function () {
+      configFile.read.returns({
+      });
+      expect(migrationsDir.resolve()).to.equal(path.join(process.cwd(), 'migrations'));
+    });
+
     it('should use the default migrations directory when unable to read the config file', function () {
       configFile.read.throws(new Error('Cannot read config file'));
       expect(migrationsDir.resolve()).to.equal(path.join(process.cwd(), 'migrations'));
