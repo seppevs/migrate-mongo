@@ -27,7 +27,7 @@
     "commander": "2.9.0",
     "fs-extra": "2.1.2",
     "lodash": "4.17.4",
-    "moment": "2.18.1",
+    "moment": "2.21.0",
     "mongodb": "2.2.25",
     "shifting": "1.2.5"
   },
