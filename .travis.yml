@@ -1,7 +1,7 @@
 language: node_js
 node_js:
-  - "4.8.2"
-  - "6.10.2"
-  - "7.9.0"
+  - "6.13.1"
+  - "8.10.0"
+  - "9.8.0"
 script: "npm run-script test-coverage"
 after_script: "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
