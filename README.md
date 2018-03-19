@@ -55,8 +55,12 @@ Edit the config.js file. Make sure you change the mongodb url:
 module.exports = {
 
   mongodb: {
-    // TODO You MUST edit this connection url to your MongoDB database:
-    url: 'mongodb://localhost:27017/YOURDATABASENAME',
+    
+    // TODO Change (or review) the url to your MongoDB:
+    url: 'mongodb://localhost:27017',
+
+    // TODO Change this to your database name:
+    databaseName: "YOURDATABASENAME",
 
     // uncomment and edit to specify Mongo client connect options (eg. increase the timeouts)
     // see https://mongodb.github.io/node-mongodb-native/2.2/api/MongoClient.html
