@@ -30,12 +30,13 @@ describe('down', function () {
     });
   });
 
-  it('should yield an error when there is nothing to downgrade', function (done) {
+  it('should yield empty list when nothing to downgrade', function (done) {
     status.yields(null, [
       { fileName: '20160609113224-some_migration.js', appliedAt: 'PENDING' }
     ]);
-    down(db, (err) => {
-      expect(err.message).to.equal('No more items to downgrade');
+    down(db, (err, migrated) => {
+      expect(err).to.equal(undefined);
+      expect(migrated).to.deep.equal([]);
       done();
     });
   });
