@@ -11,6 +11,7 @@ describe('database', function () {
   let configFile, mongodb, client; // mocked dependencies
 
   beforeEach(function () {
+    this.timeout(10000);
     configObj = createConfigObj();
     client = mockClient();
     configFile = mockConfigFile();
