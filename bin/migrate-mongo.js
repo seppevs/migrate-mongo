@@ -36,7 +36,7 @@ program
   .command('up')
   .description('run all unapplied database migrations')
   .option('-f --file <file>', 'use a custom config file')
-  .action((options) =>{
+  .action((options) => {
     global.options = options;
     database.connect((err, db) => {
       if (err) return handleError(err);
@@ -93,7 +93,7 @@ function handleError(err) {
 }
 
 function printStatusTable(statusItems) {
-  const table = new Table({head: ['Filename', 'Applied At']});
+  const table = new Table({ head: ['Filename', 'Applied At'] });
   statusItems.forEach(item => table.push(_.values(item)));
   console.log(table.toString());
 }
