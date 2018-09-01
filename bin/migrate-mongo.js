@@ -24,6 +24,7 @@ program
   .command('create [description]')
   .description('create a new database migration with the provided description')
   .option('-f --file <file>', 'use a custom config file')
+  .option('-a --api', 'use programmatic API format')
   .action((description, options) => {
     global.options = options;
     migrateMongo.create(description, (err, filename) => {
@@ -31,6 +32,7 @@ program
       console.log(`Created: ${config.read().migrationsDir}/${filename}`);
     });
   });
+  
 
 program
   .command('up')
