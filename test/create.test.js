@@ -22,6 +22,10 @@ describe('create', function () {
     });
   });
 
+  afterEach(function () {
+    delete global.options;
+  });
+
   it('should yield an error when called without a description', function (done) {
     create(null, (err) => {
       expect(err.message).to.equal('Missing parameter: description');
@@ -57,6 +61,22 @@ describe('create', function () {
       expect(fs.copy.called).to.equal(true);
       expect(fs.copy.getCall(0).args[0])
         .to.equal(path.join(__dirname, '../samples/migration.js'));
+      expect(fs.copy.getCall(0).args[1])
+        .to.equal(path.join(process.cwd(), 'migrations', '20160609080700-my_description.js'));
+      expect(filename).to.equal('20160609080700-my_description.js');
+      clock.restore();
+      done();
+    });
+  });
+
+  it('should create a new API-formatted migration file and yield the filename', function (done) {
+    //Mock passing api argument to create
+    global.options = { api: true };
+    const clock = sinon.useFakeTimers(new Date('2016-06-09T08:07:00.077Z').getTime());
+    create('my_description', (err, filename) => {
+      expect(fs.copy.called).to.equal(true);
+      expect(fs.copy.getCall(0).args[0])
+        .to.equal(path.join(__dirname, '../samples/programmaticMigration.js'));
       expect(fs.copy.getCall(0).args[1])
         .to.equal(path.join(process.cwd(), 'migrations', '20160609080700-my_description.js'));
       expect(filename).to.equal('20160609080700-my_description.js');
