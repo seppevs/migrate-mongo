@@ -80,9 +80,9 @@ describe('up', function () {
   it('should populate the changelog with info about the upgraded migrations', function (done) {
     const clock = sinon.useFakeTimers(new Date('2016-06-09T08:07:00.077Z').getTime());
     up(db, () => {
-      expect(changelogCollection.insert.called).to.equal(true);
-      expect(changelogCollection.insert.callCount).to.equal(2);
-      expect(changelogCollection.insert.getCall(0).args[0]).to.deep.equal({
+      expect(changelogCollection.insertOne.called).to.equal(true);
+      expect(changelogCollection.insertOne.callCount).to.equal(2);
+      expect(changelogCollection.insertOne.getCall(0).args[0]).to.deep.equal({
         appliedAt: new Date('2016-06-09T08:07:00.077Z'),
         fileName: '20160607173840-first_pending_migration.js'
       });
@@ -111,7 +111,7 @@ describe('up', function () {
   });
 
   it('should yield an error + items already migrated when unable to update the changelog', function (done) {
-    changelogCollection.insert.onSecondCall().yields(new Error('Kernel panic'));
+    changelogCollection.insertOne.onSecondCall().yields(new Error('Kernel panic'));
     up(db, (err, upgradedFileNames) => {
       expect(err.message).to.deep.equal('Could not update changelog: Kernel panic');
       expect(upgradedFileNames).to.deep.equal(['20160607173840-first_pending_migration.js']);
@@ -164,7 +164,7 @@ describe('up', function () {
 
   function mockChangelogCollection() {
     return {
-      insert: sinon.stub().yields()
+      insertOne: sinon.stub().yields()
     };
   }
 
