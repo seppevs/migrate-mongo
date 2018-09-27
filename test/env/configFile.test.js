@@ -26,7 +26,7 @@ describe('configFile', function () {
     });
 
     it('should yield an error if the config file does not exist', function (done) {
-      const configPath = path.join(process.cwd(), 'config.js');
+      const configPath = path.join(process.cwd(), 'migrate-mongo-config.js');
       fs.stat.yields(new Error('It does not exist'));
       configFile.shouldExist((err) => {
         expect(err.message)
@@ -48,7 +48,7 @@ describe('configFile', function () {
     });
 
     it('should yield an error if the config file exists', function (done) {
-      const configPath = path.join(process.cwd(), 'config.js');
+      const configPath = path.join(process.cwd(), 'migrate-mongo-config.js');
       fs.stat.yields();
       configFile.shouldNotExist((err) => {
         expect(err.message).to.equal('config file already exists: ' + configPath);
@@ -57,9 +57,15 @@ describe('configFile', function () {
     });
   });
 
+  describe('getConfigFilename()', () => {
+    it('should return the config file name', () => {
+      expect(configFile.getConfigFilename()).to.equal('migrate-mongo-config.js');
+    });
+  });
+
   describe('read()', function () {
     it('should attempt to read the config file', function (done) {
-      const configPath = path.join(process.cwd(), 'config.js');
+      const configPath = path.join(process.cwd(), 'migrate-mongo-config.js');
       try {
         configFile.read();
       } catch (err) {

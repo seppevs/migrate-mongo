@@ -16,7 +16,7 @@ program
   .action(function () {
     migrateMongo.init((err) => {
       if (err) return handleError(err);
-      console.log('Initialization successful. Please edit the generated config.js file');
+      console.log('Initialization successful. Please edit the generated ' + config.getConfigFilename() + ' file');
     });
   });
 
