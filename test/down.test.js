@@ -110,7 +110,7 @@ describe("down", () => {
 
   it("should be able to downgrade callback based migration", async () => {
     migration = {
-      down(db, callback) {
+      down(theDb, callback) {
         return callback();
       }
     };

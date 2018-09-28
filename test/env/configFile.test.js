@@ -61,15 +61,17 @@ describe("configFile", () => {
     });
   });
 
-  describe('getConfigFilename()', () => {
-    it('should return the config file name', () => {
-      expect(configFile.getConfigFilename()).to.equal('migrate-mongo-config.js');
+  describe("getConfigFilename()", () => {
+    it("should return the config file name", () => {
+      expect(configFile.getConfigFilename()).to.equal(
+        "migrate-mongo-config.js"
+      );
     });
   });
 
   describe("read()", () => {
     it("should attempt to read the config file", done => {
-      const configPath = path.join(process.cwd(), "config.js");
+      const configPath = path.join(process.cwd(), "migrate-mongo-config.js");
       try {
         configFile.read();
         expect.fail("Error was not thrown");

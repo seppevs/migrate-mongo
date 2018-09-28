@@ -126,7 +126,7 @@ describe("up", () => {
 
   it("should be able to upgrade callback based migration", async () => {
     firstPendingMigration = {
-      up(db, callback) {
+      up(theDb, callback) {
         return callback();
       }
     };

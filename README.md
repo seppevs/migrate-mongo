@@ -30,6 +30,8 @@ Usage: migrate-mongo [options] [command]
 
 ## Quickstart
 ### Initialize a new project
+Make sure you have [Node.js](https://nodejs.org/en/) 7.6.0 (or higher) installed.  
+
 Create a directory where you want to store your migrations for your mongo database (eg. 'albums' here) and cd into it
 ````bash
 $ mkdir albums-migrations
@@ -106,7 +108,7 @@ The ````db```` object contains [the official MongoDB db object](https://www.npmj
 There are 3 options to implement the `up` and `down` functions of your migration: 
 1. Return a Promises
 2. Use async-await 
-3. Call a callback (not recommended)
+3. Call a callback (deprecated)
 
 Always make sure the implementation matches the function signature:
 * `function up(db) { /* */ }` should return `Promise`
@@ -143,7 +145,7 @@ module.exports = {
 };
 ````
 
-#### Example 3: Call a callback (not recommended)
+#### Example 3: Call a callback (deprecated)
 Callbacks are supported for backwards compatibility.
 New migration scripts should be written using Promises and/or async & await. It's easier to read and write.
 
