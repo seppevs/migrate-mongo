@@ -39,14 +39,14 @@ $ cd albums-migrations
 Initialize a new migrate-mongo project
 ````bash
 $ migrate-mongo init
-Initialization successful. Please edit the generated config.js file
+Initialization successful. Please edit the generated migrate-mongo-config.js file
 ````
 
 The above command did two things: 
-1. create a sample 'config.js' file and 
+1. create a sample 'migrate-mongo-config.js' file and 
 2. create a 'migrations' directory
 
-Edit the config.js file. Make sure you change the mongodb url:
+Edit the migrate-mongo-config.js file. Make sure you change the mongodb url:
 ````javascript
 // In this file you can configure migrate-mongo
 
@@ -212,7 +212,7 @@ $ migrate-mongo status
 
 ## Using a custom config file
 All actions (except ```init```) accept an optional ````-f```` or ````--file```` option to specify a path to a custom config file.
-By default, migrate-mongo will look for a ````config.js```` config file in of the current directory.
+By default, migrate-mongo will look for a ````migrate-mongo-config.js```` config file in of the current directory.
 
 ### Example:
 

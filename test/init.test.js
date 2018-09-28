@@ -81,10 +81,10 @@ describe("init", () => {
     expect(fs.copy.callCount).to.equal(1);
 
     const source = fs.copy.getCall(0).args[0];
-    expect(source).to.equal(path.join(__dirname, "../samples/config.js"));
+    expect(source).to.equal(path.join(__dirname, "../samples/migrate-mongo-config.js"));
 
     const destination = fs.copy.getCall(0).args[1];
-    expect(destination).to.equal(path.join(process.cwd(), "config.js"));
+    expect(destination).to.equal(path.join(process.cwd(), "migrate-mongo-config.js"));
   });
 
   it("should yield errors that occurred when copying the sample config", async () => {

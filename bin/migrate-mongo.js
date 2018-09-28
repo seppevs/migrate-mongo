@@ -35,7 +35,7 @@ program
       .init()
       .then(() =>
         console.log(
-          "Initialization successful. Please edit the generated config.js file"
+          "Initialization successful. Please edit the generated ' + config.getConfigFilename() + ' file"
         )
       )
       .catch(err => handleError(err))
