@@ -48,35 +48,28 @@ The above command did two things:
 
 Edit the config.js file. Make sure you change the mongodb url:
 ````javascript
-'use strict';
-
 // In this file you can configure migrate-mongo
 
 module.exports = {
-
   mongodb: {
-    
     // TODO Change (or review) the url to your MongoDB:
-    url: 'mongodb://localhost:27017',
+    url: "mongodb://localhost:27017",
 
     // TODO Change this to your database name:
     databaseName: "YOURDATABASENAME",
 
-    // uncomment and edit to specify Mongo client connect options (eg. increase the timeouts)
-    // see https://mongodb.github.io/node-mongodb-native/2.2/api/MongoClient.html
-    //
-    // options: {
-    //   connectTimeoutMS: 3600000, // 1 hour
-    //   socketTimeoutMS: 3600000, // 1 hour
-    // }
+    options: {
+      useNewUrlParser: true // removes a deprecation warning when connecting
+      //   connectTimeoutMS: 3600000, // increase connection timeout to 1 hour
+      //   socketTimeoutMS: 3600000, // increase socket timeout to 1 hour
+    }
   },
 
   // The migrations dir, can be an relative or absolute path. Only edit this when really necessary.
-  migrationsDir: 'migrations',
+  migrationsDir: "migrations",
 
   // The mongodb collection where the applied changes are stored. Only edit this when really necessary.
-  changelogCollectionName: 'changelog',
-
+  changelogCollectionName: "changelog"
 };
 ````
 
@@ -91,63 +84,80 @@ Created: migrations/20160608155948-blacklist_the_beatles.js
 
 A new migration file is created in the 'migrations' directory:
 ````javascript
-'use strict';
-
 module.exports = {
-
-  up(db, next) {
-    // TODO write your migration here
-    next();
+  up(db) {
+    // TODO write your migration here. Return a Promise (and/or use async & await).
+    // See https://github.com/seppevs/migrate-mongo/#creating-a-new-migration-script
+    // Example:
+    // return db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: true}});
   },
 
-  down(db, next) {
+  down(db) {
     // TODO write the statements to rollback your migration (if possible)
-    next();
+    // Example:
+    // return db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: false}});
   }
-
 };
 ````
 
 Edit this content so it actually performs changes to your database. Don't forget to write the down part as well.
 The ````db```` object contains [the official MongoDB db object](https://www.npmjs.com/package/mongodb)
 
-An example:
+There are 3 options to implement the `up` and `down` functions of your migration: 
+1. Return a Promises
+2. Use async-await 
+3. Call a callback (not recommended)
+
+Always make sure the implementation matches the function signature:
+* `function up(db) { /* */ }` should return `Promise`
+* `function async up(db) { /* */ }` should contain `await` keyword(s) and return `Promise`
+* `function up(db, next) { /* */ }` should callback `next`
+
+#### Example 1: Return a Promise
 ````javascript
-'use strict';
-
 module.exports = {
-
-  up(db, next) {
-    db.collection('albums').update({artist: 'The Beatles'}, {$set: {blacklisted: true}}, next);
-  },
-
-  down(db, next) {
-    db.collection('albums').update({artist: 'The Beatles'}, {$set: {blacklisted: false}}, next);
-  }
-};
-````
-
-The up/down implementation can use either callback-style or return a Promise.
-
-````javascript
-'use strict';
-
-module.exports = {
-
   up(db) {
-    return db.collection('albums').update({artist: 'The Beatles'}, {$set: {blacklisted: true}});
+    return db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: true}});
   },
 
   down(db) {
-    return db.collection('albums').update({artist: 'The Beatles'}, {$set: {blacklisted: false}});
+    return db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: false}});
   }
 };
 ````
 
-Make sure the implementation matches the function signature.
+#### Example 2: Use async & await
+Async & await is especially useful if you want to perform multiple operations against your MongoDB in one migration.
 
-* `function up(db) { /* */ }` should return `Promise`
-* `function up(db, next) { /* */ }` should callback `next`
+````javascript
+module.exports = {
+  async up(db) {
+    await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: true}});
+    await db.collection('albums').updateOne({artist: 'The Doors'}, {$set: {stars: 5}});
+  },
+
+  async down(db) {
+    await db.collection('albums').updateOne({artist: 'The Doors'}, {$set: {stars: 0}});
+    await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: false}});
+  },
+};
+````
+
+#### Example 3: Call a callback (not recommended)
+Callbacks are supported for backwards compatibility.
+New migration scripts should be written using Promises and/or async & await. It's easier to read and write.
+
+````javascript
+module.exports = {
+  up(db, callback) {
+    return db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: true}}, callback);
+  },
+
+  down(db, callback) {
+    return db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: false}}, callback);
+  }
+};
+````
 
 ### Checking the status of the migrations
 At any time, you can check which migrations are applied (or not)

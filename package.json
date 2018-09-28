@@ -7,8 +7,8 @@
     "migrate-mongo": "bin/migrate-mongo.js"
   },
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha --recursive",
-    "test-coverage": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec ./test/*",
+    "test": "nyc --reporter=html --reporter=text mocha --recursive",
+    "test-coverage": "nyc --reporter=text-lcov mocha --recursive | coveralls",
     "lint": "eslint *.js lib/ test/"
   },
   "author": "Sebastian Van Sande",
@@ -20,25 +20,40 @@
     "type": "git",
     "url": "https://github.com/seppevs/migrate-mongo.git"
   },
+  "engines": {
+    "node": ">=8"
+  },
   "preferGlobal": true,
   "dependencies": {
-    "async": "2.6.1",
     "cli-table": "0.3.1",
     "commander": "2.18.0",
+    "date-fns": "1.29.0",
+    "fn-args": "3.0.0",
     "fs-extra": "7.0.0",
     "lodash": "4.17.11",
-    "moment": "2.22.2",
     "mongodb": "3.1.6",
-    "shifting": "1.2.5"
+    "p-each-series": "1.0.0"
   },
   "devDependencies": {
-    "chai": "4.1.2",
+    "chai": "4.2.0",
     "coveralls": "3.0.2",
     "eslint": "5.6.0",
+    "eslint-config-airbnb-base": "13.1.0",
+    "eslint-config-prettier": "3.1.0",
+    "eslint-plugin-import": "2.14.0",
     "eslint-plugin-mocha": "5.2.0",
-    "istanbul": "0.4.5",
     "mocha": "5.2.0",
+    "nyc": "13.0.1",
     "proxyquire": "2.1.0",
     "sinon": "6.3.4"
+  },
+  "eslintConfig": {
+    "extends": [
+      "airbnb-base",
+      "prettier"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 2018
+    }
   }
 }

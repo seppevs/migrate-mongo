@@ -1,99 +1,119 @@
 #! /usr/bin/env node
 
-const program = require('commander');
-const _ = require('lodash');
-const Table = require('cli-table');
-const migrateMongo = require('../lib/migrate-mongo');
-const database = require('../lib/env/database');
-const pkgjson = require('../package.json');
-const config = require('../lib/env/configFile');
+const program = require("commander");
+const _ = require("lodash");
+const Table = require("cli-table");
+const migrateMongo = require("../lib/migrate-mongo");
+const database = require("../lib/env/database");
+const pkgjson = require("../package.json");
+const config = require("../lib/env/configFile");
+
+function printMigrated(migrated) {
+  migrated.forEach(migratedItem => {
+    console.log(`MIGRATED UP: ${migratedItem}`);
+  });
+}
+
+function handleError(err) {
+  console.error(`ERROR: ${err.message}`);
+  process.exit(1);
+}
+
+function printStatusTable(statusItems) {
+  const table = new Table({ head: ["Filename", "Applied At"] });
+  statusItems.forEach(item => table.push(_.values(item)));
+  console.log(table.toString());
+}
 
 program.version(pkgjson.version);
 
 program
-  .command('init')
-  .description('initialize a new migration project')
-  .action(function () {
-    migrateMongo.init((err) => {
-      if (err) return handleError(err);
-      console.log('Initialization successful. Please edit the generated config.js file');
-    });
-  });
+  .command("init")
+  .description("initialize a new migration project")
+  .action(() =>
+    migrateMongo
+      .init()
+      .then(() =>
+        console.log(
+          "Initialization successful. Please edit the generated config.js file"
+        )
+      )
+      .catch(err => handleError(err))
+  );
 
 program
-  .command('create [description]')
-  .description('create a new database migration with the provided description')
-  .option('-f --file <file>', 'use a custom config file')
+  .command("create [description]")
+  .description("create a new database migration with the provided description")
+  .option("-f --file <file>", "use a custom config file")
   .action((description, options) => {
     global.options = options;
-    migrateMongo.create(description, (err, filename) => {
-      if (err) return handleError(err);
-      console.log(`Created: ${config.read().migrationsDir}/${filename}`);
-    });
+    migrateMongo
+      .create(description)
+      .then(filename =>
+        console.log(`Created: ${config.read().migrationsDir}/${filename}`)
+      )
+      .catch(err => handleError(err));
   });
 
 program
-  .command('up')
-  .description('run all unapplied database migrations')
-  .option('-f --file <file>', 'use a custom config file')
-  .action((options) => {
+  .command("up")
+  .description("run all pending database migrations")
+  .option("-f --file <file>", "use a custom config file")
+  .action(options => {
     global.options = options;
-    database.connect((err, db) => {
-      if (err) return handleError(err);
-      migrateMongo.up(db, (err, migrated) => {
-        migrated.forEach((migratedItem) => console.log(`MIGRATED UP: ${migratedItem}`));
-        if (err) return handleError(err);
+    database
+      .connect()
+      .then(db => migrateMongo.up(db))
+      .then(migrated => {
+        printMigrated(migrated);
         process.exit(0);
+      })
+      .catch(err => {
+        printMigrated(err.migrated);
+        handleError(err);
       });
-    });
   });
 
 program
-  .command('down')
-  .description('undo the last applied database migration')
-  .option('-f --file <file>', 'use a custom config file')
-  .action((options) => {
+  .command("down")
+  .description("undo the last applied database migration")
+  .option("-f --file <file>", "use a custom config file")
+  .action(options => {
     global.options = options;
-    database.connect((err, db) => {
-      if (err) return handleError(err);
-      migrateMongo.down(db, (err, migrated) => {
-        migrated.forEach(migratedItem => console.log('MIGRATED DOWN: ' + migratedItem));
-        if (err) return handleError(err);
+    database
+      .connect()
+      .then(db => migrateMongo.down(db))
+      .then(migrated => {
+        migrated.forEach(migratedItem => {
+          console.log(`MIGRATED DOWN: ${migratedItem}`);
+        });
         process.exit(0);
+      })
+      .catch(err => {
+        handleError(err);
       });
-    });
   });
 
 program
-  .command('status')
-  .description('print the changelog of the database')
-  .option('-f --file <file>', 'use a custom config file')
-  .action((options) => {
+  .command("status")
+  .description("print the changelog of the database")
+  .option("-f --file <file>", "use a custom config file")
+  .action(options => {
     global.options = options;
-    database.connect((err, db) => {
-      if (err) return handleError(err);
-      migrateMongo.status(db, (err, statusItems) => {
-        if (err) return handleError(err);
+    database
+      .connect()
+      .then(db => migrateMongo.status(db))
+      .then(statusItems => {
         printStatusTable(statusItems);
         process.exit(0);
+      })
+      .catch(err => {
+        handleError(err);
       });
-    });
   });
-
 
 program.parse(process.argv);
 
 if (_.isEmpty(program.args)) {
   program.outputHelp();
-}
-
-function handleError(err) {
-  console.error('ERROR: ' + err.message);
-  process.exit(1);
-}
-
-function printStatusTable(statusItems) {
-  const table = new Table({ head: ['Filename', 'Applied At'] });
-  statusItems.forEach(item => table.push(_.values(item)));
-  console.log(table.toString());
 }
