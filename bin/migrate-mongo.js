@@ -4,9 +4,7 @@ const program = require("commander");
 const _ = require("lodash");
 const Table = require("cli-table");
 const migrateMongo = require("../lib/migrate-mongo");
-const database = require("../lib/env/database");
 const pkgjson = require("../package.json");
-const config = require("../lib/env/configFile");
 
 function printMigrated(migrated) {
   migrated.forEach(migratedItem => {
@@ -35,7 +33,7 @@ program
       .init()
       .then(() =>
         console.log(
-          `Initialization successful. Please edit the generated \`${config.getConfigFilename()}\` file`
+          `Initialization successful. Please edit the generated \`${migrateMongo.config.getConfigFilename()}\` file`
         )
       )
       .catch(err => handleError(err))
@@ -50,7 +48,7 @@ program
     migrateMongo
       .create(description)
       .then(filename =>
-        console.log(`Created: ${config.read().migrationsDir}/${filename}`)
+        console.log(`Created: ${migrateMongo.config.read().migrationsDir}/${filename}`)
       )
       .catch(err => handleError(err));
   });
@@ -61,7 +59,7 @@ program
   .option("-f --file <file>", "use a custom config file")
   .action(options => {
     global.options = options;
-    database
+    migrateMongo.database
       .connect()
       .then(db => migrateMongo.up(db))
       .then(migrated => {
@@ -80,7 +78,7 @@ program
   .option("-f --file <file>", "use a custom config file")
   .action(options => {
     global.options = options;
-    database
+    migrateMongo.database
       .connect()
       .then(db => migrateMongo.down(db))
       .then(migrated => {
@@ -100,7 +98,7 @@ program
   .option("-f --file <file>", "use a custom config file")
   .action(options => {
     global.options = options;
-    database
+    migrateMongo.database
       .connect()
       .then(db => migrateMongo.status(db))
       .then(statusItems => {
