@@ -8,7 +8,7 @@ A database migration tool for MongoDB in Node.
 $ npm install -g migrate-mongo
 ````
 
-## Usage
+## CLI Usage
 ````
 $ migrate-mongo
 Usage: migrate-mongo [options] [command]
@@ -227,3 +227,88 @@ $ migrate-mongo status -f '~/configs/albums-migrations.js'
 └─────────────────────────────────────────┴────────────┘
 
 ````
+
+## API Usage
+
+```javascript
+const {
+  init,
+  create,
+  database,
+  config,
+  up,
+  down,
+  status
+} = require('migrate-mongo');
+```
+
+### `init() → Promise`
+
+Initialize a new migrate-mongo project
+```javascript
+await init();
+```
+
+The above command did two things: 
+1. create a sample `migrate-mongo-config.js` file and 
+2. create a `migrations` directory
+
+Edit the `migrate-mongo-config.js` file. Make sure you change the mongodb url.
+
+### `create(description) → Promise<filename>`
+
+For example:
+```javascript
+const filename = await create('blacklist_the_beatles');
+console.log('Created:', filename);
+```
+
+A new migration file is created in the `migrations` directory.
+
+### `database.connect() → Promise<MongoDb>`
+
+Connect to a mongo database using the connection settings from the `migrate-mongo-config.js` file.
+
+```javascript
+const db = await database.connect();
+```
+
+### `config.read() → JSON`
+
+Read connection settings from the `migrate-mongo-config.js` file.
+
+```javascript
+const mongoConnectionSettings = config.read();
+```
+
+### `up(MongoDb) → Promise<Array<filename>>`
+
+Apply all pending migrations
+
+```javascript
+const db = await database.connect();
+const migrated = await up(db);
+migrated.forEach(filename => console.log('Migrated:', filename));
+```
+
+If an an error occurred, the promise will reject and won't continue with the rest of the pending migrations.
+
+### `down(MongoDb) → Promise<Array<filename>>`
+
+Revert (only) the last applied migration
+
+```javascript
+const db = await database.connect();
+const migratedDown = await down(db);
+migratedDown.forEach(filename => console.log('Migrated Down:', filename));
+```
+
+### `status(MongoDb) → Promise<Array<{ filename, appliedAt }>>`
+
+Check which migrations are applied (or not.
+
+```javascript
+const db = await database.connect();
+const migrationStatus = await status(db);
+migrationStatus.forEach(({ filename, appliedAt }) => console.log(filename, ':', appliedAt));
+```
