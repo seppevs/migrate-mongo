@@ -312,3 +312,11 @@ const db = await database.connect();
 const migrationStatus = await status(db);
 migrationStatus.forEach(({ fileName, appliedAt }) => console.log(fileName, ':', appliedAt));
 ```
+
+### `db.close() → Promise`
+Close the database connection
+
+```javascript
+const db = await database.connect();
+await db.close()
+```

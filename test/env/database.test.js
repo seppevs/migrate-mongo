@@ -24,7 +24,8 @@ describe("database", () => {
 
   function mockClient() {
     return {
-      db: sinon.stub().returns({ the: "db" })
+      db: sinon.stub().returns({ the: "db" }),
+      close: "theCloseFnFromMongoClient"
     };
   }
 
@@ -68,7 +69,10 @@ describe("database", () => {
       });
 
       expect(client.db.getCall(0).args[0]).to.equal("testDb");
-      expect(db).to.deep.equal({ the: "db" });
+      expect(db).to.deep.equal({
+        the: "db",
+        close: "theCloseFnFromMongoClient"
+      });
     });
 
     it("should yield an error when no url is defined in the config file", async () => {
