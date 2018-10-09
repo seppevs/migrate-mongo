@@ -255,12 +255,12 @@ The above command did two things:
 
 Edit the `migrate-mongo-config.js` file. Make sure you change the mongodb url.
 
-### `create(description) → Promise<filename>`
+### `create(description) → Promise<fileName>`
 
 For example:
 ```javascript
-const filename = await create('blacklist_the_beatles');
-console.log('Created:', filename);
+const fileName = await create('blacklist_the_beatles');
+console.log('Created:', fileName);
 ```
 
 A new migration file is created in the `migrations` directory.
@@ -281,34 +281,34 @@ Read connection settings from the `migrate-mongo-config.js` file.
 const mongoConnectionSettings = config.read();
 ```
 
-### `up(MongoDb) → Promise<Array<filename>>`
+### `up(MongoDb) → Promise<Array<fileName>>`
 
 Apply all pending migrations
 
 ```javascript
 const db = await database.connect();
 const migrated = await up(db);
-migrated.forEach(filename => console.log('Migrated:', filename));
+migrated.forEach(fileName => console.log('Migrated:', fileName));
 ```
 
 If an an error occurred, the promise will reject and won't continue with the rest of the pending migrations.
 
-### `down(MongoDb) → Promise<Array<filename>>`
+### `down(MongoDb) → Promise<Array<fileName>>`
 
 Revert (only) the last applied migration
 
 ```javascript
 const db = await database.connect();
 const migratedDown = await down(db);
-migratedDown.forEach(filename => console.log('Migrated Down:', filename));
+migratedDown.forEach(fileName => console.log('Migrated Down:', fileName));
 ```
 
-### `status(MongoDb) → Promise<Array<{ filename, appliedAt }>>`
+### `status(MongoDb) → Promise<Array<{ fileName, appliedAt }>>`
 
 Check which migrations are applied (or not.
 
 ```javascript
 const db = await database.connect();
 const migrationStatus = await status(db);
-migrationStatus.forEach(({ filename, appliedAt }) => console.log(filename, ':', appliedAt));
+migrationStatus.forEach(({ fileName, appliedAt }) => console.log(fileName, ':', appliedAt));
 ```

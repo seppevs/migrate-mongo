@@ -47,8 +47,10 @@ program
     global.options = options;
     migrateMongo
       .create(description)
-      .then(filename =>
-        console.log(`Created: ${migrateMongo.config.read().migrationsDir}/${filename}`)
+      .then(fileName =>
+        console.log(
+          `Created: ${migrateMongo.config.read().migrationsDir}/${fileName}`
+        )
       )
       .catch(err => handleError(err));
   });
