@@ -6,7 +6,7 @@ const Table = require("cli-table");
 const migrateMongo = require("../lib/migrate-mongo");
 const pkgjson = require("../package.json");
 
-function printMigrated(migrated) {
+function printMigrated(migrated = []) {
   migrated.forEach(migratedItem => {
     console.log(`MIGRATED UP: ${migratedItem}`);
   });
@@ -69,8 +69,8 @@ program
         process.exit(0);
       })
       .catch(err => {
-        printMigrated(err.migrated);
         handleError(err);
+        printMigrated(err.migrated);
       });
   });
 
