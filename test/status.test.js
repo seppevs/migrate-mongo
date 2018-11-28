@@ -10,6 +10,7 @@ describe("status", () => {
   let fs;
   let db;
   let changelogCollection;
+  let getJavaScriptFilesFromPath;
 
   function mockMigrationsDir() {
     return {
@@ -68,6 +69,16 @@ describe("status", () => {
     };
   }
 
+  function mockGetJavaScriptFilesFromPath() {
+    return sinon
+      .stub()
+      .returns([
+        "20160509113224-first_migration.js",
+        "20160512091701-second_migration.js",
+        "20160513155321-third_migration.js"
+      ]);
+  }
+
   beforeEach(() => {
     changelogCollection = mockChangelogCollection();
 
@@ -75,8 +86,11 @@ describe("status", () => {
     configFile = mockConfigFile();
     fs = mockFs();
     db = mockDb();
+    getJavaScriptFilesFromPath = mockGetJavaScriptFilesFromPath();
+
     status = proxyquire("../lib/actions/status", {
       "../env/migrationsDir": migrationsDir,
+      "../utils/getJavaScriptFilesFromPath": getJavaScriptFilesFromPath,
       "../env/configFile": configFile,
       "fs-extra": fs
     });
@@ -118,11 +132,11 @@ describe("status", () => {
 
   it("should get the list of files in the migrations directory", async () => {
     await status(db);
-    expect(migrationsDir.getFileNames.called).to.equal(true);
+    expect(getJavaScriptFilesFromPath.called).to.equal(true);
   });
 
   it("should yield errors that occurred when getting the list of files in the migrations directory", async () => {
-    migrationsDir.getFileNames.returns(
+    getJavaScriptFilesFromPath.returns(
       Promise.reject(new Error("File system unavailable"))
     );
     try {

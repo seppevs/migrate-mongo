@@ -109,30 +109,6 @@ describe("migrationsDir", () => {
     });
   });
 
-  describe("getFileNames()", () => {
-    it("should read the directory and yield the result", async () => {
-      fs.readdir.returns(Promise.resolve(["file1.js", "file2.js"]));
-      const files = await migrationsDir.getFileNames();
-      expect(files).to.deep.equal(["file1.js", "file2.js"]);
-    });
-
-    it("should list only .js files", async () => {
-      fs.readdir.returns(Promise.resolve(["file1.js", "file2.js", ".keep"]));
-      const files = await migrationsDir.getFileNames();
-      expect(files).to.deep.equal(["file1.js", "file2.js"]);
-    });
-
-    it("should yield errors that occurred while reading the dir", async () => {
-      fs.readdir.returns(Promise.reject(new Error("Could not read")));
-      try {
-        await migrationsDir.getFileNames();
-        expect.fail("Error was not thrown");
-      } catch (err) {
-        expect(err.message).to.equal("Could not read");
-      }
-    });
-  });
-
   describe("loadMigration()", () => {
     it("should attempt to load the fileName in the migrations directory", async () => {
       const pathToMigration = path.join(
