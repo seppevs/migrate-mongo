@@ -273,12 +273,12 @@ Connect to a mongo database using the connection settings from the `migrate-mong
 const db = await database.connect();
 ```
 
-### `config.read() → JSON`
+### `config.read() → Promise<JSON>`
 
 Read connection settings from the `migrate-mongo-config.js` file.
 
 ```javascript
-const mongoConnectionSettings = config.read();
+const mongoConnectionSettings = await config.read();
 ```
 
 ### `up(MongoDb) → Promise<Array<fileName>>`
