@@ -23,4 +23,4 @@ const config = {
 };
 
 //Return the config as a promise
-module.exports = Promise.resolve(config);
+module.exports = config;
