@@ -22,4 +22,5 @@ const config = {
   changelogCollectionName: "changelog"
 };
 
+//Return the config as a promise
 module.exports = Promise.resolve(config);

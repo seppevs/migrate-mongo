@@ -1,6 +1,6 @@
 {
-  "name": "migrate-mongo",
-  "version": "4.1.2",
+  "name": "@unbill/migrate-mongo",
+  "version": "5.0.0",
   "description": "A database migration tool for MongoDB in Node",
   "main": "lib/migrate-mongo.js",
   "bin": {
@@ -11,7 +11,7 @@
     "test-coverage": "nyc --reporter=text-lcov mocha --recursive | coveralls",
     "lint": "eslint lib/ test/"
   },
-  "author": "Sebastian Van Sande",
+  "author": "Sebastian Van Sande, Q2 Biller Direct Team",
   "license": "MIT",
   "keywords": [
     "migrate mongo mongodb migrations database"
