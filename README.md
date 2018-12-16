@@ -48,7 +48,7 @@ The above command did two things:
 1. create a sample 'migrate-mongo-config.js' file and 
 2. create a 'migrations' directory
 
-Edit the migrate-mongo-config.js file. Make sure you change the mongodb url:
+Edit the migrate-mongo-config.js file. An object or promise can be returned. Make sure you change the mongodb url: 
 ````javascript
 // In this file you can configure migrate-mongo
 
