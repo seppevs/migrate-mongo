@@ -34,34 +34,34 @@ describe("migrationsDir", () => {
   });
 
   describe("resolve()", () => {
-    it("should use the configured relative migrations dir when a config file is available", () => {
+    it("should use the configured relative migrations dir when a config file is available", async () => {
       configFile.read.returns({
         migrationsDir: "custom-migrations-dir"
       });
-      expect(migrationsDir.resolve()).to.equal(
+      expect(await migrationsDir.resolve()).to.equal(
         path.join(process.cwd(), "custom-migrations-dir")
       );
     });
 
-    it("should use the configured absolute migrations dir when a config file is available", () => {
+    it("should use the configured absolute migrations dir when a config file is available", async () => {
       configFile.read.returns({
         migrationsDir: "/absolute/path/to/my/custom-migrations-dir"
       });
-      expect(migrationsDir.resolve()).to.equal(
+      expect(await migrationsDir.resolve()).to.equal(
         "/absolute/path/to/my/custom-migrations-dir"
       );
     });
 
-    it("should use the default migrations directory when no migrationsDir is specified in the config file", () => {
+    it("should use the default migrations directory when no migrationsDir is specified in the config file", async () => {
       configFile.read.returns({});
-      expect(migrationsDir.resolve()).to.equal(
+      expect(await migrationsDir.resolve()).to.equal(
         path.join(process.cwd(), "migrations")
       );
     });
 
-    it("should use the default migrations directory when unable to read the config file", () => {
+    it("should use the default migrations directory when unable to read the config file", async () => {
       configFile.read.throws(new Error("Cannot read config file"));
-      expect(migrationsDir.resolve()).to.equal(
+      expect(await migrationsDir.resolve()).to.equal(
         path.join(process.cwd(), "migrations")
       );
     });
@@ -134,14 +134,14 @@ describe("migrationsDir", () => {
   });
 
   describe("loadMigration()", () => {
-    it("should attempt to load the fileName in the migrations directory", () => {
+    it("should attempt to load the fileName in the migrations directory", async () => {
       const pathToMigration = path.join(
         process.cwd(),
         "migrations",
         "someFile.js"
       );
       try {
-        migrationsDir.loadMigration("someFile.js");
+        await migrationsDir.loadMigration("someFile.js");
         expect.fail("Error was not thrown");
       } catch (err) {
         expect(err.message).to.equal(`Cannot find module '${pathToMigration}'`);

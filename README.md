@@ -48,7 +48,7 @@ The above command did two things:
 1. create a sample 'migrate-mongo-config.js' file and 
 2. create a 'migrations' directory
 
-Edit the migrate-mongo-config.js file. Make sure you change the mongodb url:
+Edit the migrate-mongo-config.js file. An object or promise can be returned. Make sure you change the mongodb url: 
 ````javascript
 // In this file you can configure migrate-mongo
 
@@ -273,12 +273,12 @@ Connect to a mongo database using the connection settings from the `migrate-mong
 const db = await database.connect();
 ```
 
-### `config.read() → JSON`
+### `config.read() → Promise<JSON>`
 
 Read connection settings from the `migrate-mongo-config.js` file.
 
 ```javascript
-const mongoConnectionSettings = config.read();
+const mongoConnectionSettings = await config.read();
 ```
 
 ### `up(MongoDb) → Promise<Array<fileName>>`

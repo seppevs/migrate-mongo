@@ -70,39 +70,36 @@ describe("configFile", () => {
   });
 
   describe("read()", () => {
-    it("should attempt to read the config file", done => {
+    it("should attempt to read the config file", async () => {
       const configPath = path.join(process.cwd(), "migrate-mongo-config.js");
       try {
-        configFile.read();
+        await configFile.read();
         expect.fail("Error was not thrown");
       } catch (err) {
         expect(err.message).to.equal(`Cannot find module '${configPath}'`);
-        done();
       }
     });
 
-    it("should be possible to read a custom, absolute config file path", done => {
+    it("should be possible to read a custom, absolute config file path", async () => {
       global.options = { file: "/some/absoluete/path/to/a-config-file.js" };
       try {
-        configFile.read();
+        await configFile.read();
         expect.fail("Error was not thrown");
       } catch (err) {
         expect(err.message).to.equal(
           `Cannot find module '${global.options.file}'`
         );
-        done();
       }
     });
 
-    it("should be possible to read a custom, relative config file path", done => {
+    it("should be possible to read a custom, relative config file path", async () => {
       global.options = { file: "./a/relative/path/to/a-config-file.js" };
       const configPath = path.join(process.cwd(), global.options.file);
       try {
-        configFile.read();
+        await configFile.read();
         expect.fail("Error was not thrown");
       } catch (err) {
         expect(err.message).to.equal(`Cannot find module '${configPath}'`);
-        done();
       }
     });
   });

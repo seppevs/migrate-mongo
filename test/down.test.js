@@ -36,7 +36,7 @@ describe("down", () => {
 
   function mockMigrationsDir() {
     return {
-      loadMigration: sinon.stub().returns(migration)
+      loadMigration: sinon.stub().returns(Promise.resolve(migration))
     };
   }
 
