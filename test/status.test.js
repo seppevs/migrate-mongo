@@ -5,11 +5,26 @@ const proxyquire = require("proxyquire");
 
 describe("status", () => {
   let status;
+  let alwaysDir;
   let migrationsDir;
   let configFile;
   let fs;
   let db;
   let changelogCollection;
+
+  function mockAlwaysDir() {
+    return {
+      shouldExist: sinon.stub().returns(Promise.resolve()),
+      getFileNames: sinon
+        .stub()
+        .returns(
+          Promise.resolve([
+            "20160512091701-first_always.js",
+            "20160512091701-second_always.js"
+          ])
+        )
+    };
+  }
 
   function mockMigrationsDir() {
     return {
@@ -56,11 +71,18 @@ describe("status", () => {
           Promise.resolve([
             {
               fileName: "20160509113224-first_migration.js",
-              appliedAt: new Date("2016-06-03T20:10:12.123Z")
+              appliedAt: new Date("2016-06-03T20:10:12.123Z"),
+              type: "MIGRATION"
             },
             {
               fileName: "20160512091701-second_migration.js",
-              appliedAt: new Date("2016-06-09T20:10:12.123Z")
+              appliedAt: new Date("2016-06-09T20:10:12.123Z"),
+              type: "MIGRATION"
+            },
+            {
+              fileName: "20160512091701-first_always.js",
+              appliedAt: new Date("2016-06-09T20:10:12.123Z"),
+              type: "ALWAYS"
             }
           ])
         )
@@ -71,11 +93,13 @@ describe("status", () => {
   beforeEach(() => {
     changelogCollection = mockChangelogCollection();
 
+    alwaysDir = mockAlwaysDir();
     migrationsDir = mockMigrationsDir();
     configFile = mockConfigFile();
     fs = mockFs();
     db = mockDb();
     status = proxyquire("../lib/actions/status", {
+      "../env/alwaysDir": alwaysDir,
       "../env/migrationsDir": migrationsDir,
       "../env/configFile": configFile,
       "fs-extra": fs
@@ -157,16 +181,29 @@ describe("status", () => {
     const statusItems = await status(db);
     expect(statusItems).to.deep.equal([
       {
-        appliedAt: "2016-06-03T20:10:12.123Z",
-        fileName: "20160509113224-first_migration.js"
-      },
-      {
         appliedAt: "2016-06-09T20:10:12.123Z",
-        fileName: "20160512091701-second_migration.js"
+        fileName: "20160512091701-first_always.js",
+        type: "ALWAYS"
       },
       {
         appliedAt: "PENDING",
-        fileName: "20160513155321-third_migration.js"
+        fileName: "20160512091701-second_always.js",
+        type: "ALWAYS"
+      },
+      {
+        appliedAt: "2016-06-03T20:10:12.123Z",
+        fileName: "20160509113224-first_migration.js",
+        type: "MIGRATION"
+      },
+      {
+        appliedAt: "2016-06-09T20:10:12.123Z",
+        fileName: "20160512091701-second_migration.js",
+        type: "MIGRATION"
+      },
+      {
+        appliedAt: "PENDING",
+        fileName: "20160513155321-third_migration.js",
+        type: "MIGRATION"
       }
     ]);
   });

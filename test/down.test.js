@@ -16,10 +16,12 @@ describe("down", () => {
     return sinon.stub().returns(
       Promise.resolve([
         {
+          type: "MIGRATION",
           fileName: "20160609113224-first_migration.js",
           appliedAt: new Date()
         },
         {
+          type: "MIGRATION",
           fileName: "20160609113225-last_migration.js",
           appliedAt: new Date()
         }
