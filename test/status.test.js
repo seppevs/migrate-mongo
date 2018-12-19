@@ -5,22 +5,22 @@ const proxyquire = require("proxyquire");
 
 describe("status", () => {
   let status;
-  let alwaysDir;
+  let alwaysBeforeDir;
   let migrationsDir;
   let configFile;
   let fs;
   let db;
   let changelogCollection;
 
-  function mockAlwaysDir() {
+  function mockAlwaysBeforeDir() {
     return {
       shouldExist: sinon.stub().returns(Promise.resolve()),
       getFileNames: sinon
         .stub()
         .returns(
           Promise.resolve([
-            "20160512091701-first_always.js",
-            "20160512091701-second_always.js"
+            "20160512091701-first_always_before.js",
+            "20160512091701-second_always_before.js"
           ])
         )
     };
@@ -36,6 +36,20 @@ describe("status", () => {
             "20160509113224-first_migration.js",
             "20160512091701-second_migration.js",
             "20160513155321-third_migration.js"
+          ])
+        )
+    };
+  }
+
+  function mockAlwaysAfterDir() {
+    return {
+      shouldExist: sinon.stub().returns(Promise.resolve()),
+      getFileNames: sinon
+        .stub()
+        .returns(
+          Promise.resolve([
+            "20160512091701-first_always_after.js",
+            "20160512091701-second_always_after.js"
           ])
         )
     };
@@ -70,6 +84,11 @@ describe("status", () => {
         toArray: sinon.stub().returns(
           Promise.resolve([
             {
+              fileName: "20160512091701-first_always_before.js",
+              appliedAt: new Date("2016-06-09T20:10:12.123Z"),
+              type: "ALWAYS_BEFORE"
+            },
+            {
               fileName: "20160509113224-first_migration.js",
               appliedAt: new Date("2016-06-03T20:10:12.123Z"),
               type: "MIGRATION"
@@ -80,9 +99,9 @@ describe("status", () => {
               type: "MIGRATION"
             },
             {
-              fileName: "20160512091701-first_always.js",
+              fileName: "20160512091701-first_always_after.js",
               appliedAt: new Date("2016-06-09T20:10:12.123Z"),
-              type: "ALWAYS"
+              type: "ALWAYS_AFTER"
             }
           ])
         )
@@ -93,22 +112,26 @@ describe("status", () => {
   beforeEach(() => {
     changelogCollection = mockChangelogCollection();
 
-    alwaysDir = mockAlwaysDir();
+    alwaysBeforeDir = mockAlwaysBeforeDir();
     migrationsDir = mockMigrationsDir();
+    alwaysAfterDir = mockAlwaysAfterDir();
     configFile = mockConfigFile();
     fs = mockFs();
     db = mockDb();
     status = proxyquire("../lib/actions/status", {
-      "../env/alwaysDir": alwaysDir,
+      "../env/alwaysBeforeDir": alwaysBeforeDir,
       "../env/migrationsDir": migrationsDir,
+      "../env/alwaysAfterDir": alwaysAfterDir,
       "../env/configFile": configFile,
       "fs-extra": fs
     });
   });
 
-  it("should check that the migrations directory exists", async () => {
+  it("should check that the migrations directories exists", async () => {
     await status(db);
+    expect(alwaysBeforeDir.shouldExist.called).to.equal(true);
     expect(migrationsDir.shouldExist.called).to.equal(true);
+    expect(alwaysAfterDir.shouldExist.called).to.equal(true);
   });
 
   it("should yield an error when the migrations directory does not exist", async () => {
@@ -140,9 +163,11 @@ describe("status", () => {
     }
   });
 
-  it("should get the list of files in the migrations directory", async () => {
+  it("should get the list of files in the migrations directories", async () => {
     await status(db);
+    expect(alwaysBeforeDir.getFileNames.called).to.equal(true);
     expect(migrationsDir.getFileNames.called).to.equal(true);
+    expect(alwaysAfterDir.getFileNames.called).to.equal(true);
   });
 
   it("should yield errors that occurred when getting the list of files in the migrations directory", async () => {
@@ -182,13 +207,13 @@ describe("status", () => {
     expect(statusItems).to.deep.equal([
       {
         appliedAt: "2016-06-09T20:10:12.123Z",
-        fileName: "20160512091701-first_always.js",
-        type: "ALWAYS"
+        fileName: "20160512091701-first_always_before.js",
+        type: "ALWAYS_BEFORE"
       },
       {
         appliedAt: "PENDING",
-        fileName: "20160512091701-second_always.js",
-        type: "ALWAYS"
+        fileName: "20160512091701-second_always_before.js",
+        type: "ALWAYS_BEFORE"
       },
       {
         appliedAt: "2016-06-03T20:10:12.123Z",
@@ -204,7 +229,17 @@ describe("status", () => {
         appliedAt: "PENDING",
         fileName: "20160513155321-third_migration.js",
         type: "MIGRATION"
-      }
+      },
+      {
+        appliedAt: "2016-06-09T20:10:12.123Z",
+        fileName: "20160512091701-first_always_after.js",
+        type: "ALWAYS_AFTER"
+      },
+      {
+        appliedAt: "PENDING",
+        fileName: "20160512091701-second_always_after.js",
+        type: "ALWAYS_AFTER"
+      },
     ]);
   });
 });

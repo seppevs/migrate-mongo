@@ -4,8 +4,8 @@ const proxyquire = require("proxyquire");
 
 const path = require("path");
 
-describe("alwaysDir", () => {
-  let alwaysDir;
+describe("alwaysAfterDir", () => {
+  let alwaysAfterDir;
   let fs;
   let configFile;
 
@@ -19,7 +19,7 @@ describe("alwaysDir", () => {
   function mockConfigFile() {
     return {
       read: sinon.stub().returns({
-        alwaysDir: "always"
+        alwaysAfterDir: "always-after"
       })
     };
   }
@@ -27,7 +27,7 @@ describe("alwaysDir", () => {
   beforeEach(() => {
     fs = mockFs();
     configFile = mockConfigFile();
-    alwaysDir = proxyquire("../../lib/env/alwaysDir", {
+    alwaysAfterDir = proxyquire("../../lib/env/alwaysAfterDir", {
       "fs-extra": fs,
       "./configFile": configFile
     });
@@ -36,33 +36,33 @@ describe("alwaysDir", () => {
   describe("resolve()", () => {
     it("should use the configured relative always dir when a config file is available", async () => {
       configFile.read.returns({
-        alwaysDir: "custom-always-dir"
+        alwaysAfterDir: "custom-always-after-dir"
       });
-      expect(await alwaysDir.resolve()).to.equal(
-        path.join(process.cwd(), "custom-always-dir")
+      expect(await alwaysAfterDir.resolve()).to.equal(
+        path.join(process.cwd(), "custom-always-after-dir")
       );
     });
 
     it("should use the configured absolute always dir when a config file is available", async () => {
       configFile.read.returns({
-        alwaysDir: "/absolute/path/to/my/custom-always-dir"
+        alwaysAfterDir: "/absolute/path/to/my/custom-always-after-dir"
       });
-      expect(await alwaysDir.resolve()).to.equal(
-        "/absolute/path/to/my/custom-always-dir"
+      expect(await alwaysAfterDir.resolve()).to.equal(
+        "/absolute/path/to/my/custom-always-after-dir"
       );
     });
 
-    it("should use the default always directory when no alwaysDir is specified in the config file", async () => {
+    it("should use the default always directory when no alwaysAfterDir is specified in the config file", async () => {
       configFile.read.returns({});
-      expect(await alwaysDir.resolve()).to.equal(
-        path.join(process.cwd(), "always")
+      expect(await alwaysAfterDir.resolve()).to.equal(
+        path.join(process.cwd(), "always-after")
       );
     });
 
     it("should use the default always directory when unable to read the config file", async () => {
       configFile.read.throws(new Error("Cannot read config file"));
-      expect(await alwaysDir.resolve()).to.equal(
-        path.join(process.cwd(), "always")
+      expect(await alwaysAfterDir.resolve()).to.equal(
+        path.join(process.cwd(), "always-after")
       );
     });
   });
@@ -70,18 +70,18 @@ describe("alwaysDir", () => {
   describe("shouldExist()", () => {
     it("should not reject with an error if the always dir exists", async () => {
       fs.stat.returns(Promise.resolve());
-      await alwaysDir.shouldExist();
+      await alwaysAfterDir.shouldExist();
     });
 
     it("should yield an error if the always dir does not exist", async () => {
-      const alwaysPath = path.join(process.cwd(), "always");
+      const alwaysPath = path.join(process.cwd(), "always-after");
       fs.stat.returns(Promise.reject(new Error("It does not exist")));
       try {
-        await alwaysDir.shouldExist();
+        await alwaysAfterDir.shouldExist();
         expect.fail("Error was not thrown");
       } catch (err) {
         expect(err.message).to.equal(
-          `always directory does not exist: ${alwaysPath}`
+          `always-after directory does not exist: ${alwaysPath}`
         );
       }
     });
@@ -92,18 +92,18 @@ describe("alwaysDir", () => {
       const error = new Error("File does not exist");
       error.code = "ENOENT";
       fs.stat.returns(Promise.reject(error));
-      await alwaysDir.shouldNotExist();
+      await alwaysAfterDir.shouldNotExist();
     });
 
     it("should yield an error if the always dir exists", async () => {
-      const alwaysPath = path.join(process.cwd(), "always");
+      const alwaysPath = path.join(process.cwd(), "always-after");
       fs.stat.returns(Promise.resolve());
       try {
-        await alwaysDir.shouldNotExist();
+        await alwaysAfterDir.shouldNotExist();
         expect.fail("Error was not thrown");
       } catch (err) {
         expect(err.message).to.equal(
-          `always directory already exists: ${alwaysPath}`
+          `always-after directory already exists: ${alwaysPath}`
         );
       }
     });
@@ -112,20 +112,20 @@ describe("alwaysDir", () => {
   describe("getFileNames()", () => {
     it("should read the directory and yield the result", async () => {
       fs.readdir.returns(Promise.resolve(["file1.js", "file2.js"]));
-      const files = await alwaysDir.getFileNames();
+      const files = await alwaysAfterDir.getFileNames();
       expect(files).to.deep.equal(["file1.js", "file2.js"]);
     });
 
     it("should list only .js files", async () => {
       fs.readdir.returns(Promise.resolve(["file1.js", "file2.js", ".keep"]));
-      const files = await alwaysDir.getFileNames();
+      const files = await alwaysAfterDir.getFileNames();
       expect(files).to.deep.equal(["file1.js", "file2.js"]);
     });
 
     it("should yield errors that occurred while reading the dir", async () => {
       fs.readdir.returns(Promise.reject(new Error("Could not read")));
       try {
-        await alwaysDir.getFileNames();
+        await alwaysAfterDir.getFileNames();
         expect.fail("Error was not thrown");
       } catch (err) {
         expect(err.message).to.equal("Could not read");
@@ -137,11 +137,11 @@ describe("alwaysDir", () => {
     it("should attempt to load the fileName in the always directory", async () => {
       const pathToMigration = path.join(
         process.cwd(),
-        "always",
+        "always-after",
         "someFile.js"
       );
       try {
-        await alwaysDir.loadMigration("someFile.js");
+        await alwaysAfterDir.loadMigration("someFile.js");
         expect.fail("Error was not thrown");
       } catch (err) {
         expect(err.message).to.equal(`Cannot find module '${pathToMigration}'`);

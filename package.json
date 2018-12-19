@@ -1,6 +1,6 @@
 {
   "name": "@unbill/migrate-mongo",
-  "version": "4.3.0",
+  "version": "4.4.0",
   "description": "A database migration tool for MongoDB in Node",
   "main": "lib/migrate-mongo.js",
   "bin": {
