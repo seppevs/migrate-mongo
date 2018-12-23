@@ -72,6 +72,12 @@ module.exports = {
   // The migrations dir, can be an relative or absolute path. Only edit this when really necessary.
   migrationsDir: "migrations",
 
+  // The before dir, can be an relative or absolute path. Only edit this when really necessary.
+  beforeDir: "before",
+
+  // The before dir, can be an relative or absolute path. Only edit this when really necessary.
+  afterDir: "after",
+
   // The mongodb collection where the applied changes are stored. Only edit this when really necessary.
   changelogCollectionName: "changelog"
 };
@@ -292,6 +298,26 @@ console.log('Created:', fileName);
 ```
 
 A new migration file is created in the `migrations` directory.
+
+### `create-before(description) → Promise<fileName>`
+
+For example:
+```javascript
+const fileName = await create-before('blacklist_the_beatles_before');
+console.log('Created:', fileName);
+```
+
+A new always-before file is created in the `before` directory.
+
+### `create-after(description) → Promise<fileName>`
+
+For example:
+```javascript
+const fileName = await create-before('blacklist_the_beatles_after');
+console.log('Created:', fileName);
+```
+
+A new always-after file is created in the `after` directory.
 
 ### `database.connect() → Promise<MongoDb>`
 
