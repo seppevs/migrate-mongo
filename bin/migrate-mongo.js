@@ -62,7 +62,7 @@ program
   .action((description, options) => {
     global.options = options;
     migrateMongo
-      .create(description)
+      .createBefore(description)
       .then(fileName => 
         migrateMongo.config.read().then(config => {
           console.log(`Created: ${config.beforeDir}/${fileName}`);
@@ -78,7 +78,7 @@ program
   .action((description, options) => {
     global.options = options;
     migrateMongo
-      .create(description)
+      .createAfter(description)
       .then(fileName => 
         migrateMongo.config.read().then(config => {
           console.log(`Created: ${config.afterDir}/${fileName}`);

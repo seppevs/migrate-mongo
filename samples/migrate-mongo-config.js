@@ -19,7 +19,7 @@ const config = {
   migrationsDir: "migrations",
 
   // The before dir, can be an relative or absolute path. Only edit this when really necessary.
-  beforeDir: "alway-before",
+  beforeDir: "before",
 
   // The before dir, can be an relative or absolute path. Only edit this when really necessary.
   afterDir: "after",
