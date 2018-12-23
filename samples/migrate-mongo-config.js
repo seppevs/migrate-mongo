@@ -18,11 +18,11 @@ const config = {
   // The migrations dir, can be an relative or absolute path. Only edit this when really necessary.
   migrationsDir: "migrations",
 
-  // The always-before dir, can be an relative or absolute path. Only edit this when really necessary.
-  alwaysBeforeDir: "alway-before",
+  // The before dir, can be an relative or absolute path. Only edit this when really necessary.
+  beforeDir: "alway-before",
 
-  // The always-before dir, can be an relative or absolute path. Only edit this when really necessary.
-  alwaysAfterDir: "always-after",
+  // The before dir, can be an relative or absolute path. Only edit this when really necessary.
+  afterDir: "after",
 
   // The mongodb collection where the applied changes are stored. Only edit this when really necessary.
   changelogCollectionName: "changelog"

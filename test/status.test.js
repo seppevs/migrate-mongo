@@ -5,14 +5,14 @@ const proxyquire = require("proxyquire");
 
 describe("status", () => {
   let status;
-  let alwaysBeforeDir;
+  let beforeDir;
   let migrationsDir;
   let configFile;
   let fs;
   let db;
   let changelogCollection;
 
-  function mockAlwaysBeforeDir() {
+  function mockBeforeDir() {
     return {
       shouldExist: sinon.stub().returns(Promise.resolve()),
       getFileNames: sinon
@@ -41,7 +41,7 @@ describe("status", () => {
     };
   }
 
-  function mockAlwaysAfterDir() {
+  function mockAfterDir() {
     return {
       shouldExist: sinon.stub().returns(Promise.resolve()),
       getFileNames: sinon
@@ -112,16 +112,16 @@ describe("status", () => {
   beforeEach(() => {
     changelogCollection = mockChangelogCollection();
 
-    alwaysBeforeDir = mockAlwaysBeforeDir();
+    beforeDir = mockBeforeDir();
     migrationsDir = mockMigrationsDir();
-    alwaysAfterDir = mockAlwaysAfterDir();
+    afterDir = mockAfterDir();
     configFile = mockConfigFile();
     fs = mockFs();
     db = mockDb();
     status = proxyquire("../lib/actions/status", {
-      "../env/alwaysBeforeDir": alwaysBeforeDir,
+      "../env/beforeDir": beforeDir,
       "../env/migrationsDir": migrationsDir,
-      "../env/alwaysAfterDir": alwaysAfterDir,
+      "../env/afterDir": afterDir,
       "../env/configFile": configFile,
       "fs-extra": fs
     });
@@ -129,9 +129,9 @@ describe("status", () => {
 
   it("should check that the migrations directories exists", async () => {
     await status(db);
-    expect(alwaysBeforeDir.shouldExist.called).to.equal(true);
+    expect(beforeDir.shouldExist.called).to.equal(true);
     expect(migrationsDir.shouldExist.called).to.equal(true);
-    expect(alwaysAfterDir.shouldExist.called).to.equal(true);
+    expect(afterDir.shouldExist.called).to.equal(true);
   });
 
   it("should yield an error when the migrations directory does not exist", async () => {
@@ -165,9 +165,9 @@ describe("status", () => {
 
   it("should get the list of files in the migrations directories", async () => {
     await status(db);
-    expect(alwaysBeforeDir.getFileNames.called).to.equal(true);
+    expect(beforeDir.getFileNames.called).to.equal(true);
     expect(migrationsDir.getFileNames.called).to.equal(true);
-    expect(alwaysAfterDir.getFileNames.called).to.equal(true);
+    expect(afterDir.getFileNames.called).to.equal(true);
   });
 
   it("should yield errors that occurred when getting the list of files in the migrations directory", async () => {

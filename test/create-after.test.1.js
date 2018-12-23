@@ -6,11 +6,11 @@ const proxyquire = require("proxyquire");
 
 describe("create", () => {
   let create;
-  let alwaysAfterDir;
+  let afterDir;
   let configFile;
   let fs;
 
-  function mockAlwaysAfterDir() {
+  function mockAfterDir() {
     return {
       shouldExist: sinon.stub().returns(Promise.resolve())
     };
@@ -29,11 +29,11 @@ describe("create", () => {
   }
 
   beforeEach(() => {
-    alwaysAfterDir = mockAlwaysAfterDir();
+    afterDir = mockAfterDir();
     configFile = mockConfigFile();
     fs = mockFs();
-    create = proxyquire("../lib/actions/create-always-after", {
-      "../env/alwaysAfterDir": alwaysAfterDir,
+    create = proxyquire("../lib/actions/create-after", {
+      "../env/afterDir": afterDir,
       "../env/configFile": configFile,
       "fs-extra": fs
     });
@@ -48,20 +48,20 @@ describe("create", () => {
     }
   });
 
-  it("should check that the always-after directory exists", async () => {
+  it("should check that the after directory exists", async () => {
     await create("my_description");
-    expect(alwaysAfterDir.shouldExist.called).to.equal(true);
+    expect(afterDir.shouldExist.called).to.equal(true);
   });
 
-  it("should yield an error when the always-after directory does not exist", async () => {
-    alwaysAfterDir.shouldExist.returns(
-      Promise.reject(new Error("always-after directory does not exist"))
+  it("should yield an error when the after directory does not exist", async () => {
+    afterDir.shouldExist.returns(
+      Promise.reject(new Error("after directory does not exist"))
     );
     try {
       await create("my_description");
       expect.fail("Error was not thrown");
     } catch (err) {
-      expect(err.message).to.equal("always-after directory does not exist");
+      expect(err.message).to.equal("after directory does not exist");
     }
   });
 
@@ -77,10 +77,10 @@ describe("create", () => {
     const filename = await create("my_description");
     expect(fs.copy.called).to.equal(true);
     expect(fs.copy.getCall(0).args[0]).to.equal(
-      path.join(__dirname, "../samples/always.js")
+      path.join(__dirname, "../samples/before-after.js")
     );
     expect(fs.copy.getCall(0).args[1]).to.equal(
-      path.join(process.cwd(), "always-after", "20160609080700-my_description.js")
+      path.join(process.cwd(), "after", "20160609080700-my_description.js")
     );
     expect(filename).to.equal("20160609080700-my_description.js");
     clock.restore();
@@ -93,12 +93,12 @@ describe("create", () => {
     await create("this description contains spaces");
     expect(fs.copy.called).to.equal(true);
     expect(fs.copy.getCall(0).args[0]).to.equal(
-      path.join(__dirname, "../samples/always.js")
+      path.join(__dirname, "../samples/before-after.js")
     );
     expect(fs.copy.getCall(0).args[1]).to.equal(
       path.join(
         process.cwd(),
-        "always-after",
+        "after",
         "20160609080700-this_description_contains_spaces.js"
       )
     );

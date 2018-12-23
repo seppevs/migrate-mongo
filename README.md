@@ -16,13 +16,13 @@ Usage: migrate-mongo [options] [command]
 
   Commands:
 
-    init                  initialize a new migration project
-    create [description]  create a new database migration with the provided description
-    create-always-before [description]  create a new database script that always runs before migrations
-    create-always-after [description]  create a new database script that always runs after migrations
-    up [options]          run all unapplied database migrations
-    down [options]        undo the last applied database migration
-    status [options]      print the changelog of the database
+  init                          initialize a new migration project
+    create [description]        create a new database migration with the provided description
+    create-before [description] create a new database script that always runs before migrations with the provided description
+    create-after [description]  create a new database script that always runs after migrations with the provided description
+    up [options]                run all unapplied database migrations
+    down [options]              undo the last applied database migration
+    status [options]            print the changelog of the database
 
   Options:
 
@@ -163,18 +163,19 @@ module.exports = {
 };
 ````
 
-### Creating a new 'always' script
-To create a new database always script, just run the ````migrate-mongo create-always-before [description]```` or
-````migrate-mongo create-always-after [description]````  command. As the name implies, these 'always' scripts get 
-run each time the database migration is run. These scripts are good for tasks like ensuring indexes on each migration run.
+### Creating a new 'before' or 'after' script
+To create a new database before or after script, just run ````migrate-mongo create-before [description]```` or
+````migrate-mongo create-after [description]````. As the names imply, these scripts get 
+run each time either before or after the database migration is run. 
+These scripts are good for tasks like ensuring indexes on each migration run.
 
 For example:
 ````bash
-$ migrate-mongo create-always-after blacklist_the_beatles_idx
-Created: always-after/20160608155948-blacklist_the_beatles_idx.js
+$ migrate-mongo create-after blacklist_the_beatles_idx
+Created: after/20160608155948-blacklist_the_beatles_idx.js
 ````
 
-A new migration file is created in the 'always-before' or 'always-after' directory.
+A new migration file is created in the 'before' or 'after' directory.
 Always scripts only contain an 'up' as they are not a migration.
 ````javascript
 module.exports = {

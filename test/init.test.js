@@ -5,13 +5,13 @@ const proxyquire = require("proxyquire");
 
 describe("init", () => {
   let init;
-  let alwaysBeforeDir;
+  let beforeDir;
   let migrationsDir;
-  let alwaysAfterDir;
+  let afterDir;
   let configFile;
   let fs;
 
-  function mockAlwaysBeforeDir() {
+  function mockBeforeDir() {
     return {
       shouldNotExist: sinon.stub().returns(Promise.resolve())
     };
@@ -23,7 +23,7 @@ describe("init", () => {
     };
   }
 
-  function mockAlwaysAfterDir() {
+  function mockAfterDir() {
     return {
       shouldNotExist: sinon.stub().returns(Promise.resolve())
     };
@@ -43,15 +43,15 @@ describe("init", () => {
   }
 
   beforeEach(() => {
-    alwaysBeforeDir = mockAlwaysBeforeDir();
+    beforeDir = mockBeforeDir();
     migrationsDir = mockMigrationsDir();
-    alwaysAfterDir = mockAlwaysAfterDir();
+    afterDir = mockAfterDir();
     configFile = mockConfigFile();
     fs = mockFs();
     init = proxyquire("../lib/actions/init", {
-      "../env/alwaysBeforeDir": alwaysBeforeDir,
+      "../env/beforeDir": beforeDir,
       "../env/migrationsDir": migrationsDir,
-      "../env/alwaysAfterDir": alwaysAfterDir,
+      "../env/afterDir": afterDir,
       "../env/configFile": configFile,
       "fs-extra": fs
     });
@@ -59,13 +59,13 @@ describe("init", () => {
 
   it("should check if the migrations directory already exists", async () => {
     await init();
-    expect(alwaysBeforeDir.shouldNotExist.called).to.equal(true);
+    expect(beforeDir.shouldNotExist.called).to.equal(true);
     expect(migrationsDir.shouldNotExist.called).to.equal(true);
-    expect(alwaysAfterDir.shouldNotExist.called).to.equal(true);
+    expect(afterDir.shouldNotExist.called).to.equal(true);
   });
 
   it("should not continue and yield an error if the aways-before directory already exists", async () => {
-    alwaysBeforeDir.shouldNotExist.returns(
+    beforeDir.shouldNotExist.returns(
       Promise.reject(new Error("Dir exists"))
     );
     try {
@@ -78,7 +78,7 @@ describe("init", () => {
   });
 
   it("should not continue and yield an error if the aways-after directory already exists", async () => {
-    alwaysAfterDir.shouldNotExist.returns(
+    afterDir.shouldNotExist.returns(
       Promise.reject(new Error("Dir exists"))
     );
     try {
@@ -90,8 +90,8 @@ describe("init", () => {
     }
   });
 
-  it("should not continue and yield an error if the always-before directory already exists", async () => {
-    alwaysBeforeDir.shouldNotExist.returns(
+  it("should not continue and yield an error if the before directory already exists", async () => {
+    beforeDir.shouldNotExist.returns(
       Promise.reject(new Error("Dir exists"))
     );
     try {
@@ -116,8 +116,8 @@ describe("init", () => {
     }
   });
 
-  it("should not continue and yield an error if the always-after directory already exists", async () => {
-    alwaysAfterDir.shouldNotExist.returns(
+  it("should not continue and yield an error if the after directory already exists", async () => {
+    afterDir.shouldNotExist.returns(
       Promise.reject(new Error("Dir exists"))
     );
     try {
@@ -178,9 +178,9 @@ describe("init", () => {
 
     expect(fs.ensureFile.called).to.equal(true);
     expect(fs.ensureFile.callCount).to.equal(3);
-    expect(fs.ensureFile.getCall(0).args[0]).to.deep.equal(path.join(process.cwd(), "always-before/.gitkeep"));
+    expect(fs.ensureFile.getCall(0).args[0]).to.deep.equal(path.join(process.cwd(), "before/.gitkeep"));
     expect(fs.ensureFile.getCall(1).args[0]).to.deep.equal(path.join(process.cwd(), "migrations/.gitkeep"));
-    expect(fs.ensureFile.getCall(2).args[0]).to.deep.equal(path.join(process.cwd(), "always-after/.gitkeep"));
+    expect(fs.ensureFile.getCall(2).args[0]).to.deep.equal(path.join(process.cwd(), "after/.gitkeep"));
   });
 
   it("should yield errors that occurred when creating the migrations directory", async () => {

@@ -8,16 +8,16 @@ describe("up", () => {
   let status;
   let configFile;
   let migrationsDir;
-  let alwaysBeforeDir;
-  let alwaysAfterDir;
+  let beforeDir;
+  let afterDir;
   let db;
 
-  let firstAppliedAlwaysBefore;
-  let firstPendingAlwaysBefore;
+  let firstAppliedBefore;
+  let firstPendingBefore;
   let firstPendingMigration;
   let secondPendingMigration;
-  let firstAppliedAlwaysAfter;
-  let firstPendingAlwaysAfter;
+  let firstAppliedAfter;
+  let firstPendingAfter;
   let changelogCollection;
 
   function mockStatus() {
@@ -25,12 +25,12 @@ describe("up", () => {
       Promise.resolve([
         {
           type: "ALWAYS_BEFORE",
-          fileName: "20160605123224-first_applied_always_before.js",
+          fileName: "20160605123224-first_applied_before.js",
           appliedAt: new Date()
         },
         {
           type: "ALWAYS_BEFORE",
-          fileName: "20160607173840-first_pending_always_before.js",
+          fileName: "20160607173840-first_pending_before.js",
           appliedAt: "PENDING"
         },
         {
@@ -55,12 +55,12 @@ describe("up", () => {
         },
         {
           type: "ALWAYS_AFTER",
-          fileName: "20160605123224-first_applied_always_after.js",
+          fileName: "20160605123224-first_applied_after.js",
           appliedAt: new Date()
         },
         {
           type: "ALWAYS_AFTER",
-          fileName: "20160607173840-first_pending_always_after.js",
+          fileName: "20160607173840-first_pending_after.js",
           appliedAt: "PENDING"
         },
       ])
@@ -76,15 +76,15 @@ describe("up", () => {
     };
   }
 
-  function mockAlwaysBeforeDir() {
+  function mockBeforeDir() {
     const mock = {};
     mock.loadMigration = sinon.stub();
     mock.loadMigration
-      .withArgs("20160605123224-first_applied_always_before.js")
-      .returns(Promise.resolve(firstAppliedAlwaysBefore));
+      .withArgs("20160605123224-first_applied_before.js")
+      .returns(Promise.resolve(firstAppliedBefore));
     mock.loadMigration
-      .withArgs("20160607173840-first_pending_always_before.js")
-      .returns(Promise.resolve(firstPendingAlwaysBefore));
+      .withArgs("20160607173840-first_pending_before.js")
+      .returns(Promise.resolve(firstPendingBefore));
     return mock;
   }
 
@@ -100,15 +100,15 @@ describe("up", () => {
     return mock;
   }
 
-  function mockAlwaysAfterDir() {
+  function mockAfterDir() {
     const mock = {};
     mock.loadMigration = sinon.stub();
     mock.loadMigration
-      .withArgs("20160605123224-first_applied_always_after.js")
-      .returns(Promise.resolve(firstAppliedAlwaysAfter));
+      .withArgs("20160605123224-first_applied_after.js")
+      .returns(Promise.resolve(firstAppliedAfter));
     mock.loadMigration
-      .withArgs("20160607173840-first_pending_always_after.js")
-      .returns(Promise.resolve(firstPendingAlwaysAfter));
+      .withArgs("20160607173840-first_pending_after.js")
+      .returns(Promise.resolve(firstPendingAfter));
     return mock;
   }
 
@@ -137,26 +137,26 @@ describe("up", () => {
     return proxyquire("../lib/actions/up", {
       "./status": status,
       "../env/configFile": configFile,
-      "../env/alwaysBeforeDir": alwaysBeforeDir,
+      "../env/beforeDir": beforeDir,
       "../env/migrationsDir": migrationsDir,
-      "../env/alwaysAfterDir": alwaysAfterDir,
+      "../env/afterDir": afterDir,
     });
   }
 
   beforeEach(() => {
-    firstAppliedAlwaysBefore = mockMigration();
-    firstPendingAlwaysBefore = mockMigration();
+    firstAppliedBefore = mockMigration();
+    firstPendingBefore = mockMigration();
     firstPendingMigration = mockMigration();
     secondPendingMigration = mockMigration();
-    firstAppliedAlwaysAfter = mockMigration();
-    firstPendingAlwaysAfter = mockMigration();
+    firstAppliedAfter = mockMigration();
+    firstPendingAfter = mockMigration();
     changelogCollection = mockChangelogCollection();
 
     status = mockStatus();
     configFile = mockConfigFile();
-    alwaysBeforeDir = mockAlwaysBeforeDir();
+    beforeDir = mockBeforeDir();
     migrationsDir = mockMigrationsDir();
-    alwaysAfterDir = mockAlwaysAfterDir();
+    afterDir = mockAfterDir();
     db = mockDb();
 
     up = loadUpWithInjectedMocks();
@@ -167,15 +167,15 @@ describe("up", () => {
     expect(status.called).to.equal(true);
   });
 
-  it("should load all the pending always-before scripts", async () => {
+  it("should load all the pending before scripts", async () => {
     await up(db);
-    expect(alwaysBeforeDir.loadMigration.called).to.equal(true);
-    expect(alwaysBeforeDir.loadMigration.callCount).to.equal(2);
-    expect(alwaysBeforeDir.loadMigration.getCall(0).args[0]).to.equal(
-      "20160605123224-first_applied_always_before.js"
+    expect(beforeDir.loadMigration.called).to.equal(true);
+    expect(beforeDir.loadMigration.callCount).to.equal(2);
+    expect(beforeDir.loadMigration.getCall(0).args[0]).to.equal(
+      "20160605123224-first_applied_before.js"
     );
-    expect(alwaysBeforeDir.loadMigration.getCall(1).args[0]).to.equal(
-      "20160607173840-first_pending_always_before.js"
+    expect(beforeDir.loadMigration.getCall(1).args[0]).to.equal(
+      "20160607173840-first_pending_before.js"
     );
   });
 
@@ -191,28 +191,28 @@ describe("up", () => {
     );
   });
 
-  it("should load all the pending always-after scripts", async () => {
+  it("should load all the pending after scripts", async () => {
     await up(db);
-    expect(alwaysAfterDir.loadMigration.called).to.equal(true);
-    expect(alwaysAfterDir.loadMigration.callCount).to.equal(2);
-    expect(alwaysAfterDir.loadMigration.getCall(0).args[0]).to.equal(
-      "20160605123224-first_applied_always_after.js"
+    expect(afterDir.loadMigration.called).to.equal(true);
+    expect(afterDir.loadMigration.callCount).to.equal(2);
+    expect(afterDir.loadMigration.getCall(0).args[0]).to.equal(
+      "20160605123224-first_applied_after.js"
     );
-    expect(alwaysAfterDir.loadMigration.getCall(1).args[0]).to.equal(
-      "20160607173840-first_pending_always_after.js"
+    expect(afterDir.loadMigration.getCall(1).args[0]).to.equal(
+      "20160607173840-first_pending_after.js"
     );
   });
 
   it("should upgrade all operations in ascending order", async () => {
     await up(db);
-    expect(firstAppliedAlwaysBefore.up.called).to.equal(true);
-    expect(firstPendingAlwaysBefore.up.called).to.equal(true);
+    expect(firstAppliedBefore.up.called).to.equal(true);
+    expect(firstPendingBefore.up.called).to.equal(true);
     expect(firstPendingMigration.up.called).to.equal(true);
     expect(secondPendingMigration.up.called).to.equal(true);
-    expect(firstAppliedAlwaysAfter.up.called).to.equal(true);
-    expect(firstPendingAlwaysAfter.up.called).to.equal(true);
-    sinon.assert.callOrder(firstAppliedAlwaysBefore.up, firstPendingAlwaysBefore.up, 
-      firstPendingMigration.up, secondPendingMigration.up, firstAppliedAlwaysAfter.up, firstPendingAlwaysAfter.up);
+    expect(firstAppliedAfter.up.called).to.equal(true);
+    expect(firstPendingAfter.up.called).to.equal(true);
+    sinon.assert.callOrder(firstAppliedBefore.up, firstPendingBefore.up, 
+      firstPendingMigration.up, secondPendingMigration.up, firstAppliedAfter.up, firstPendingAfter.up);
   });
 
   it("should be able to upgrade callback based migration", async () => {
@@ -236,7 +236,7 @@ describe("up", () => {
     expect(changelogCollection.insertOne.callCount).to.equal(6);
     expect(changelogCollection.insertOne.getCall(0).args[0]).to.deep.equal({
       appliedAt: new Date("2016-06-09T08:07:00.077Z"),
-      fileName: "20160605123224-first_applied_always_before.js"
+      fileName: "20160605123224-first_applied_before.js"
     });
     clock.restore();
   });
@@ -244,12 +244,12 @@ describe("up", () => {
   it("should yield a list of upgraded migration file names", async () => {
     const upgradedFileNames = await up(db);
     expect(upgradedFileNames).to.deep.equal([
-      "20160605123224-first_applied_always_before.js",
-      "20160607173840-first_pending_always_before.js",
+      "20160605123224-first_applied_before.js",
+      "20160607173840-first_pending_before.js",
       "20160607173840-first_pending_migration.js",
       "20160608060209-second_pending_migration.js",
-      "20160605123224-first_applied_always_after.js",
-      "20160607173840-first_pending_always_after.js",
+      "20160605123224-first_applied_after.js",
+      "20160607173840-first_pending_after.js",
     ]);
   });
 

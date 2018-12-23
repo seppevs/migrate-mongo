@@ -4,8 +4,8 @@ const proxyquire = require("proxyquire");
 
 const path = require("path");
 
-describe("alwaysBeforeDir", () => {
-  let alwaysBeforeDir;
+describe("beforeDir", () => {
+  let beforeDir;
   let fs;
   let configFile;
 
@@ -19,7 +19,7 @@ describe("alwaysBeforeDir", () => {
   function mockConfigFile() {
     return {
       read: sinon.stub().returns({
-        alwaysBeforeDir: "always-before"
+        beforeDir: "before"
       })
     };
   }
@@ -27,7 +27,7 @@ describe("alwaysBeforeDir", () => {
   beforeEach(() => {
     fs = mockFs();
     configFile = mockConfigFile();
-    alwaysBeforeDir = proxyquire("../../lib/env/alwaysBeforeDir", {
+    beforeDir = proxyquire("../../lib/env/beforeDir", {
       "fs-extra": fs,
       "./configFile": configFile
     });
@@ -36,33 +36,33 @@ describe("alwaysBeforeDir", () => {
   describe("resolve()", () => {
     it("should use the configured relative always dir when a config file is available", async () => {
       configFile.read.returns({
-        alwaysBeforeDir: "custom-always-before-dir"
+        beforeDir: "custom-before-dir"
       });
-      expect(await alwaysBeforeDir.resolve()).to.equal(
-        path.join(process.cwd(), "custom-always-before-dir")
+      expect(await beforeDir.resolve()).to.equal(
+        path.join(process.cwd(), "custom-before-dir")
       );
     });
 
     it("should use the configured absolute always dir when a config file is available", async () => {
       configFile.read.returns({
-        alwaysBeforeDir: "/absolute/path/to/my/custom-always-before-dir"
+        beforeDir: "/absolute/path/to/my/custom-before-dir"
       });
-      expect(await alwaysBeforeDir.resolve()).to.equal(
-        "/absolute/path/to/my/custom-always-before-dir"
+      expect(await beforeDir.resolve()).to.equal(
+        "/absolute/path/to/my/custom-before-dir"
       );
     });
 
-    it("should use the default always directory when no alwaysBeforeDir is specified in the config file", async () => {
+    it("should use the default always directory when no beforeDir is specified in the config file", async () => {
       configFile.read.returns({});
-      expect(await alwaysBeforeDir.resolve()).to.equal(
-        path.join(process.cwd(), "always-before")
+      expect(await beforeDir.resolve()).to.equal(
+        path.join(process.cwd(), "before")
       );
     });
 
     it("should use the default always directory when unable to read the config file", async () => {
       configFile.read.throws(new Error("Cannot read config file"));
-      expect(await alwaysBeforeDir.resolve()).to.equal(
-        path.join(process.cwd(), "always-before")
+      expect(await beforeDir.resolve()).to.equal(
+        path.join(process.cwd(), "before")
       );
     });
   });
@@ -70,18 +70,18 @@ describe("alwaysBeforeDir", () => {
   describe("shouldExist()", () => {
     it("should not reject with an error if the always dir exists", async () => {
       fs.stat.returns(Promise.resolve());
-      await alwaysBeforeDir.shouldExist();
+      await beforeDir.shouldExist();
     });
 
     it("should yield an error if the always dir does not exist", async () => {
-      const alwaysPath = path.join(process.cwd(), "always-before");
+      const alwaysPath = path.join(process.cwd(), "before");
       fs.stat.returns(Promise.reject(new Error("It does not exist")));
       try {
-        await alwaysBeforeDir.shouldExist();
+        await beforeDir.shouldExist();
         expect.fail("Error was not thrown");
       } catch (err) {
         expect(err.message).to.equal(
-          `always-before directory does not exist: ${alwaysPath}`
+          `before directory does not exist: ${alwaysPath}`
         );
       }
     });
@@ -92,18 +92,18 @@ describe("alwaysBeforeDir", () => {
       const error = new Error("File does not exist");
       error.code = "ENOENT";
       fs.stat.returns(Promise.reject(error));
-      await alwaysBeforeDir.shouldNotExist();
+      await beforeDir.shouldNotExist();
     });
 
     it("should yield an error if the always dir exists", async () => {
-      const alwaysPath = path.join(process.cwd(), "always-before");
+      const alwaysPath = path.join(process.cwd(), "before");
       fs.stat.returns(Promise.resolve());
       try {
-        await alwaysBeforeDir.shouldNotExist();
+        await beforeDir.shouldNotExist();
         expect.fail("Error was not thrown");
       } catch (err) {
         expect(err.message).to.equal(
-          `always-before directory already exists: ${alwaysPath}`
+          `before directory already exists: ${alwaysPath}`
         );
       }
     });
@@ -112,20 +112,20 @@ describe("alwaysBeforeDir", () => {
   describe("getFileNames()", () => {
     it("should read the directory and yield the result", async () => {
       fs.readdir.returns(Promise.resolve(["file1.js", "file2.js"]));
-      const files = await alwaysBeforeDir.getFileNames();
+      const files = await beforeDir.getFileNames();
       expect(files).to.deep.equal(["file1.js", "file2.js"]);
     });
 
     it("should list only .js files", async () => {
       fs.readdir.returns(Promise.resolve(["file1.js", "file2.js", ".keep"]));
-      const files = await alwaysBeforeDir.getFileNames();
+      const files = await beforeDir.getFileNames();
       expect(files).to.deep.equal(["file1.js", "file2.js"]);
     });
 
     it("should yield errors that occurred while reading the dir", async () => {
       fs.readdir.returns(Promise.reject(new Error("Could not read")));
       try {
-        await alwaysBeforeDir.getFileNames();
+        await beforeDir.getFileNames();
         expect.fail("Error was not thrown");
       } catch (err) {
         expect(err.message).to.equal("Could not read");
@@ -137,11 +137,11 @@ describe("alwaysBeforeDir", () => {
     it("should attempt to load the fileName in the always directory", async () => {
       const pathToMigration = path.join(
         process.cwd(),
-        "always-before",
+        "before",
         "someFile.js"
       );
       try {
-        await alwaysBeforeDir.loadMigration("someFile.js");
+        await beforeDir.loadMigration("someFile.js");
         expect.fail("Error was not thrown");
       } catch (err) {
         expect(err.message).to.equal(`Cannot find module '${pathToMigration}'`);
