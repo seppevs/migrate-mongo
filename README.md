@@ -313,7 +313,7 @@ A new always-before file is created in the `before` directory.
 
 For example:
 ```javascript
-const fileName = await create-before('blacklist_the_beatles_after');
+const fileName = await create-after('blacklist_the_beatles_after');
 console.log('Created:', fileName);
 ```
 
