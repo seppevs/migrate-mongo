@@ -38,7 +38,7 @@ describe("init", () => {
   function mockFs() {
     return {
       copy: sinon.stub().returns(Promise.resolve()),
-      mkdirs: sinon.stub().returns(Promise.resolve())
+      ensureFile: sinon.stub().returns(Promise.resolve())
     };
   }
 
@@ -73,7 +73,7 @@ describe("init", () => {
     } catch (err) {
       expect(err.message).to.equal("Dir exists");
       expect(fs.copy.called).to.equal(false);
-      expect(fs.mkdirs.called).to.equal(false);
+      expect(fs.ensureFile.called).to.equal(false);
     }
   });
 
@@ -86,7 +86,7 @@ describe("init", () => {
     } catch (err) {
       expect(err.message).to.equal("Dir exists");
       expect(fs.copy.called).to.equal(false);
-      expect(fs.mkdirs.called).to.equal(false);
+      expect(fs.ensureFile.called).to.equal(false);
     }
   });
 
@@ -99,7 +99,7 @@ describe("init", () => {
     } catch (err) {
       expect(err.message).to.equal("Dir exists");
       expect(fs.copy.called).to.equal(false);
-      expect(fs.mkdirs.called).to.equal(false);
+      expect(fs.ensureFile.called).to.equal(false);
     }
   });
 
@@ -112,7 +112,7 @@ describe("init", () => {
     } catch (err) {
       expect(err.message).to.equal("Dir exists");
       expect(fs.copy.called).to.equal(false);
-      expect(fs.mkdirs.called).to.equal(false);
+      expect(fs.ensureFile.called).to.equal(false);
     }
   });
 
@@ -125,7 +125,7 @@ describe("init", () => {
     } catch (err) {
       expect(err.message).to.equal("Dir exists");
       expect(fs.copy.called).to.equal(false);
-      expect(fs.mkdirs.called).to.equal(false);
+      expect(fs.ensureFile.called).to.equal(false);
     }
   });
 
@@ -143,7 +143,7 @@ describe("init", () => {
     } catch (err) {
       expect(err.message).to.equal("Config exists");
       expect(fs.copy.called).to.equal(false);
-      expect(fs.mkdirs.called).to.equal(false);
+      expect(fs.ensureFile.called).to.equal(false);
     }
   });
 
@@ -176,15 +176,15 @@ describe("init", () => {
   it("should create migrations directories in the current working directory", async () => {
     await init();
 
-    expect(fs.mkdirs.called).to.equal(true);
-    expect(fs.mkdirs.callCount).to.equal(3);
-    expect(fs.mkdirs.getCall(0).args[0]).to.deep.equal(path.join(process.cwd(), "always-before"));
-    expect(fs.mkdirs.getCall(1).args[0]).to.deep.equal(path.join(process.cwd(), "migrations"));
-    expect(fs.mkdirs.getCall(2).args[0]).to.deep.equal(path.join(process.cwd(), "always-after"));
+    expect(fs.ensureFile.called).to.equal(true);
+    expect(fs.ensureFile.callCount).to.equal(3);
+    expect(fs.ensureFile.getCall(0).args[0]).to.deep.equal(path.join(process.cwd(), "always-before/.gitkeep"));
+    expect(fs.ensureFile.getCall(1).args[0]).to.deep.equal(path.join(process.cwd(), "migrations/.gitkeep"));
+    expect(fs.ensureFile.getCall(2).args[0]).to.deep.equal(path.join(process.cwd(), "always-after/.gitkeep"));
   });
 
   it("should yield errors that occurred when creating the migrations directory", async () => {
-    fs.mkdirs.returns(Promise.reject(new Error("I cannot do that")));
+    fs.ensureFile.returns(Promise.reject(new Error("I cannot do that")));
     try {
       await init();
     } catch (err) {

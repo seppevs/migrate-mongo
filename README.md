@@ -18,6 +18,8 @@ Usage: migrate-mongo [options] [command]
 
     init                  initialize a new migration project
     create [description]  create a new database migration with the provided description
+    create-always-before [description]  create a new database script that always runs before migrations
+    create-always-after [description]  create a new database script that always runs after migrations
     up [options]          run all unapplied database migrations
     down [options]        undo the last applied database migration
     status [options]      print the changelog of the database
@@ -48,7 +50,7 @@ The above command did two things:
 1. create a sample 'migrate-mongo-config.js' file and 
 2. create a 'migrations' directory
 
-Edit the migrate-mongo-config.js file. Make sure you change the mongodb url:
+Edit the migrate-mongo-config.js file. An object or promise can be returned. Make sure you change the mongodb url: 
 ````javascript
 // In this file you can configure migrate-mongo
 
@@ -160,6 +162,31 @@ module.exports = {
   }
 };
 ````
+
+### Creating a new 'always' script
+To create a new database always script, just run the ````migrate-mongo create-always-before [description]```` or
+````migrate-mongo create-always-after [description]````  command. As the name implies, these 'always' scripts get 
+run each time the database migration is run. These scripts are good for tasks like ensuring indexes on each migration run.
+
+For example:
+````bash
+$ migrate-mongo create-always-after blacklist_the_beatles_idx
+Created: always-after/20160608155948-blacklist_the_beatles_idx.js
+````
+
+A new migration file is created in the 'always-before' or 'always-after' directory.
+Always scripts only contain an 'up' as they are not a migration.
+````javascript
+module.exports = {
+  up(db) {
+    // TODO write your migration here. Return a Promise (and/or use async & await).
+    // See https://github.com/seppevs/migrate-mongo/#creating-a-new-migration-script
+    // Example:
+    // return db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: true}});
+  }
+};
+````
+
 
 ### Checking the status of the migrations
 At any time, you can check which migrations are applied (or not)
