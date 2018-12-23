@@ -56,6 +56,38 @@ program
   });
 
 program
+  .command("create-before [description]")
+  .description("create a new database always before script with the provided description")
+  .option("-f --file <file>", "use a custom config file")
+  .action((description, options) => {
+    global.options = options;
+    migrateMongo
+      .create(description)
+      .then(fileName => 
+        migrateMongo.config.read().then(config => {
+          console.log(`Created: ${config.beforeDir}/${fileName}`);
+        })
+      )
+      .catch(err => handleError(err));
+  });
+
+program
+  .command("create-after [description]")
+  .description("create a new database always after script with the provided description")
+  .option("-f --file <file>", "use a custom config file")
+  .action((description, options) => {
+    global.options = options;
+    migrateMongo
+      .create(description)
+      .then(fileName => 
+        migrateMongo.config.read().then(config => {
+          console.log(`Created: ${config.afterDir}/${fileName}`);
+        })
+      )
+      .catch(err => handleError(err));
+  });
+
+program
   .command("up")
   .description("run all pending database migrations")
   .option("-f --file <file>", "use a custom config file")
