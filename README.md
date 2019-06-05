@@ -33,7 +33,7 @@ Usage: migrate-mongo [options] [command]
 
 ## Quickstart
 ### Initialize a new project
-Make sure you have [Node.js](https://nodejs.org/en/) 7.6.0 (or higher) installed.  
+Make sure you have [Node.js](https://nodejs.org/en/) 8.0.0 (or higher) installed.  
 
 Create a directory where you want to store your migrations for your mongo database (eg. 'albums' here) and cd into it
 ````bash
@@ -215,11 +215,13 @@ $ migrate-mongo status
 └─────────────────────────────────────────┴────────────┘
 ````
 
-## Using a custom config file
+## Extra tips and tricks
+
+### Using a custom config file
 All actions (except ```init```) accept an optional ````-f```` or ````--file```` option to specify a path to a custom config file.
 By default, migrate-mongo will look for a ````migrate-mongo-config.js```` config file in of the current directory.
 
-### Example:
+#### Example:
 
 ````bash
 $ migrate-mongo status -f '~/configs/albums-migrations.js'
@@ -230,6 +232,18 @@ $ migrate-mongo status -f '~/configs/albums-migrations.js'
 └─────────────────────────────────────────┴────────────┘
 
 ````
+
+### Using npm packages in your migration scripts
+You can use use Node.js modules (or require other modules) in your migration scripts.
+It's even possible to use npm modules, just provide a `package.json` file in the root of your migration project:
+
+````bash
+$ cd albums-migrations
+$ npm init --yes
+````
+
+Now you have a package.json file, and you can install your favorite npm modules that might help you in your migration scripts.
+For example, one of the very useful [promise-fun](https://github.com/sindresorhus/promise-fun) npm modules.
 
 ## API Usage
 
