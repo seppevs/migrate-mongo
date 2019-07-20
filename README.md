@@ -164,6 +164,10 @@ module.exports = {
 };
 ````
 
+#### Overriding the sample migration
+To override the content of the sample migration that will be created by the `create` command, 
+create a file **`sample-migration.js`** in the migrations directory.
+
 ### Checking the status of the migrations
 At any time, you can check which migrations are applied (or not)
 
