@@ -12,7 +12,7 @@ describe("database", () => {
   function createConfigObj() {
     return {
       mongodb: {
-        url: "mongodb://someserver:27017",
+        url: "mongodb://localhost:27017",
         databaseName: "testDb",
         options: {
           connectTimeoutMS: 3600000, // 1 hour
@@ -60,7 +60,7 @@ describe("database", () => {
       const db = await database.connect();
       expect(mongodb.MongoClient.connect.called).to.equal(true);
       expect(mongodb.MongoClient.connect.getCall(0).args[0]).to.equal(
-        "mongodb://someserver:27017"
+        "mongodb://localhost:27017"
       );
 
       expect(mongodb.MongoClient.connect.getCall(0).args[1]).to.deep.equal({
