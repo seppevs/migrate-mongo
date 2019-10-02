@@ -9,6 +9,7 @@ describe("down", () => {
   let configFile;
   let migrationsDir;
   let db;
+  let client;
   let migration;
   let changelogCollection;
 
@@ -47,6 +48,10 @@ describe("down", () => {
     return mock;
   }
 
+  function mockClient() {
+    return { the: 'client' };
+  }
+
   function mockMigration() {
     const theMigration = {
       down: sinon.stub()
@@ -62,7 +67,7 @@ describe("down", () => {
   }
 
   function loadDownWithInjectedMocks() {
-    return proxyquire("../lib/actions/down", {
+    return proxyquire("../../lib/actions/down", {
       "./status": status,
       "../env/configFile": configFile,
       "../env/migrationsDir": migrationsDir
@@ -77,6 +82,7 @@ describe("down", () => {
     configFile = mockConfigFile();
     migrationsDir = mockMigrationsDir();
     db = mockDb();
+    client = mockClient();
 
     down = loadDownWithInjectedMocks();
   });
@@ -108,7 +114,18 @@ describe("down", () => {
     expect(migration.down.called).to.equal(true);
   });
 
-  it("should be able to downgrade callback based migration", async () => {
+  it("should be able to downgrade callback based migration that has both the `db` and `client` arguments", async () => {
+    migration = {
+      down(theDb, theClient, callback) {
+        return callback();
+      }
+    };
+    migrationsDir = mockMigrationsDir();
+    down = loadDownWithInjectedMocks();
+    await down(db, client);
+  });
+
+  it("should be able to downgrade callback based migration that has only the `db` argument", async () => {
     migration = {
       down(theDb, callback) {
         return callback();
