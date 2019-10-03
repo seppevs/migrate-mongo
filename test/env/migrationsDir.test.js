@@ -148,4 +148,18 @@ describe("migrationsDir", () => {
       }
     });
   });
+
+  describe("doesSampleMigrationExist()", () => {
+    it("should return true if sample migration exists", async () => {
+      fs.stat.returns(Promise.resolve());
+      const result = await migrationsDir.doesSampleMigrationExist();
+      expect(result).to.equal(true);
+    });
+
+    it("should return false if sample migration doesn't exists", async () => {
+      fs.stat.returns(Promise.reject(new Error("It does not exist")));
+      const result = await migrationsDir.doesSampleMigrationExist();
+      expect(result).to.equal(false);
+    });
+  });
 });
