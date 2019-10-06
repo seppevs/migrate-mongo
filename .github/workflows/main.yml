@@ -1,0 +1,23 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        platform: [ubuntu-latest,]
+        node: [ '12', '10', '8' ]
+    name: Node ${{ matrix.node }}
+    runs-on: ${{ matrix.platform }}
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node }}
+    - name: install dependencies
+      run: npm install
+    - name: run coverage
+      run: npm run-script test-coverage
+    - name: create coverage report
+      run: cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
