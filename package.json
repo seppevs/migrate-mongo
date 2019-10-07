@@ -39,7 +39,7 @@
     "coveralls": "3.0.6",
     "eslint": "6.2.2",
     "eslint-config-airbnb-base": "14.0.0",
-    "eslint-config-prettier": "6.1.0",
+    "eslint-config-prettier": "6.4.0",
     "eslint-plugin-import": "2.18.2",
     "eslint-plugin-mocha": "6.1.0",
     "mocha": "6.2.0",
