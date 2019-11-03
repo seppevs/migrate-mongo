@@ -114,6 +114,6 @@ program
 
 program.parse(process.argv);
 
-if (_.isEmpty(program.args)) {
+if (_.isEmpty(program.rawArgs)) {
   program.outputHelp();
 }
