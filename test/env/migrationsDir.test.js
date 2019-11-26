@@ -144,7 +144,7 @@ describe("migrationsDir", () => {
         await migrationsDir.loadMigration("someFile.js");
         expect.fail("Error was not thrown");
       } catch (err) {
-        expect(err.message).to.equal(`Cannot find module '${pathToMigration}'`);
+        expect(err.message).to.match(new RegExp(`Cannot find module '${pathToMigration}'`));
       }
     });
   });

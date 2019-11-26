@@ -76,7 +76,7 @@ describe("configFile", () => {
         await configFile.read();
         expect.fail("Error was not thrown");
       } catch (err) {
-        expect(err.message).to.equal(`Cannot find module '${configPath}'`);
+        expect(err.message).to.match(new RegExp(`Cannot find module '${configPath}'`));
       }
     });
 
@@ -86,8 +86,8 @@ describe("configFile", () => {
         await configFile.read();
         expect.fail("Error was not thrown");
       } catch (err) {
-        expect(err.message).to.equal(
-          `Cannot find module '${global.options.file}'`
+        expect(err.message).to.match(
+          new RegExp(`Cannot find module '${global.options.file}'`)
         );
       }
     });
@@ -99,7 +99,7 @@ describe("configFile", () => {
         await configFile.read();
         expect.fail("Error was not thrown");
       } catch (err) {
-        expect(err.message).to.equal(`Cannot find module '${configPath}'`);
+        expect(err.message).to.match(new RegExp(`Cannot find module '${configPath}'`));
       }
     });
   });

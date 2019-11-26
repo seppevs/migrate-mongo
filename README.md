@@ -90,14 +90,14 @@ Created: migrations/20160608155948-blacklist_the_beatles.js
 A new migration file is created in the 'migrations' directory:
 ````javascript
 module.exports = {
-  up(db) {
+  up(db, client) {
     // TODO write your migration here. Return a Promise (and/or use async & await).
     // See https://github.com/seppevs/migrate-mongo/#creating-a-new-migration-script
     // Example:
     // return db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: true}});
   },
 
-  down(db) {
+  down(db, client) {
     // TODO write the statements to rollback your migration (if possible)
     // Example:
     // return db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: false}});
@@ -107,16 +107,17 @@ module.exports = {
 
 Edit this content so it actually performs changes to your database. Don't forget to write the down part as well.
 The ````db```` object contains [the official MongoDB db object](https://www.npmjs.com/package/mongodb)
+The ````client```` object is a [MongoClient](https://mongodb.github.io/node-mongodb-native/3.3/api/MongoClient.html) instance (which you can omit if you don't use it).
 
 There are 3 options to implement the `up` and `down` functions of your migration: 
 1. Return a Promises
 2. Use async-await 
-3. Call a callback (deprecated)
+3. Call a callback (DEPRECATED!)
 
 Always make sure the implementation matches the function signature:
-* `function up(db) { /* */ }` should return `Promise`
-* `function async up(db) { /* */ }` should contain `await` keyword(s) and return `Promise`
-* `function up(db, next) { /* */ }` should callback `next`
+* `function up(db, client) { /* */ }` should return `Promise`
+* `function async up(db, client) { /* */ }` should contain `await` keyword(s) and return `Promise`
+* `function up(db, client, next) { /* */ }` should callback `next`
 
 #### Example 1: Return a Promise
 ````javascript
@@ -248,6 +249,46 @@ $ npm init --yes
 
 Now you have a package.json file, and you can install your favorite npm modules that might help you in your migration scripts.
 For example, one of the very useful [promise-fun](https://github.com/sindresorhus/promise-fun) npm modules.
+
+### Using MongoDB's Transactions API
+You can make use of the [MongoDB Transaction API](https://docs.mongodb.com/manual/core/transactions/) in your migration scripts.
+
+Note: this requires both:
+- MongoDB 4.0 or higher 
+- migrate-mongo 7.0.0 or higher
+
+migrate-mongo will call your migration `up` and `down` function with a second argument: `client`.
+This `client` argument is an [MongoClient](https://mongodb.github.io/node-mongodb-native/3.3/api/MongoClient.html) instance, it gives you access to the `startSession` function.
+
+Example:
+
+````javascript
+module.exports = {
+  async up(db, client) {
+    const session = client.startSession();
+    try {
+        await session.withTransaction(async () => {
+            await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: true}});
+            await db.collection('albums').updateOne({artist: 'The Doors'}, {$set: {stars: 5}});
+        });
+    } finally {
+      await session.endSession();
+    }
+  },
+
+  async down(db, client) {
+    const session = client.startSession();
+    try {
+        await session.withTransaction(async () => {
+            await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: false}});
+            await db.collection('albums').updateOne({artist: 'The Doors'}, {$set: {stars: 0}});
+        });
+    } finally {
+      await session.endSession();
+    }
+  },
+};
+````
 
 ## API Usage
 

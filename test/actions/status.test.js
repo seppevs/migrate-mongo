@@ -75,7 +75,7 @@ describe("status", () => {
     configFile = mockConfigFile();
     fs = mockFs();
     db = mockDb();
-    status = proxyquire("../lib/actions/status", {
+    status = proxyquire("../../lib/actions/status", {
       "../env/migrationsDir": migrationsDir,
       "../env/configFile": configFile,
       "fs-extra": fs

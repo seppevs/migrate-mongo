@@ -33,7 +33,7 @@ describe("create", () => {
     migrationsDir = mockMigrationsDir();
     configFile = mockConfigFile();
     fs = mockFs();
-    create = proxyquire("../lib/actions/create", {
+    create = proxyquire("../../lib/actions/create", {
       "../env/migrationsDir": migrationsDir,
       "../env/configFile": configFile,
       "fs-extra": fs
@@ -78,7 +78,7 @@ describe("create", () => {
     const filename = await create("my_description");
     expect(fs.copy.called).to.equal(true);
     expect(fs.copy.getCall(0).args[0]).to.equal(
-      path.join(__dirname, "../samples/migration.js")
+      path.join(__dirname, "../../samples/migration.js")
     );
     expect(fs.copy.getCall(0).args[1]).to.equal(
       path.join(process.cwd(), "migrations", "20160609080700-my_description.js")
@@ -94,7 +94,7 @@ describe("create", () => {
     await create("this description contains spaces");
     expect(fs.copy.called).to.equal(true);
     expect(fs.copy.getCall(0).args[0]).to.equal(
-      path.join(__dirname, "../samples/migration.js")
+      path.join(__dirname, "../../samples/migration.js")
     );
     expect(fs.copy.getCall(0).args[1]).to.equal(
       path.join(

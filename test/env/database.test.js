@@ -57,7 +57,7 @@ describe("database", () => {
 
   describe("connect()", () => {
     it("should connect MongoClient to the configured mongodb url with the configured options", async () => {
-      const db = await database.connect();
+      const result = await database.connect();
       expect(mongodb.MongoClient.connect.called).to.equal(true);
       expect(mongodb.MongoClient.connect.getCall(0).args[0]).to.equal(
         "mongodb://someserver:27017"
@@ -69,10 +69,11 @@ describe("database", () => {
       });
 
       expect(client.db.getCall(0).args[0]).to.equal("testDb");
-      expect(db).to.deep.equal({
+      expect(result.db).to.deep.equal({
         the: "db",
         close: "theCloseFnFromMongoClient"
       });
+      expect(result.client).to.deep.equal(client);
     });
 
     it("should yield an error when no url is defined in the config file", async () => {
