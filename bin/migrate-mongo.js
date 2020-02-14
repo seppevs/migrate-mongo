@@ -2,7 +2,7 @@
 
 const program = require("commander");
 const _ = require("lodash");
-const Table = require("cli-table");
+const Table = require("cli-table3");
 const migrateMongo = require("../lib/migrate-mongo");
 const pkgjson = require("../package.json");
 
@@ -63,7 +63,7 @@ program
     global.options = options;
     migrateMongo.database
       .connect()
-      .then(db => migrateMongo.up(db))
+      .then(({db, client}) => migrateMongo.up(db, client))
       .then(migrated => {
         printMigrated(migrated);
         process.exit(0);
@@ -82,7 +82,7 @@ program
     global.options = options;
     migrateMongo.database
       .connect()
-      .then(db => migrateMongo.down(db))
+      .then(({db, client}) => migrateMongo.down(db, client))
       .then(migrated => {
         migrated.forEach(migratedItem => {
           console.log(`MIGRATED DOWN: ${migratedItem}`);
@@ -102,7 +102,7 @@ program
     global.options = options;
     migrateMongo.database
       .connect()
-      .then(db => migrateMongo.status(db))
+      .then(({db, client}) => migrateMongo.status(db, client))
       .then(statusItems => {
         printStatusTable(statusItems);
         process.exit(0);
@@ -114,6 +114,6 @@ program
 
 program.parse(process.argv);
 
-if (_.isEmpty(program.args)) {
+if (_.isEmpty(program.rawArgs)) {
   program.outputHelp();
 }

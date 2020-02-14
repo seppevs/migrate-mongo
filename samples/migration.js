@@ -1,14 +1,14 @@
 module.exports = {
-  up(db) {
-    // TODO write your migration here. Return a Promise (and/or use async & await).
+  async up(db, client) {
+    // TODO write your migration here.
     // See https://github.com/seppevs/migrate-mongo/#creating-a-new-migration-script
     // Example:
-    // return db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: true}});
+    // await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: true}});
   },
 
-  down(db) {
+  async down(db, client) {
     // TODO write the statements to rollback your migration (if possible)
     // Example:
-    // return db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: false}});
+    // await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: false}});
   }
 };

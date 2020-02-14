@@ -32,7 +32,7 @@ describe("init", () => {
     migrationsDir = mockMigrationsDir();
     configFile = mockConfigFile();
     fs = mockFs();
-    init = proxyquire("../lib/actions/init", {
+    init = proxyquire("../../lib/actions/init", {
       "../env/migrationsDir": migrationsDir,
       "../env/configFile": configFile,
       "fs-extra": fs
@@ -82,7 +82,7 @@ describe("init", () => {
 
     const source = fs.copy.getCall(0).args[0];
     expect(source).to.equal(
-      path.join(__dirname, "../samples/migrate-mongo-config.js")
+      path.join(__dirname, "../../samples/migrate-mongo-config.js")
     );
 
     const destination = fs.copy.getCall(0).args[1];

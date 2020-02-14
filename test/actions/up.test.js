@@ -9,6 +9,7 @@ describe("up", () => {
   let configFile;
   let migrationsDir;
   let db;
+  let client;
 
   let firstPendingMigration;
   let secondPendingMigration;
@@ -65,6 +66,10 @@ describe("up", () => {
     return mock;
   }
 
+  function mockClient() {
+    return { the: 'client' };
+  }
+
   function mockMigration() {
     const migration = {
       up: sinon.stub()
@@ -80,7 +85,7 @@ describe("up", () => {
   }
 
   function loadUpWithInjectedMocks() {
-    return proxyquire("../lib/actions/up", {
+    return proxyquire("../../lib/actions/up", {
       "./status": status,
       "../env/configFile": configFile,
       "../env/migrationsDir": migrationsDir
@@ -96,6 +101,7 @@ describe("up", () => {
     configFile = mockConfigFile();
     migrationsDir = mockMigrationsDir();
     db = mockDb();
+    client = mockClient();
 
     up = loadUpWithInjectedMocks();
   });
@@ -124,7 +130,18 @@ describe("up", () => {
     sinon.assert.callOrder(firstPendingMigration.up, secondPendingMigration.up);
   });
 
-  it("should be able to upgrade callback based migration", async () => {
+  it("should be able to upgrade callback based migration that has both the `db` and `client` args", async () => {
+    firstPendingMigration = {
+      up(theDb, theClient, callback) {
+        return callback();
+      }
+    };
+    migrationsDir = mockMigrationsDir();
+    up = loadUpWithInjectedMocks();
+    await up(db, client);
+  });
+
+  it("should be able to upgrade callback based migration that has only the `db` arg", async () => {
     firstPendingMigration = {
       up(theDb, callback) {
         return callback();
@@ -132,8 +149,9 @@ describe("up", () => {
     };
     migrationsDir = mockMigrationsDir();
     up = loadUpWithInjectedMocks();
-    await up(db);
+    await up(db, client);
   });
+
   it("should populate the changelog with info about the upgraded migrations", async () => {
     const clock = sinon.useFakeTimers(
       new Date("2016-06-09T08:07:00.077Z").getTime()
