@@ -371,10 +371,10 @@ const migrationStatus = await status(db);
 migrationStatus.forEach(({ fileName, appliedAt }) => console.log(fileName, ':', appliedAt));
 ```
 
-### `db.close() → Promise`
+### `client.close() → Promise`
 Close the database connection
 
 ```javascript
-const { db } = await database.connect();
-await db.close()
+const { db, client } = await database.connect();
+await client.close();
 ```
