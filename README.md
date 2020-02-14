@@ -323,12 +323,12 @@ console.log('Created:', fileName);
 
 A new migration file is created in the `migrations` directory.
 
-### `database.connect() → Promise<MongoDb>`
+### `database.connect() → Promise<{db: MongoDb, client: MongoClient}>`
 
 Connect to a mongo database using the connection settings from the `migrate-mongo-config.js` file.
 
 ```javascript
-const db = await database.connect();
+const { db, client } = await database.connect();
 ```
 
 ### `config.read() → Promise<JSON>`
@@ -339,25 +339,25 @@ Read connection settings from the `migrate-mongo-config.js` file.
 const mongoConnectionSettings = await config.read();
 ```
 
-### `up(MongoDb) → Promise<Array<fileName>>`
+### `up(MongoDb, MongoClient) → Promise<Array<fileName>>`
 
 Apply all pending migrations
 
 ```javascript
-const db = await database.connect();
-const migrated = await up(db);
+const { db, client } = await database.connect();
+const migrated = await up(db, client);
 migrated.forEach(fileName => console.log('Migrated:', fileName));
 ```
 
 If an an error occurred, the promise will reject and won't continue with the rest of the pending migrations.
 
-### `down(MongoDb) → Promise<Array<fileName>>`
+### `down(MongoDb, MongoClient) → Promise<Array<fileName>>`
 
 Revert (only) the last applied migration
 
 ```javascript
-const db = await database.connect();
-const migratedDown = await down(db);
+const { db, client } = await database.connect();
+const migratedDown = await down(db, client);
 migratedDown.forEach(fileName => console.log('Migrated Down:', fileName));
 ```
 
@@ -366,7 +366,7 @@ migratedDown.forEach(fileName => console.log('Migrated Down:', fileName));
 Check which migrations are applied (or not.
 
 ```javascript
-const db = await database.connect();
+const { db } = await database.connect();
 const migrationStatus = await status(db);
 migrationStatus.forEach(({ fileName, appliedAt }) => console.log(fileName, ':', appliedAt));
 ```
@@ -375,6 +375,6 @@ migrationStatus.forEach(({ fileName, appliedAt }) => console.log(fileName, ':', 
 Close the database connection
 
 ```javascript
-const db = await database.connect();
+const { db } = await database.connect();
 await db.close()
 ```
