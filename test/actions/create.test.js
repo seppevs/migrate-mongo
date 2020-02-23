@@ -12,7 +12,8 @@ describe("create", () => {
 
   function mockMigrationsDir() {
     return {
-      shouldExist: sinon.stub().returns(Promise.resolve())
+      shouldExist: sinon.stub().returns(Promise.resolve()),
+      doesSampleMigrationExist: sinon.stub().returns(Promise.resolve(false))
     };
   }
 
@@ -113,5 +114,23 @@ describe("create", () => {
     } catch (err) {
       expect(err.message).to.equal("Copy failed");
     }
+  });
+
+  it("should use the sample migration file if it exists", async () => {
+    const clock = sinon.useFakeTimers(
+        new Date("2016-06-09T08:07:00.077Z").getTime()
+    );
+    migrationsDir.doesSampleMigrationExist.returns(true);
+    const filename = await create("my_description");
+    expect(migrationsDir.doesSampleMigrationExist.called).to.equal(true);
+    expect(fs.copy.called).to.equal(true);
+    expect(fs.copy.getCall(0).args[0]).to.equal(
+        path.join(process.cwd(), "migrations", "sample-migration.js")
+    );
+    expect(fs.copy.getCall(0).args[1]).to.equal(
+        path.join(process.cwd(), "migrations", "20160609080700-my_description.js")
+    );
+    expect(filename).to.equal("20160609080700-my_description.js");
+    clock.restore();
   });
 });
