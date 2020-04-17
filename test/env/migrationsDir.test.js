@@ -19,7 +19,8 @@ describe("migrationsDir", () => {
   function mockConfigFile() {
     return {
       read: sinon.stub().returns({
-        migrationsDir: "migrations"
+        migrationsDir: "migrations",
+        migrationFileExtension: ".js"
       })
     };
   }
@@ -116,10 +117,13 @@ describe("migrationsDir", () => {
       expect(files).to.deep.equal(["file1.js", "file2.js"]);
     });
 
-    it("should list only .js files", async () => {
-      fs.readdir.returns(Promise.resolve(["file1.js", "file2.js", ".keep"]));
+    it("should list only files with configured extension", async () => {
+      configFile.read.returns({
+        migrationFileExtension: ".ts"
+      });
+      fs.readdir.returns(Promise.resolve(["file1.ts", "file2.ts", "file1.js", "file2.js", ".keep"]));
       const files = await migrationsDir.getFileNames();
-      expect(files).to.deep.equal(["file1.js", "file2.js"]);
+      expect(files).to.deep.equal(["file1.ts", "file2.ts"]);
     });
 
     it("should yield errors that occurred while reading the dir", async () => {
@@ -146,6 +150,39 @@ describe("migrationsDir", () => {
       } catch (err) {
         expect(err.message).to.match(new RegExp(`Cannot find module '${pathToMigration}'`));
       }
+    });
+  });
+
+  describe("resolveMigrationFileExtension()", () => {
+    it("should provide the value if specified", async () => {
+      configFile.read.returns({
+        migrationFileExtension: ".ts"
+      });
+      const ext = await migrationsDir.resolveMigrationFileExtension();
+      expect(ext).to.equal(".ts");
+    });
+    it("should error if the extension does not start with dot", async () => {
+      configFile.read.returns({
+        migrationFileExtension: "js"
+      });
+      try {
+        await migrationsDir.resolveMigrationFileExtension();
+        expect.fail("Error was not thrown");
+      } catch(err) {
+        expect(err.message).to.equal("migrationFileExtension must start with dot");
+      }
+    });
+    it("should use the default if not specified", async() => {
+      configFile.read.returns({
+        migrationFileExtension: undefined
+      });
+      const ext = await migrationsDir.resolveMigrationFileExtension();
+      expect(ext).to.equal(".js");
+    });
+    it("should use the default if config file not found", async() => {
+      configFile.read.throws();
+      const ext = await migrationsDir.resolveMigrationFileExtension();
+      expect(ext).to.equal(".js");
     });
   });
 
