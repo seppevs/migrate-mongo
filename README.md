@@ -82,6 +82,11 @@ module.exports = {
 };
 ````
 
+Alternatively, you can also encode your database name in the url (and leave out the `databaseName` property):
+````
+        url: "mongodb://localhost:27017/YOURDATABASE",
+````
+
 ### Creating a new migration script
 To create a new database migration script, just run the ````migrate-mongo create [description]```` command.
 

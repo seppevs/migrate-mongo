@@ -86,19 +86,6 @@ describe("database", () => {
       }
     });
 
-    it("should yield an error when no databaseName is defined in the config file", async () => {
-      delete configObj.mongodb.databaseName;
-      try {
-        await database.connect();
-        expect.fail("Error was not thrown");
-      } catch (err) {
-        expect(err.message).to.equal(
-          "No `databaseName` defined in config file! This is required since migrate-mongo v3. " +
-            "See https://github.com/seppevs/migrate-mongo#initialize-a-new-project"
-        );
-      }
-    });
-
     it("should yield an error when unable to connect", async () => {
       mongodb.MongoClient.connect.returns(
         Promise.reject(new Error("Unable to connect"))
