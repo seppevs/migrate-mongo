@@ -32,7 +32,7 @@ Usage: migrate-mongo [options] [command]
     -V, --version  output the version number
 ````
 
-## Quickstart
+## Basic Usage
 ### Initialize a new project
 Make sure you have [Node.js](https://nodejs.org/en/) 10 (or higher) installed.  
 
@@ -229,7 +229,7 @@ $ migrate-mongo status
 └─────────────────────────────────────────┴────────────┘
 ````
 
-## Extra tips and tricks
+## Advanced Features
 
 ### Using a custom config file
 All actions (except ```init```) accept an optional ````-f```` or ````--file```` option to specify a path to a custom config file.
@@ -359,7 +359,7 @@ Read connection settings from the `migrate-mongo-config.js` file.
 const mongoConnectionSettings = await config.read();
 ```
 
-### `config.set(yourConfigObject) → Promise<JSON>`
+### `config.set(yourConfigObject)`
 
 Tell migrate-mongo NOT to use the `migrate-mongo-config.js` file, but instead use the config object passed as the first argument of this function.
 When using this feature, please do this at the very beginning of your program.
