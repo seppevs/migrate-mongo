@@ -299,6 +299,13 @@ module.exports = {
 };
 ````
 
+### Version
+To know which version of migrate-mongo you're running, just pass the `version` option:
+
+````bash
+$ migrate-mongo version
+````
+
 ## API Usage
 
 ```javascript
