@@ -6,7 +6,7 @@ const proxyquire = require("proxyquire");
 describe("init", () => {
   let init;
   let migrationsDir;
-  let configFile;
+  let config;
   let fs;
 
   function mockMigrationsDir() {
@@ -15,7 +15,7 @@ describe("init", () => {
     };
   }
 
-  function mockConfigFile() {
+  function mockConfig() {
     return {
       shouldNotExist: sinon.stub().returns(Promise.resolve())
     };
@@ -30,11 +30,11 @@ describe("init", () => {
 
   beforeEach(() => {
     migrationsDir = mockMigrationsDir();
-    configFile = mockConfigFile();
+    config = mockConfig();
     fs = mockFs();
     init = proxyquire("../../lib/actions/init", {
       "../env/migrationsDir": migrationsDir,
-      "../env/configFile": configFile,
+      "../env/config": config,
       "fs-extra": fs
     });
   });
@@ -59,11 +59,11 @@ describe("init", () => {
 
   it("should check if the config file already exists", async () => {
     await init();
-    expect(configFile.shouldNotExist.called).to.equal(true);
+    expect(config.shouldNotExist.called).to.equal(true);
   });
 
   it("should not continue and yield an error if the config file already exists", async () => {
-    configFile.shouldNotExist.returns(
+    config.shouldNotExist.returns(
       Promise.resolve(new Error("Config exists"))
     );
     try {

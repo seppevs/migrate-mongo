@@ -6,7 +6,7 @@ const proxyquire = require("proxyquire");
 describe("up", () => {
   let up;
   let status;
-  let configFile;
+  let config;
   let migrationsDir;
   let db;
   let client;
@@ -38,7 +38,7 @@ describe("up", () => {
     );
   }
 
-  function mockConfigFile() {
+  function mockConfig() {
     return {
       shouldExist: sinon.stub().returns(Promise.resolve()),
       read: sinon.stub().returns({
@@ -87,7 +87,7 @@ describe("up", () => {
   function loadUpWithInjectedMocks() {
     return proxyquire("../../lib/actions/up", {
       "./status": status,
-      "../env/configFile": configFile,
+      "../env/config": config,
       "../env/migrationsDir": migrationsDir
     });
   }
@@ -98,7 +98,7 @@ describe("up", () => {
     changelogCollection = mockChangelogCollection();
 
     status = mockStatus();
-    configFile = mockConfigFile();
+    config = mockConfig();
     migrationsDir = mockMigrationsDir();
     db = mockDb();
     client = mockClient();
@@ -175,7 +175,6 @@ describe("up", () => {
     ]);
   });
 
-  // TODO this test first also had a list of migrated files (on error), review !
   it("should stop migrating when an error occurred and yield the error", async () => {
     secondPendingMigration.up.returns(Promise.reject(new Error("Nope")));
     try {

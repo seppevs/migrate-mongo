@@ -6,7 +6,7 @@ const proxyquire = require("proxyquire");
 describe("down", () => {
   let down;
   let status;
-  let configFile;
+  let config;
   let migrationsDir;
   let db;
   let client;
@@ -28,7 +28,7 @@ describe("down", () => {
     );
   }
 
-  function mockConfigFile() {
+  function mockConfig() {
     return {
       shouldExist: sinon.stub().returns(Promise.resolve()),
       read: sinon.stub().returns({ changelogCollectionName: "changelog" })
@@ -69,7 +69,7 @@ describe("down", () => {
   function loadDownWithInjectedMocks() {
     return proxyquire("../../lib/actions/down", {
       "./status": status,
-      "../env/configFile": configFile,
+      "../env/config": config,
       "../env/migrationsDir": migrationsDir
     });
   }
@@ -79,7 +79,7 @@ describe("down", () => {
     changelogCollection = mockChangelogCollection();
 
     status = mockStatus();
-    configFile = mockConfigFile();
+    config = mockConfig();
     migrationsDir = mockMigrationsDir();
     db = mockDb();
     client = mockClient();

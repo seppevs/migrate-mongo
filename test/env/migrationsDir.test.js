@@ -7,7 +7,7 @@ const path = require("path");
 describe("migrationsDir", () => {
   let migrationsDir;
   let fs;
-  let configFile;
+  let config;
 
   function mockFs() {
     return {
@@ -16,7 +16,7 @@ describe("migrationsDir", () => {
     };
   }
 
-  function mockConfigFile() {
+  function mockConfig() {
     return {
       read: sinon.stub().returns({
         migrationsDir: "migrations",
@@ -27,16 +27,16 @@ describe("migrationsDir", () => {
 
   beforeEach(() => {
     fs = mockFs();
-    configFile = mockConfigFile();
+    config = mockConfig();
     migrationsDir = proxyquire("../../lib/env/migrationsDir", {
       "fs-extra": fs,
-      "./configFile": configFile
+      "./config": config
     });
   });
 
   describe("resolve()", () => {
     it("should use the configured relative migrations dir when a config file is available", async () => {
-      configFile.read.returns({
+      config.read.returns({
         migrationsDir: "custom-migrations-dir"
       });
       expect(await migrationsDir.resolve()).to.equal(
@@ -45,7 +45,7 @@ describe("migrationsDir", () => {
     });
 
     it("should use the configured absolute migrations dir when a config file is available", async () => {
-      configFile.read.returns({
+      config.read.returns({
         migrationsDir: "/absolute/path/to/my/custom-migrations-dir"
       });
       expect(await migrationsDir.resolve()).to.equal(
@@ -54,14 +54,14 @@ describe("migrationsDir", () => {
     });
 
     it("should use the default migrations directory when no migrationsDir is specified in the config file", async () => {
-      configFile.read.returns({});
+      config.read.returns({});
       expect(await migrationsDir.resolve()).to.equal(
         path.join(process.cwd(), "migrations")
       );
     });
 
     it("should use the default migrations directory when unable to read the config file", async () => {
-      configFile.read.throws(new Error("Cannot read config file"));
+      config.read.throws(new Error("Cannot read config file"));
       expect(await migrationsDir.resolve()).to.equal(
         path.join(process.cwd(), "migrations")
       );
@@ -118,7 +118,7 @@ describe("migrationsDir", () => {
     });
 
     it("should list only files with configured extension", async () => {
-      configFile.read.returns({
+      config.read.returns({
         migrationFileExtension: ".ts"
       });
       fs.readdir.returns(Promise.resolve(["file1.ts", "file2.ts", "file1.js", "file2.js", ".keep"]));
@@ -155,14 +155,14 @@ describe("migrationsDir", () => {
 
   describe("resolveMigrationFileExtension()", () => {
     it("should provide the value if specified", async () => {
-      configFile.read.returns({
+      config.read.returns({
         migrationFileExtension: ".ts"
       });
       const ext = await migrationsDir.resolveMigrationFileExtension();
       expect(ext).to.equal(".ts");
     });
     it("should error if the extension does not start with dot", async () => {
-      configFile.read.returns({
+      config.read.returns({
         migrationFileExtension: "js"
       });
       try {
@@ -173,14 +173,14 @@ describe("migrationsDir", () => {
       }
     });
     it("should use the default if not specified", async() => {
-      configFile.read.returns({
+      config.read.returns({
         migrationFileExtension: undefined
       });
       const ext = await migrationsDir.resolveMigrationFileExtension();
       expect(ext).to.equal(".js");
     });
     it("should use the default if config file not found", async() => {
-      configFile.read.throws();
+      config.read.throws();
       const ext = await migrationsDir.resolveMigrationFileExtension();
       expect(ext).to.equal(".js");
     });

@@ -7,7 +7,7 @@ const proxyquire = require("proxyquire");
 describe("create", () => {
   let create;
   let migrationsDir;
-  let configFile;
+  let config;
   let fs;
 
   function mockMigrationsDir() {
@@ -18,7 +18,7 @@ describe("create", () => {
     };
   }
 
-  function mockConfigFile() {
+  function mockConfig() {
     return {
       shouldExist: sinon.stub().returns(Promise.resolve()),
     };
@@ -32,11 +32,11 @@ describe("create", () => {
 
   beforeEach(() => {
     migrationsDir = mockMigrationsDir();
-    configFile = mockConfigFile();
+    config = mockConfig();
     fs = mockFs();
     create = proxyquire("../../lib/actions/create", {
       "../env/migrationsDir": migrationsDir,
-      "../env/configFile": configFile,
+      "../env/config": config,
       "fs-extra": fs
     });
   });
@@ -67,9 +67,9 @@ describe("create", () => {
     }
   });
 
-  it("should not be necessary to have an config file present", async () => {
+  it("should not be necessary to have an config present", async () => {
     await create("my_description");
-    expect(configFile.shouldExist.called).to.equal(false);
+    expect(config.shouldExist.called).to.equal(false);
   });
 
   it("should create a new migration file and yield the filename", async () => {

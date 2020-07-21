@@ -347,6 +347,31 @@ Read connection settings from the `migrate-mongo-config.js` file.
 const mongoConnectionSettings = await config.read();
 ```
 
+### `config.set(yourConfigObject) → Promise<JSON>`
+
+Tell migrate-mongo NOT to use the `migrate-mongo-config.js` file, but instead use the config object passed as the first argument of this function.
+When using this feature, please do this at the very beginning of your program.
+
+Example:
+```javascript
+const { config, up } = require('../lib/migrate-mongo');
+
+const myConfig = {
+    mongodb: {
+        url: "mongodb://localhost:27017/mydatabase",
+        options: { useNewUrlParser: true }
+    },
+    migrationsDir: "migrations",
+    changelogCollectionName: "changelog",
+    migrationFileExtension: ".js"
+};
+
+config.set(myConfig);
+
+// then, use the API as you normally would, eg:
+await up();
+```
+
 ### `up(MongoDb, MongoClient) → Promise<Array<fileName>>`
 
 Apply all pending migrations

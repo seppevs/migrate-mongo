@@ -6,7 +6,7 @@ const proxyquire = require("proxyquire");
 describe("status", () => {
   let status;
   let migrationsDir;
-  let configFile;
+  let config;
   let fs;
   let db;
   let changelogCollection;
@@ -26,7 +26,7 @@ describe("status", () => {
     };
   }
 
-  function mockConfigFile() {
+  function mockConfig() {
     return {
       shouldExist: sinon.stub().returns(Promise.resolve()),
       read: sinon.stub().returns({
@@ -72,12 +72,12 @@ describe("status", () => {
     changelogCollection = mockChangelogCollection();
 
     migrationsDir = mockMigrationsDir();
-    configFile = mockConfigFile();
+    config = mockConfig();
     fs = mockFs();
     db = mockDb();
     status = proxyquire("../../lib/actions/status", {
       "../env/migrationsDir": migrationsDir,
-      "../env/configFile": configFile,
+      "../env/config": config,
       "fs-extra": fs
     });
   });
@@ -101,11 +101,11 @@ describe("status", () => {
 
   it("should check that the config file exists", async () => {
     await status(db);
-    expect(configFile.shouldExist.called).to.equal(true);
+    expect(config.shouldExist.called).to.equal(true);
   });
 
   it("should yield an error when config file does not exist", async () => {
-    configFile.shouldExist.returns(
+    config.shouldExist.returns(
       Promise.reject(new Error("config file does not exist"))
     );
     try {

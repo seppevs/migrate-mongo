@@ -4,8 +4,8 @@ const proxyquire = require("proxyquire");
 
 const path = require("path");
 
-describe("configFile", () => {
-  let configFile; // module under test
+describe("config", () => {
+  let config; // module under test
   let fs; // mocked dependencies
 
   function mockFs() {
@@ -16,20 +16,27 @@ describe("configFile", () => {
 
   beforeEach(() => {
     fs = mockFs();
-    configFile = proxyquire("../../lib/env/configFile", { "fs-extra": fs });
+    config = proxyquire("../../lib/env/config", { "fs-extra": fs });
   });
 
   describe("shouldExist()", () => {
-    it("should not yield an error if the config file exists", async () => {
-      fs.stat.returns(Promise.resolve());
-      await configFile.shouldExist();
+
+    it('should not yield an error when the config was set manually', async () => {
+      fs.stat.returns(Promise.reject());
+      config.set({ my: 'config'})
+      await config.shouldExist();
     });
 
-    it("should yield an error if the config file does not exist", async () => {
+    it("should not yield an error if the config exists", async () => {
+      fs.stat.returns(Promise.resolve());
+      await config.shouldExist();
+    });
+
+    it("should yield an error if the config does not exist", async () => {
       const configPath = path.join(process.cwd(), "migrate-mongo-config.js");
       fs.stat.returns(Promise.reject(new Error("It does not exist")));
       try {
-        await configFile.shouldExist();
+        await config.shouldExist();
         expect.fail("Error was not thrown");
       } catch (err) {
         expect(err.message).to.equal(
@@ -40,18 +47,25 @@ describe("configFile", () => {
   });
 
   describe("shouldNotExist()", () => {
-    it("should not yield an error if the config file does not exist", async () => {
+
+    it('should not yield an error when the config was set manually', async () => {
+      fs.stat.returns(Promise.reject());
+      config.set({ my: 'config'})
+      await config.shouldNotExist();
+    });
+
+    it("should not yield an error if the config does not exist", async () => {
       const error = new Error("File does not exist");
       error.code = "ENOENT";
       fs.stat.returns(Promise.reject(error));
-      await configFile.shouldNotExist();
+      await config.shouldNotExist();
     });
 
-    it("should yield an error if the config file exists", async () => {
+    it("should yield an error if the config exists", async () => {
       const configPath = path.join(process.cwd(), "migrate-mongo-config.js");
       fs.stat.returns(Promise.resolve());
       try {
-        await configFile.shouldNotExist();
+        await config.shouldNotExist();
         expect.fail("Error was not thrown");
       } catch (err) {
         expect(err.message).to.equal(
@@ -63,17 +77,25 @@ describe("configFile", () => {
 
   describe("getConfigFilename()", () => {
     it("should return the config file name", () => {
-      expect(configFile.getConfigFilename()).to.equal(
+      expect(config.getConfigFilename()).to.equal(
         "migrate-mongo-config.js"
       );
     });
   });
 
   describe("read()", () => {
+
+    it('should resolve with the custom config content when config content was set manually', async () => {
+      const expected = { my: 'custom-config'};
+      config.set(expected);
+      const actual = await config.read();
+      expect(actual).to.deep.equal(expected);
+    });
+
     it("should attempt to read the config file", async () => {
       const configPath = path.join(process.cwd(), "migrate-mongo-config.js");
       try {
-        await configFile.read();
+        await config.read();
         expect.fail("Error was not thrown");
       } catch (err) {
         expect(err.message).to.match(new RegExp(`Cannot find module '${configPath}'`));
@@ -83,7 +105,7 @@ describe("configFile", () => {
     it("should be possible to read a custom, absolute config file path", async () => {
       global.options = { file: "/some/absoluete/path/to/a-config-file.js" };
       try {
-        await configFile.read();
+        await config.read();
         expect.fail("Error was not thrown");
       } catch (err) {
         expect(err.message).to.match(
@@ -96,7 +118,7 @@ describe("configFile", () => {
       global.options = { file: "./a/relative/path/to/a-config-file.js" };
       const configPath = path.join(process.cwd(), global.options.file);
       try {
-        await configFile.read();
+        await config.read();
         expect.fail("Error was not thrown");
       } catch (err) {
         expect(err.message).to.match(new RegExp(`Cannot find module '${configPath}'`));

@@ -5,7 +5,7 @@ const proxyquire = require("proxyquire");
 describe("database", () => {
   let configObj;
   let database;
-  let configFile;
+  let config;
   let mongodb;
   let client;
 
@@ -29,7 +29,7 @@ describe("database", () => {
     };
   }
 
-  function mockConfigFile() {
+  function mockConfig() {
     return {
       read: sinon.stub().returns(configObj)
     };
@@ -46,11 +46,11 @@ describe("database", () => {
   beforeEach(() => {
     configObj = createConfigObj();
     client = mockClient();
-    configFile = mockConfigFile();
+    config = mockConfig();
     mongodb = mockMongodb();
 
     database = proxyquire("../../lib/env/database", {
-      "./configFile": configFile,
+      "./config": config,
       mongodb
     });
   });
