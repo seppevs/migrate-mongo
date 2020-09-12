@@ -58,7 +58,8 @@ program
 program
   .command("up")
   .description("run all pending database migrations")
-  .option("-f --file <file>", "use a custom config file")
+  .option("-c --custom <custom>", "use a custom config file")
+  .option("-f --file <file>", "use a file")
   .action(options => {
     global.options = options;
     migrateMongo.database
