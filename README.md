@@ -28,6 +28,7 @@ Usage: migrate-mongo [options] [command]
 
   Options:
 
+    -c, --custom   specify a custom migration file (only for up)
     -h, --help     output usage information
     -V, --version  output the version number
 ````
