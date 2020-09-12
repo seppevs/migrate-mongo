@@ -141,7 +141,7 @@ describe("up", () => {
     sinon.assert.callOrder(firstPendingMigration.up, secondPendingMigration.up);
   });
 
-  it("should custom", async () => {
+  it("should be able to run a custom migration", async () => {
     global.options = { custom: "20160608060210-first_custom_migration.js" };
     await up(db);
     expect(firstCustomMigration.up.called).to.equal(true);
