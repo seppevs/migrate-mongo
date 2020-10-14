@@ -7,11 +7,13 @@ describe("down", () => {
   let down;
   let status;
   let config;
+  let lock;
   let migrationsDir;
   let db;
   let client;
   let migration;
   let changelogCollection;
+  let changelogLockCollection;
 
   function mockStatus() {
     return sinon.stub().returns(
@@ -31,7 +33,11 @@ describe("down", () => {
   function mockConfig() {
     return {
       shouldExist: sinon.stub().returns(Promise.resolve()),
-      read: sinon.stub().returns({ changelogCollectionName: "changelog" })
+      read: sinon.stub().returns({
+        changelogCollectionName: "changelog",
+        lockCollectionName: "changelog_lock",
+        lockTtl: 10
+      })
     };
   }
 
@@ -45,6 +51,7 @@ describe("down", () => {
     const mock = {};
     mock.collection = sinon.stub();
     mock.collection.withArgs("changelog").returns(changelogCollection);
+    mock.collection.withArgs("changelog_lock").returns(changelogLockCollection);
     return mock;
   }
 
@@ -66,17 +73,40 @@ describe("down", () => {
     };
   }
 
+  function mockChangelogLockCollection() {
+    const findStub = {
+      toArray: () => {
+        return [];
+      }
+    }
+
+    return {
+      insertOne: sinon.stub().returns(Promise.resolve()),
+      createIndex: sinon.stub().returns(Promise.resolve()),
+      find: sinon.stub().returns(findStub),
+      deleteMany: sinon.stub().returns(Promise.resolve()),
+    }
+  }
+
   function loadDownWithInjectedMocks() {
     return proxyquire("../../lib/actions/down", {
       "./status": status,
       "../env/config": config,
-      "../env/migrationsDir": migrationsDir
+      "../env/migrationsDir": migrationsDir,
+      "../utils/lock": lock,
+    });
+  }
+
+  function loadLockWithInjectedMocks() {
+    return proxyquire("../../lib/utils/lock", {
+      "../env/config": config
     });
   }
 
   beforeEach(() => {
     migration = mockMigration();
     changelogCollection = mockChangelogCollection();
+    changelogLockCollection = mockChangelogLockCollection();
 
     status = mockStatus();
     config = mockConfig();
@@ -84,6 +114,7 @@ describe("down", () => {
     db = mockDb();
     client = mockClient();
 
+    lock = loadLockWithInjectedMocks();
     down = loadDownWithInjectedMocks();
   });
 
@@ -178,5 +209,62 @@ describe("down", () => {
   it("should yield a list of downgraded items", async () => {
     const items = await down(db);
     expect(items).to.deep.equal(["20160609113225-last_migration.js"]);
+  });
+
+  it("should lock if feature is enabled", async() => {
+    await down(db);
+    expect(changelogLockCollection.createIndex.called).to.equal(true);
+    expect(changelogLockCollection.find.called).to.equal(true);
+    expect(changelogLockCollection.insertOne.called).to.equal(true);
+    expect(changelogLockCollection.deleteMany.called).to.equal(true);
+  });
+
+  it("should ignore lock if feature is disabled", async() => {
+    config.read = sinon.stub().returns({
+      changelogCollectionName: "changelog",
+      lockCollectionName: "changelog_lock",
+      lockTtl: 0
+    });
+    const findStub = {
+      toArray: () => {
+        return [{ createdAt: new Date() }];
+      }
+    }
+    changelogLockCollection.find.returns(findStub);
+
+    await down(db);
+    expect(changelogLockCollection.createIndex.called).to.equal(false);
+    expect(changelogLockCollection.find.called).to.equal(false);
+  });
+
+  it("should yield an error when unable to create a lock", async() => {
+    changelogLockCollection.insertOne.returns(Promise.reject(new Error("Kernel panic")));
+
+    try {
+      await down(db);
+      expect.fail("Error was not thrown");
+    } catch (err) {
+      expect(err.message).to.deep.equal(
+        "Could not create a lock: Kernel panic"
+      );
+    }
+  });
+
+  it("should yield an error when changelog is locked", async() => {
+    const findStub = {
+      toArray: () => {
+        return [{ createdAt: new Date() }];
+      }
+    }
+    changelogLockCollection.find.returns(findStub);
+
+    try {
+      await down(db);
+      expect.fail("Error was not thrown");
+    } catch (err) {
+      expect(err.message).to.deep.equal(
+        "Could not migrate down, a lock is in place."
+      );
+    }
   });
 });
