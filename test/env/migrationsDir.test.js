@@ -135,6 +135,22 @@ describe("migrationsDir", () => {
         expect(err.message).to.equal("Could not read");
       }
     });
+
+    it("should be sorted in alphabetical order", async () => {
+      fs.readdir.returns(Promise.resolve([
+        "20201014172343-test.js",
+        "20201014172356-test3.js",
+        "20201014172354-test2.js",
+        "20201014172345-test1.js"
+      ]));
+      const files = await migrationsDir.getFileNames();
+      expect(files).to.deep.equal([
+        "20201014172343-test.js",
+        "20201014172345-test1.js",
+        "20201014172354-test2.js",
+        "20201014172356-test3.js"
+      ]);
+    });
   });
 
   describe("loadMigration()", () => {
