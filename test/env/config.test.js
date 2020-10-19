@@ -22,7 +22,7 @@ describe("config", () => {
   describe("shouldExist()", () => {
 
     it('should not yield an error when the config was set manually', async () => {
-      fs.stat.returns(Promise.reject());
+      fs.stat.rejects();
       config.set({ my: 'config'})
       await config.shouldExist();
     });
@@ -49,7 +49,7 @@ describe("config", () => {
   describe("shouldNotExist()", () => {
 
     it('should not yield an error when the config was set manually', async () => {
-      fs.stat.returns(Promise.reject());
+      fs.stat.rejects();
       config.set({ my: 'config'})
       await config.shouldNotExist();
     });
