@@ -13,6 +13,7 @@ describe("up", () => {
 
   let firstPendingMigration;
   let secondPendingMigration;
+  let firstCustomMigration;
   let changelogCollection;
 
   function mockStatus() {
@@ -25,6 +26,10 @@ describe("up", () => {
         {
           fileName: "20160606093207-second_applied_migration.js",
           appliedAt: new Date()
+        },
+        {
+          fileName: "20160608060210-first_custom_migration.js",
+          appliedAt: "CUSTOM"
         },
         {
           fileName: "20160607173840-first_pending_migration.js",
@@ -56,6 +61,9 @@ describe("up", () => {
     mock.loadMigration
       .withArgs("20160608060209-second_pending_migration.js")
       .returns(Promise.resolve(secondPendingMigration));
+      mock.loadMigration
+      .withArgs("20160608060210-first_custom_migration.js")
+      .returns(Promise.resolve(firstCustomMigration));
     return mock;
   }
 
@@ -95,6 +103,7 @@ describe("up", () => {
   beforeEach(() => {
     firstPendingMigration = mockMigration();
     secondPendingMigration = mockMigration();
+    firstCustomMigration = mockMigration();
     changelogCollection = mockChangelogCollection();
 
     status = mockStatus();
@@ -104,6 +113,8 @@ describe("up", () => {
     client = mockClient();
 
     up = loadUpWithInjectedMocks();
+
+    global.options={};
   });
 
   it("should fetch the status", async () => {
@@ -128,6 +139,13 @@ describe("up", () => {
     expect(firstPendingMigration.up.called).to.equal(true);
     expect(secondPendingMigration.up.called).to.equal(true);
     sinon.assert.callOrder(firstPendingMigration.up, secondPendingMigration.up);
+  });
+
+  it("should be able to run a custom migration", async () => {
+    global.options = { custom: "20160608060210-first_custom_migration.js" };
+    await up(db);
+    expect(firstCustomMigration.up.called).to.equal(true);
+    expect(changelogCollection.insertOne.called).to.equal(false);
   });
 
   it("should be able to upgrade callback based migration that has both the `db` and `client` args", async () => {

@@ -58,6 +58,7 @@ program
 program
   .command("up")
   .description("run all pending database migrations")
+  .option("-c --custom <custom>", "run a custom migration file")
   .option("-f --file <file>", "use a custom config file")
   .action(options => {
     global.options = options;
