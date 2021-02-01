@@ -13,7 +13,7 @@ function printMigrated(migrated = []) {
 }
 
 function handleError(err) {
-  console.error(`ERROR: ${err.message}`);
+  console.error(`ERROR: ${err.message}`, err.stack);
   process.exit(1);
 }
 
