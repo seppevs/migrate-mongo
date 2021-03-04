@@ -18,9 +18,13 @@ function handleError(err) {
 }
 
 function printStatusTable(statusItems) {
-  const table = new Table({ head: ["Filename", "Applied At"] });
-  statusItems.forEach(item => table.push(_.values(item)));
-  console.log(table.toString());
+  return migrateMongo.config.read().then(config => {
+    const useFileHash = config.useFileHash === true;
+    const table = new Table({ head: useFileHash ? ["Filename", "Hash", "Applied At"] : ["Filename", "Applied At"]});
+    statusItems.forEach(item => table.push(_.values(item)));
+    console.log(table.toString());
+  })
+  
 }
 
 program.version(pkgjson.version);
@@ -103,8 +107,8 @@ program
     migrateMongo.database
       .connect()
       .then(({db, client}) => migrateMongo.status(db, client))
-      .then(statusItems => {
-        printStatusTable(statusItems);
+      .then(statusItems => printStatusTable(statusItems))
+      .then(() => {
         process.exit(0);
       })
       .catch(err => {

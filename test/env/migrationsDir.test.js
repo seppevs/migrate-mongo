@@ -12,7 +12,8 @@ describe("migrationsDir", () => {
   function mockFs() {
     return {
       stat: sinon.stub(),
-      readdir: sinon.stub()
+      readdir: sinon.stub(),
+      readFile: sinon.stub()
     };
   }
 
@@ -215,4 +216,12 @@ describe("migrationsDir", () => {
       expect(result).to.equal(false);
     });
   });
+
+  describe("loadFileHash()", () => {
+    it("should return a hash based on the file contents", async () => {
+      fs.readFile.returns(Promise.resolve("some string to hash"));
+      const result = await migrationsDir.loadFileHash('somefile.js');
+      expect(result).to.equal("ea83a45637a9af470a994d2c9722273ef07d47aec0660a1d10afe6e9586801ac");
+    })
+  })
 });
