@@ -79,6 +79,10 @@ module.exports = {
 
   // The file extension to create migrations and search for in migration dir 
   migrationFileExtension: ".js"
+
+  // Enable the algorithm to create a checksum of the file contents and use that in the comparison to determin
+  // if the file should be run.  Requires that scripts are coded to be run multiple times.
+  useFileHash: false
 };
 ````
 
@@ -298,6 +302,26 @@ module.exports = {
   },
 };
 ````
+
+### Using a file hash algorithm to enable re-running updated files
+There are use cases where it may make sense to not treat scripts as immutable items.  An example would be a simple collection with lookup values where you just can wipe and recreate the entire collection all at the same time.
+
+```javascript
+useFileHash: true
+```
+
+Set this config value to will enable tracking a hash of the file contents and will run a file with the same name again as long as the file contents have changes.  Setting this flag changes the behavior for every script and if this is enabled each script needs to be written in a manner where it can be re-run safefly.  A script of the same name and hash will not be executed again, only if the hash changes.
+
+Now the status will also include the file hash in the output
+
+```bash
+┌────────────────────────────────────────┬──────────────────────────────────────────────────────────────────┬──────────────────────────┐
+│ Filename                               │ Hash                                                             │ Applied At               │
+├────────────────────────────────────────┼──────────────────────────────────────────────────────────────────┼──────────────────────────┤
+│ 20160608155948-blacklist_the_beatles.js│ 7625a0220d552dbeb42e26fdab61d8c7ef54ac3a052254588c267e42e9fa876d │ 2021-03-04T15:40:22.732Z │
+└────────────────────────────────────────┴──────────────────────────────────────────────────────────────────┴──────────────────────────┘
+
+```
 
 ### Version
 To know which version of migrate-mongo you're running, just pass the `version` option:
