@@ -20,7 +20,7 @@ function handleError(err) {
 function printStatusTable(statusItems) {
   return migrateMongo.config.read().then(config => {
     const useFileHash = config.useFileHash === true;
-    const table = new Table({ head: useFileHash ? ["Filename", "Hash", "Applied At"] : ["Filename", "Applied At"]});
+    const table = new Table({ head: useFileHash ? ["Filename", "Hash", "Applied At", "Migration block"] : ["Filename", "Applied At", "Migration block"]});
     statusItems.forEach(item => table.push(_.values(item)));
     console.log(table.toString());
   })
@@ -82,6 +82,7 @@ program
   .command("down")
   .description("undo the last applied database migration")
   .option("-f --file <file>", "use a custom config file")
+  .option("-b --block", "rollback all scripts from the same migration block")
   .action(options => {
     global.options = options;
     migrateMongo.database

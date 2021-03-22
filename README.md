@@ -233,6 +233,12 @@ $ migrate-mongo status
 └─────────────────────────────────────────┴────────────┘
 ````
 
+#### Migrate down all scripts from a same migration
+With the flag -b (--block), migrate-mongo will revert all scripts of the last migration.
+````bash
+$ migrate-mongo down -b
+````
+
 ## Advanced Features
 
 ### Using a custom config file
