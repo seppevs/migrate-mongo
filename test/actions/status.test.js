@@ -199,15 +199,18 @@ describe("status", () => {
     expect(statusItems).to.deep.equal([
       {
         appliedAt: "2016-06-03T20:10:12.123Z",
-        fileName: "20160509113224-first_migration.js"
+        fileName: "20160509113224-first_migration.js",
+        migrationBlock: undefined
       },
       {
         appliedAt: "2016-06-09T20:10:12.123Z",
-        fileName: "20160512091701-second_migration.js"
+        fileName: "20160512091701-second_migration.js",
+        migrationBlock: undefined
       },
       {
         appliedAt: "PENDING",
-        fileName: "20160513155321-third_migration.js"
+        fileName: "20160513155321-third_migration.js",
+        migrationBlock: undefined
       }
     ]);
   });
@@ -220,16 +223,19 @@ describe("status", () => {
         appliedAt: "PENDING",
         fileName: "20160509113224-first_migration.js",
         fileHash: "0f295f21f63c66dc78d8dc091ce3c8bab8c56d8b74fb35a0c99f6d9953e37d1a",
+        migrationBlock: undefined
       },
       {
         appliedAt: "PENDING",
         fileName: "20160512091701-second_migration.js",
         fileHash: "18b4d9c95a8678ae3a6dd3ae5b8961737a6c3dd65e3e655a5f5718d97a0bff70",
+        migrationBlock: undefined
       },
       {
         appliedAt: "PENDING",
         fileName: "20160513155321-third_migration.js",
         fileHash: "1f9eb3b5eb70b2fb5b83fa0c660d859082f0bb615e835d29943d26fb0d352022",
+        migrationBlock: undefined
       }
     ]);
   });
@@ -243,16 +249,19 @@ describe("status", () => {
         appliedAt: "2016-06-03T20:10:12.123Z",
         fileName: "20160509113224-first_migration.js",
         fileHash: "0f295f21f63c66dc78d8dc091ce3c8bab8c56d8b74fb35a0c99f6d9953e37d1a",
+        migrationBlock: undefined
       },
       {
         appliedAt: "2016-06-09T20:10:12.123Z",
         fileName: "20160512091701-second_migration.js",
         fileHash: "18b4d9c95a8678ae3a6dd3ae5b8961737a6c3dd65e3e655a5f5718d97a0bff70",
+        migrationBlock: undefined
       },
       {
         appliedAt: "PENDING",
         fileName: "20160513155321-third_migration.js",
         fileHash: "1f9eb3b5eb70b2fb5b83fa0c660d859082f0bb615e835d29943d26fb0d352022",
+        migrationBlock: undefined
       }
     ]);
   });
@@ -279,16 +288,19 @@ describe("status", () => {
         appliedAt: "2016-06-03T20:10:12.123Z",
         fileName: "20160509113224-first_migration.js",
         fileHash: "0f295f21f63c66dc78d8dc091ce3c8bab8c56d8b74fb35a0c99f6d9953e37d1a",
+        migrationBlock: undefined
       },
       {
         appliedAt: "PENDING",
         fileName: "20160512091701-second_migration.js",
         fileHash: "18b4d9c95a8678ae3a6dd3ae5b8961737a6c3dd65e3e655a5f5718d97a0bff71", // this hash is different
+        migrationBlock: undefined
       },
       {
         appliedAt: "PENDING",
         fileName: "20160513155321-third_migration.js",
         fileHash: "1f9eb3b5eb70b2fb5b83fa0c660d859082f0bb615e835d29943d26fb0d352022",
+        migrationBlock: undefined
       }
     ]);
   });

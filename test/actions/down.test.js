@@ -18,11 +18,17 @@ describe("down", () => {
       Promise.resolve([
         {
           fileName: "20160609113224-first_migration.js",
-          appliedAt: new Date()
+          appliedAt: new Date(),
+        },
+        {
+          fileName: "20160609113224-second_migration.js",
+          appliedAt: new Date(),
+          migrationBlock: 1
         },
         {
           fileName: "20160609113225-last_migration.js",
-          appliedAt: new Date()
+          appliedAt: new Date(),
+          migrationBlock: 1
         }
       ])
     );
@@ -178,5 +184,11 @@ describe("down", () => {
   it("should yield a list of downgraded items", async () => {
     const items = await down(db);
     expect(items).to.deep.equal(["20160609113225-last_migration.js"]);
+  });
+
+  it("should rollback last migrations scripts of a same migration block", async () => {
+    global.options = { block: true };
+    const items = await down(db);
+    expect(items).to.deep.equal(["20160609113225-last_migration.js", "20160609113224-second_migration.js"]);
   });
 });
