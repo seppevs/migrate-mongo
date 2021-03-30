@@ -78,11 +78,14 @@ module.exports = {
   changelogCollectionName: "changelog",
 
   // The file extension to create migrations and search for in migration dir 
-  migrationFileExtension: ".js"
+  migrationFileExtension: ".js",
 
   // Enable the algorithm to create a checksum of the file contents and use that in the comparison to determin
   // if the file should be run.  Requires that scripts are coded to be run multiple times.
-  useFileHash: false
+  useFileHash: false,
+
+  // Enable the algorithm to save a copy of the file contents and use that content for down migrations
+  saveFileContents: false
 };
 ````
 
@@ -321,6 +324,16 @@ Now the status will also include the file hash in the output
 │ 20160608155948-blacklist_the_beatles.js│ 7625a0220d552dbeb42e26fdab61d8c7ef54ac3a052254588c267e42e9fa876d │ 2021-03-04T15:40:22.732Z │
 └────────────────────────────────────────┴──────────────────────────────────────────────────────────────────┴──────────────────────────┘
 
+```
+
+### Save the contents of the migration script to the database
+If we are rolling back our code, the file with the migration may not be available. In that case we 
+would not be able to undo the database changes by running the `down()` method. If we
+enable this option, the contents of the migration file will be saved into the database
+and will be used to run the down migrations
+
+```javascript
+saveFileContents: true
 ```
 
 ### Version

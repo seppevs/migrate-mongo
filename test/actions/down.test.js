@@ -37,7 +37,8 @@ describe("down", () => {
 
   function mockMigrationsDir() {
     return {
-      loadMigration: sinon.stub().returns(Promise.resolve(migration))
+      loadMigration: sinon.stub().returns(Promise.resolve(migration)),
+      writeFileContents: sinon.stub().returns(Promise.resolve(true))
     };
   }
 
@@ -62,7 +63,8 @@ describe("down", () => {
 
   function mockChangelogCollection() {
     return {
-      deleteOne: sinon.stub().returns(Promise.resolve())
+      deleteOne: sinon.stub().returns(Promise.resolve()),
+      findOne: sinon.stub().returns(Promise.resolve(migration))
     };
   }
 
@@ -176,6 +178,15 @@ describe("down", () => {
   });
 
   it("should yield a list of downgraded items", async () => {
+    const items = await down(db);
+    expect(items).to.deep.equal(["20160609113225-last_migration.js"]);
+  });
+
+  it("should yield a list of downgraded items when used saved file contents", async () => {
+    config.read.returns({
+      changelogCollectionName: "changelog",
+      saveFileContents: true
+    })
     const items = await down(db);
     expect(items).to.deep.equal(["20160609113225-last_migration.js"]);
   });

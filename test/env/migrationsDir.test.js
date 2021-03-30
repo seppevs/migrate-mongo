@@ -13,7 +13,8 @@ describe("migrationsDir", () => {
     return {
       stat: sinon.stub(),
       readdir: sinon.stub(),
-      readFile: sinon.stub()
+      readFile: sinon.stub(),
+      writeFile: sinon.stub()
     };
   }
 
@@ -222,6 +223,22 @@ describe("migrationsDir", () => {
       fs.readFile.returns(Promise.resolve("some string to hash"));
       const result = await migrationsDir.loadFileHash('somefile.js');
       expect(result).to.equal("ea83a45637a9af470a994d2c9722273ef07d47aec0660a1d10afe6e9586801ac");
+    })
+  })
+
+  describe("loadFileContents()", () => {
+    it("should return the content of a file contents", async () => {
+      fs.readFile.returns(Promise.resolve('the content of some file'));
+      const result = await migrationsDir.loadFileContents('somefile.js');
+      expect(result).to.equal('the content of some file');
+    })
+  })
+
+  describe("writeFileContents()", () => {
+    it("should write a string to a file", async () => {
+      fs.writeFile.returns(Promise.resolve(true));
+      const result = await migrationsDir.writeFileContents('somefile.js', 'some content');
+      expect(result).to.equal(true);
     })
   })
 });

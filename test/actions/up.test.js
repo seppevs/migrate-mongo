@@ -167,6 +167,57 @@ describe("up", () => {
     clock.restore();
   });
 
+  it("should populate the changelog with hash and file contents info", async () => {
+    const clock = sinon.useFakeTimers(
+      new Date("2016-06-09T08:07:00.077Z").getTime()
+    );
+
+    config.read.returns({
+      changelogCollectionName: "changelog",
+      useFileHash: true,
+      saveFileContents: true
+    })
+
+    status.returns(
+      Promise.resolve([
+        {
+          fileName: "20160605123224-first_applied_migration.js",
+          fileContents: "contents of first applied migration",
+          fileHash: "0f295f21f63c66dc78d8dc091ce3c8bab8c56d8b74fb35a0c99f6d9953e37d1a",
+          appliedAt: new Date()
+        },
+        {
+          fileName: "20160606093207-second_applied_migration.js",
+          fileContents: "contents of second applied migration",
+          fileHash: "18b4d9c95a8678ae3a6dd3ae5b8961737a6c3dd65e3e655a5f5718d97a0bff70",
+          appliedAt: new Date()
+        },
+        {
+          fileName: "20160607173840-first_pending_migration.js",
+          fileContents: "contents of first pending migration",
+          fileHash: "1f9eb3b5eb70b2fb5b83fa0c660d859082f0bb615e835d29943d26fb0d352022",
+          appliedAt: "PENDING"
+        },
+        {
+          fileName: "20160608060209-second_pending_migration.js",
+          fileContents: "contents of second pending migration",
+          fileHash: "18b4d9c95a8678ae3a6dd3ae5b8961737a6c3dd65e3e655a5f5718d97a0bff71",
+          appliedAt: "PENDING"
+        }
+      ])
+    );
+
+    await up(db);
+
+    expect(changelogCollection.insertOne.getCall(0).args[0]).to.deep.equal({
+      appliedAt: new Date("2016-06-09T08:07:00.077Z"),
+      fileName: "20160607173840-first_pending_migration.js",
+      fileContents: "contents of first pending migration",
+      fileHash: "1f9eb3b5eb70b2fb5b83fa0c660d859082f0bb615e835d29943d26fb0d352022"
+    });
+    clock.restore();
+  });
+
   it("should yield a list of upgraded migration file names", async () => {
     const upgradedFileNames = await up(db);
     expect(upgradedFileNames).to.deep.equal([

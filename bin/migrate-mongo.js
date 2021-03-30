@@ -21,7 +21,11 @@ function printStatusTable(statusItems) {
   return migrateMongo.config.read().then(config => {
     const useFileHash = config.useFileHash === true;
     const table = new Table({ head: useFileHash ? ["Filename", "Hash", "Applied At"] : ["Filename", "Applied At"]});
-    statusItems.forEach(item => table.push(_.values(item)));
+    statusItems.forEach(item => {
+      const migration = item;
+      delete migration.fileContents;
+      table.push(_.values(migration))
+    });
     console.log(table.toString());
   })
   
@@ -106,14 +110,18 @@ program
     global.options = options;
     migrateMongo.database
       .connect()
-      .then(({db, client}) => migrateMongo.status(db, client))
-      .then(statusItems => printStatusTable(statusItems))
-      .then(() => {
-        process.exit(0);
+      .then(({db}) => {
+        migrateMongo.config.read().then((config) => {
+          migrateMongo.status(db, config.saveFileContents)
+            .then(statusItems => printStatusTable(statusItems))
+            .then(() => {
+              process.exit(0);
+            })
+            .catch(err => {
+              handleError(err);
+            });
+        })
       })
-      .catch(err => {
-        handleError(err);
-      });
   });
 
 program.parse(process.argv);
