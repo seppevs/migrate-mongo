@@ -32,7 +32,7 @@
     "fs-extra": "^9.1.0",
     "lodash": "^4.17.21",
     "mongodb": "^3.6.4",
-    "p-each-series": "^2.2.0"
+    "p-each-series": "^3.0.0"
   },
   "devDependencies": {
     "chai": "^4.3.3",
