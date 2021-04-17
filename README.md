@@ -57,6 +57,20 @@ Edit the migrate-mongo-config.js file. An object or promise can be returned. Mak
 // In this file you can configure migrate-mongo
 
 module.exports = {
+  // configure ssh tunnel, see https://github.com/agebrock/tunnel-ssh#readme
+  sshTunnel: {
+    // username:'root',
+    // password:'secret',
+    // host:sshServer,
+    // port:22,
+    // dstHost:destinationServer,
+    // dstPort:27017,
+    // privateKey:require(fs).readFileSync('/path/to/key'),
+    // passphrase:'secret',
+    // localHost:'127.0.0.1',
+    // localPort: 27000
+  },
+
   mongodb: {
     // TODO Change (or review) the url to your MongoDB:
     url: "mongodb://localhost:27017",
@@ -65,7 +79,8 @@ module.exports = {
     databaseName: "YOURDATABASENAME",
 
     options: {
-      useNewUrlParser: true // removes a deprecation warning when connecting
+      useNewUrlParser: true, // removes a deprecation warning when connecting
+      useUnifiedTopology: true, // removes a deprecating warning when connecting
       //   connectTimeoutMS: 3600000, // increase connection timeout to 1 hour
       //   socketTimeoutMS: 3600000, // increase socket timeout to 1 hour
     }
@@ -78,7 +93,7 @@ module.exports = {
   changelogCollectionName: "changelog",
 
   // The file extension to create migrations and search for in migration dir 
-  migrationFileExtension: ".js"
+  migrationFileExtension: ".js",
 
   // Enable the algorithm to create a checksum of the file contents and use that in the comparison to determin
   // if the file should be run.  Requires that scripts are coded to be run multiple times.
@@ -322,6 +337,9 @@ Now the status will also include the file hash in the output
 └────────────────────────────────────────┴──────────────────────────────────────────────────────────────────┴──────────────────────────┘
 
 ```
+
+### Connecting to your database via SSH tunnel
+If your database resides in a secured VPN or is privately accessible through an SSH tunnel, you can add configurations for your ssh tunnel to the `sshTunnel` option in the config file. If this option is defined, your migration scripts will automatically be run via the SSH tunnel. This feature uses the [tunnel-ssh](https://github.com/agebrock/tunnel-ssh#readme) package to wrap database connections, and borrows the same configuration options, therefore the docs for the repo are a good place to look for further clarifications for this functionality.
 
 ### Version
 To know which version of migrate-mongo you're running, just pass the `version` option:

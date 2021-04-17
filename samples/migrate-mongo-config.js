@@ -1,6 +1,20 @@
 // In this file you can configure migrate-mongo
 
 const config = {
+  // configure ssh tunnel, see https://github.com/agebrock/tunnel-ssh#readme
+  sshTunnel: {
+    // username:'root',
+    // password:'secret',
+    // host:sshServer,
+    // port:22,
+    // dstHost:destinationServer,
+    // dstPort:27017,
+    // privateKey:require(fs).readFileSync('/path/to/key'),
+    // passphrase:'secret',
+    // localHost:'127.0.0.1',
+    // localPort: 27000
+  },
+
   mongodb: {
     // TODO Change (or review) the url to your MongoDB:
     url: "mongodb://localhost:27017",
