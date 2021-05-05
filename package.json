@@ -21,7 +21,7 @@
     "url": "https://github.com/theogravity/migrate-mongo-alt.git"
   },
   "engines": {
-    "node": ">=12"
+    "node": ">=16"
   },
   "preferGlobal": true,
   "dependencies": {
@@ -30,7 +30,7 @@
     "date-fns": "^2.28.0",
     "fs-extra": "^10.0.1",
     "lodash": "^4.17.21",
-    "mongodb": "^4.3.0",
+    "mongodb": "^6.0.0",
     "p-each-series": "^2.2.0"
   },
   "peerDependencies": {
@@ -55,7 +55,7 @@
       "prettier"
     ],
     "parserOptions": {
-      "ecmaVersion": 2018
+      "ecmaVersion": 2020
     }
   }
 }
