@@ -7,6 +7,7 @@ const path = require("path");
 describe("config", () => {
   let config; // module under test
   let fs; // mocked dependencies
+  let moduleLoader;
 
   function mockFs() {
     return {
@@ -14,9 +15,19 @@ describe("config", () => {
     };
   }
 
+  function mockModuleLoader() {
+    return {
+      import: sinon.stub(),
+    };
+  }
+
   beforeEach(() => {
     fs = mockFs();
-    config = proxyquire("../../lib/env/config", { "fs-extra": fs });
+    moduleLoader = mockModuleLoader();
+    config = proxyquire("../../lib/env/config", {
+      "fs-extra": fs,
+      "../utils/module-loader": moduleLoader
+    });
   });
 
   describe("shouldExist()", () => {
@@ -98,19 +109,17 @@ describe("config", () => {
         await config.read();
         expect.fail("Error was not thrown");
       } catch (err) {
-        expect(err.message).to.match(new RegExp(`Cannot find module '${configPath}'`));
+        expect(err.message).to.have.string(`Cannot find module '${configPath}'`);
       }
     });
 
     it("should be possible to read a custom, absolute config file path", async () => {
-      global.options = { file: "/some/absoluete/path/to/a-config-file.js" };
+      global.options = { file: "/some/absolute/path/to/a-config-file.js" };
       try {
         await config.read();
         expect.fail("Error was not thrown");
       } catch (err) {
-        expect(err.message).to.match(
-          new RegExp(`Cannot find module '${global.options.file}'`)
-        );
+        expect(err.message).to.have.string(`Cannot find module '${global.options.file}'`);
       }
     });
 
@@ -121,8 +130,17 @@ describe("config", () => {
         await config.read();
         expect.fail("Error was not thrown");
       } catch (err) {
-        expect(err.message).to.match(new RegExp(`Cannot find module '${configPath}'`));
+        expect(err.message).to.have.string(`Cannot find module '${configPath}'`);
       }
+    });
+
+    it("should fall back to using 'import' if Node requires the use of ESM", async () => {
+      const error = new Error('ESM required');
+      error.code = 'ERR_REQUIRE_ESM';
+      moduleLoader.require = sinon.stub().throws(error);
+      moduleLoader.import.returns({});
+      await config.read();
+      expect(moduleLoader.import.called).to.equal(true);
     });
   });
 });
