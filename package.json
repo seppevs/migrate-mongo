@@ -31,7 +31,7 @@
     "fn-args": "^5.0.0",
     "fs-extra": "^9.1.0",
     "lodash": "^4.17.21",
-    "mongodb": "^3.6.4",
+    "mongodb": "^4.0.0",
     "p-each-series": "^2.2.0"
   },
   "devDependencies": {
