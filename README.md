@@ -1,29 +1,23 @@
-<p align="center">
-    <img src="/migrate-mongo-logo.png" alt="migrate-mongo database migration tool for Node.js"/>
+# Migrate Firestore Mongo
 
-[![Build Status](https://img.shields.io/travis/seppevs/migrate-mongo.svg?style=flat)](https://travis-ci.org/seppevs/migrate-mongo) [![Coverage Status](https://coveralls.io/repos/github/seppevs/migrate-mongo/badge.svg?branch=master)](https://coveralls.io/r/seppevs/migrate-mongo) [![NPM](https://img.shields.io/npm/v/migrate-mongo.svg?style=flat)](https://www.npmjs.org/package/migrate-mongo) [![Downloads](https://img.shields.io/npm/dm/migrate-mongo.svg?style=flat)](https://www.npmjs.org/package/migrate-mongo) [![Dependencies](https://david-dm.org/seppevs/migrate-mongo.svg)](https://david-dm.org/seppevs/migrate-mongo) [![Known Vulnerabilities](https://snyk.io/test/github/seppevs/migrate-mongo/badge.svg)](https://snyk.io/test/github/seppevs/migrate-mongo)
-
-migrate-mongo is a database migration tool for MongoDB running in Node.js 
-
-</p>
+migrate-firestore-mongo is a database migration tool for MongoDB running in Node.js 
     
 ## Installation
 ````bash
-$ npm install -g migrate-mongo
+$ npm install -g migrate-firestore-mongo
 ````
 
 ## CLI Usage
 ````
-$ migrate-mongo
-Usage: migrate-mongo [options] [command]
+$ migrate-firestore-mongo
+Usage: migrate-firestore-mongo [options] [command]
 
 
   Commands:
 
     init                  initialize a new migration project
     create [description]  create a new database migration with the provided description
-    up [options]          run all unapplied database migrations
-    down [options]        undo the last applied database migration
+    run [options]          run all unapplied database migrations    
     status [options]      print the changelog of the database
 
   Options:
@@ -42,21 +36,26 @@ $ mkdir albums-migrations
 $ cd albums-migrations
 ````
 
-Initialize a new migrate-mongo project
+Initialize a new migrate-firestore-mongo project
 ````bash
-$ migrate-mongo init
-Initialization successful. Please edit the generated migrate-mongo-config.js file
+$ migrate-firestore-mongo init
+Initialization successful. Please edit the generated migrate-firestore-mongo-config.js file
 ````
 
 The above command did two things: 
-1. create a sample 'migrate-mongo-config.js' file and 
+1. create a sample 'migrate-firestore-mongo-config.js' file and 
 2. create a 'migrations' directory
 
-Edit the migrate-mongo-config.js file. An object or promise can be returned. Make sure you change the mongodb url: 
+Edit the migrate-firestore-mongo-config.js file. An object or promise can be returned. Make sure you change the mongodb url: 
 ````javascript
-// In this file you can configure migrate-mongo
+// In this file you can configure migrate-firestore-mongo
 
 module.exports = {
+  firestore: {
+    applicationCredentials: 'YOURFIREBASEAPPLICATIONCREDENTIALS',
+    serviceAccount: 'YOURFIREBASESERVICEACCOUNT',
+    privateKey: 'YOURFIREBASEPRIVATEKEY'
+  },
   mongodb: {
     // TODO Change (or review) the url to your MongoDB:
     url: "mongodb://localhost:27017",
@@ -75,7 +74,7 @@ module.exports = {
   migrationsDir: "migrations",
 
   // The mongodb collection where the applied changes are stored. Only edit this when really necessary.
-  changelogCollectionName: "changelog",
+  importsCollectionName: "changelog",
 
   // The file extension to create migrations and search for in migration dir 
   migrationFileExtension: ".js"
@@ -92,11 +91,11 @@ Alternatively, you can also encode your database name in the url (and leave out 
 ````
 
 ### Creating a new migration script
-To create a new database migration script, just run the ````migrate-mongo create [description]```` command.
+To create a new database migration script, just run the ````migrate-firestore-mongo create [description]```` command.
 
 For example:
 ````bash
-$ migrate-mongo create blacklist_the_beatles
+$ migrate-firestore-mongo create blacklist_the_beatles
 Created: migrations/20160608155948-blacklist_the_beatles.js
 ````
 
@@ -105,7 +104,7 @@ A new migration file is created in the 'migrations' directory:
 module.exports = {
   up(db, client) {
     // TODO write your migration here. Return a Promise (and/or use async & await).
-    // See https://github.com/seppevs/migrate-mongo/#creating-a-new-migration-script
+    // See https://github.com/seppevs/migrate-firestore-mongo/#creating-a-new-migration-script
     // Example:
     // return db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: true}});
   },
@@ -118,11 +117,11 @@ module.exports = {
 };
 ````
 
-Edit this content so it actually performs changes to your database. Don't forget to write the down part as well.
+Edit this content so it actually performs changes to your database.
 The ````db```` object contains [the official MongoDB db object](https://www.npmjs.com/package/mongodb)
 The ````client```` object is a [MongoClient](https://mongodb.github.io/node-mongodb-native/3.3/api/MongoClient.html) instance (which you can omit if you don't use it).
 
-There are 3 options to implement the `up` and `down` functions of your migration: 
+There are 3 options to implement the `up` function of your migration: 
 1. Return a Promises
 2. Use async-await 
 3. Call a callback (DEPRECATED!)
@@ -186,7 +185,7 @@ create a file **`sample-migration.js`** in the migrations directory.
 At any time, you can check which migrations are applied (or not)
 
 ````bash
-$ migrate-mongo status
+$ migrate-firestore-mongo status
 ┌─────────────────────────────────────────┬────────────┐
 │ Filename                                │ Applied At │
 ├─────────────────────────────────────────┼────────────┤
@@ -199,7 +198,7 @@ $ migrate-mongo status
 ### Migrate up
 This command will apply all pending migrations
 ````bash
-$ migrate-mongo up
+$ migrate-firestore-mongo up
 MIGRATED UP: 20160608155948-blacklist_the_beatles.js
 ````
 
@@ -207,7 +206,7 @@ If an an error occurred, it will stop and won't continue with the rest of the pe
 
 If we check the status again, we can see the last migration was successfully applied:
 ````bash
-$ migrate-mongo status
+$ migrate-firestore-mongo status
 ┌─────────────────────────────────────────┬──────────────────────────┐
 │ Filename                                │ Applied At               │
 ├─────────────────────────────────────────┼──────────────────────────┤
@@ -215,34 +214,16 @@ $ migrate-mongo status
 └─────────────────────────────────────────┴──────────────────────────┘
 ````
 
-### Migrate down
-With this command, migrate-mongo will revert (only) the last applied migration
-
-````bash
-$ migrate-mongo down
-MIGRATED DOWN: 20160608155948-blacklist_the_beatles.js
-````
-
-If we check the status again, we see that the reverted migration is pending again:
-````bash
-$ migrate-mongo status
-┌─────────────────────────────────────────┬────────────┐
-│ Filename                                │ Applied At │
-├─────────────────────────────────────────┼────────────┤
-│ 20160608155948-blacklist_the_beatles.js │ PENDING    │
-└─────────────────────────────────────────┴────────────┘
-````
-
 ## Advanced Features
 
 ### Using a custom config file
 All actions (except ```init```) accept an optional ````-f```` or ````--file```` option to specify a path to a custom config file.
-By default, migrate-mongo will look for a ````migrate-mongo-config.js```` config file in of the current directory.
+By default, migrate-firestore-mongo will look for a ````migrate-firestore-mongo-config.js```` config file in of the current directory.
 
 #### Example:
 
 ````bash
-$ migrate-mongo status -f '~/configs/albums-migrations.js'
+$ migrate-firestore-mongo status -f '~/configs/albums-migrations.js'
 ┌─────────────────────────────────────────┬────────────┐
 │ Filename                                │ Applied At │
 ├─────────────────────────────────────────┼────────────┤
@@ -268,9 +249,9 @@ You can make use of the [MongoDB Transaction API](https://docs.mongodb.com/manua
 
 Note: this requires both:
 - MongoDB 4.0 or higher 
-- migrate-mongo 7.0.0 or higher
+- migrate-firestore-mongo 7.0.0 or higher
 
-migrate-mongo will call your migration `up` and `down` function with a second argument: `client`.
+migrate-firestore-mongo will call your migration `up` function with a second argument: `client`.
 This `client` argument is an [MongoClient](https://mongodb.github.io/node-mongodb-native/3.3/api/MongoClient.html) instance, it gives you access to the `startSession` function.
 
 Example:
@@ -324,10 +305,10 @@ Now the status will also include the file hash in the output
 ```
 
 ### Version
-To know which version of migrate-mongo you're running, just pass the `version` option:
+To know which version of migrate-firestore-mongo you're running, just pass the `version` option:
 
 ````bash
-$ migrate-mongo version
+$ migrate-firestore-mongo version
 ````
 
 ## API Usage
@@ -338,24 +319,23 @@ const {
   create,
   database,
   config,
-  up,
-  down,
+  up,  
   status
-} = require('migrate-mongo');
+} = require('migrate-firestore-mongo');
 ```
 
 ### `init() → Promise`
 
-Initialize a new migrate-mongo project
+Initialize a new migrate-firestore-mongo project
 ```javascript
 await init();
 ```
 
 The above command did two things: 
-1. create a sample `migrate-mongo-config.js` file and 
+1. create a sample `migrate-firestore-mongo-config.js` file and 
 2. create a `migrations` directory
 
-Edit the `migrate-mongo-config.js` file. Make sure you change the mongodb url.
+Edit the `migrate-firestore-mongo-config.js` file. Make sure you change the mongodb url.
 
 ### `create(description) → Promise<fileName>`
 
@@ -369,7 +349,7 @@ A new migration file is created in the `migrations` directory.
 
 ### `database.connect() → Promise<{db: MongoDb, client: MongoClient}>`
 
-Connect to a mongo database using the connection settings from the `migrate-mongo-config.js` file.
+Connect to a mongo database using the connection settings from the `migrate-firestore-mongo-config.js` file.
 
 ```javascript
 const { db, client } = await database.connect();
@@ -377,7 +357,7 @@ const { db, client } = await database.connect();
 
 ### `config.read() → Promise<JSON>`
 
-Read connection settings from the `migrate-mongo-config.js` file.
+Read connection settings from the `migrate-firestore-mongo-config.js` file.
 
 ```javascript
 const mongoConnectionSettings = await config.read();
@@ -385,21 +365,26 @@ const mongoConnectionSettings = await config.read();
 
 ### `config.set(yourConfigObject)`
 
-Tell migrate-mongo NOT to use the `migrate-mongo-config.js` file, but instead use the config object passed as the first argument of this function.
+Tell migrate-firestore-mongo NOT to use the `migrate-firestore-mongo-config.js` file, but instead use the config object passed as the first argument of this function.
 When using this feature, please do this at the very beginning of your program.
 
 Example:
 ```javascript
-const { config, up } = require('../lib/migrate-mongo');
+const { config, up } = require('../lib/migrate-firestore-mongo');
 
 const myConfig = {
+    firestore: {
+      applicationCredentials: 'YOURFIREBASEAPPLICATIONCREDENTIALS',
+      serviceAccount: 'YOURFIREBASESERVICEACCOUNT',
+      privateKey: 'YOURFIREBASEPRIVATEKEY'
+    },
     mongodb: {
         url: "mongodb://localhost:27017/mydatabase",
         options: { useNewUrlParser: true }
     },
     migrationsDir: "migrations",
-    changelogCollectionName: "changelog",
-    migrationFileExtension: ".js"
+    importsCollectionName: "changelog",
+    migrationFileExtension: ".ts"
 };
 
 config.set(myConfig);
@@ -419,16 +404,6 @@ migrated.forEach(fileName => console.log('Migrated:', fileName));
 ```
 
 If an an error occurred, the promise will reject and won't continue with the rest of the pending migrations.
-
-### `down(MongoDb, MongoClient) → Promise<Array<fileName>>`
-
-Revert (only) the last applied migration
-
-```javascript
-const { db, client } = await database.connect();
-const migratedDown = await down(db, client);
-migratedDown.forEach(fileName => console.log('Migrated Down:', fileName));
-```
 
 ### `status(MongoDb) → Promise<Array<{ fileName, appliedAt }>>`
 

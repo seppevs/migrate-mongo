@@ -8,3 +8,9 @@ node_modules
 # Istanbul test coverage
 coverage
 .nyc_output
+
+# Ignore .env files
+.env
+
+# Examples folder
+examples

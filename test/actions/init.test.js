@@ -82,12 +82,12 @@ describe("init", () => {
 
     const source = fs.copy.getCall(0).args[0];
     expect(source).to.equal(
-      path.join(__dirname, "../../samples/migrate-mongo-config.js")
+      path.join(__dirname, "../../samples/migrate-firestore-mongo-config.js")
     );
 
     const destination = fs.copy.getCall(0).args[1];
     expect(destination).to.equal(
-      path.join(process.cwd(), "migrate-mongo-config.js")
+      path.join(process.cwd(), "migrate-firestore-mongo-config.js")
     );
   });
 

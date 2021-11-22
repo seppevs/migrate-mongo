@@ -44,7 +44,7 @@ describe("status", () => {
     return {
       shouldExist: sinon.stub().returns(Promise.resolve()),
       read: sinon.stub().returns({
-        changelogCollectionName: "changelog"
+        importsCollectionName: "changelog"
       })
     };
   }
@@ -85,7 +85,7 @@ describe("status", () => {
 
   function enabledFileHash(configContent) {
     configContent.read.returns({
-      changelogCollectionName: "changelog",
+      importsCollectionName: "changelog",
       useFileHash: true
     })
   }

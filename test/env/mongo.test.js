@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const sinon = require("sinon");
 const proxyquire = require("proxyquire");
 
-describe("database", () => {
+describe("mongo", () => {
   let configObj;
   let database;
   let config;
@@ -49,7 +49,7 @@ describe("database", () => {
     config = mockConfig();
     mongodb = mockMongodb();
 
-    database = proxyquire("../../lib/env/database", {
+    database = proxyquire("../../lib/env/mongo", {
       "./config": config,
       mongodb
     });

@@ -1,30 +1,32 @@
 {
-  "name": "migrate-mongo",
-  "version": "8.2.3",
-  "description": "A database migration tool for MongoDB in Node",
-  "main": "lib/migrate-mongo.js",
+  "name": "migrate-firestore-mongo",
+  "version": "1.0.0",
+  "description": "A database import/export data tool from Firestore to MongoDB in Node",
+  "main": "lib/migrate-firestore-mongo.js",
   "bin": {
-    "migrate-mongo": "bin/migrate-mongo.js"
+    "migrate-firestore-mongo": "bin/migrate-firestore-mongo.js"
   },
   "scripts": {
     "test": "nyc --reporter=html --reporter=text mocha --recursive",
     "test-coverage": "nyc --reporter=text-lcov mocha --recursive | coveralls",
     "lint": "eslint lib/ test/"
   },
-  "author": "Sebastian Van Sande",
+  "author": "Parcela Express",
   "license": "MIT",
   "keywords": [
-    "migrate mongo mongodb migrations database"
+    "migrate mongo mongodb firebase firestore import export migrations database"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/seppevs/migrate-mongo.git"
+    "url": "https://github.com/Parcela-Express/migrate-firestore-mongo.git"
   },
   "engines": {
     "node": ">=8"
   },
   "preferGlobal": true,
   "dependencies": {
+    "firebase": "^7.19.0",
+    "firebase-admin": "^9.1.1",
     "cli-table3": "^0.6.0",
     "commander": "^8.1.0",
     "date-fns": "^2.23.0",
@@ -32,6 +34,7 @@
     "fs-extra": "^10.0.0",
     "lodash": "^4.17.21",
     "mongodb": "^4.0.1",
+    "array.chunk": "^1.1.0",
     "p-each-series": "^2.2.0"
   },
   "devDependencies": {
@@ -42,6 +45,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-mocha": "^9.0.0",
+    "firebase-tools": "^9.11.0",
     "mocha": "^9.0.3",
     "nyc": "^15.1.0",
     "proxyquire": "^2.1.3",

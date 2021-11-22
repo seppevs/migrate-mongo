@@ -33,7 +33,7 @@ describe("config", () => {
     });
 
     it("should yield an error if the config does not exist", async () => {
-      const configPath = path.join(process.cwd(), "migrate-mongo-config.js");
+      const configPath = path.join(process.cwd(), "migrate-firestore-mongo-config.js");
       fs.stat.returns(Promise.reject(new Error("It does not exist")));
       try {
         await config.shouldExist();
@@ -62,7 +62,7 @@ describe("config", () => {
     });
 
     it("should yield an error if the config exists", async () => {
-      const configPath = path.join(process.cwd(), "migrate-mongo-config.js");
+      const configPath = path.join(process.cwd(), "migrate-firestore-mongo-config.js");
       fs.stat.returns(Promise.resolve());
       try {
         await config.shouldNotExist();
@@ -78,7 +78,7 @@ describe("config", () => {
   describe("getConfigFilename()", () => {
     it("should return the config file name", () => {
       expect(config.getConfigFilename()).to.equal(
-        "migrate-mongo-config.js"
+        "migrate-firestore-mongo-config.js"
       );
     });
   });
@@ -93,7 +93,7 @@ describe("config", () => {
     });
 
     it("should attempt to read the config file", async () => {
-      const configPath = path.join(process.cwd(), "migrate-mongo-config.js");
+      const configPath = path.join(process.cwd(), "migrate-firestore-mongo-config.js");
       try {
         await config.read();
         expect.fail("Error was not thrown");
