@@ -22,6 +22,18 @@ const config = {
   // The mongodb collection where the applied changes are stored. Only edit this when really necessary.
   changelogCollectionName: "changelog",
 
+  // Field in collection to store migration name
+  nameField: 'fileName',
+
+  // Prefix for migration name
+  namePrefix: '',
+
+  // Whether name should include file extension
+  nameWithoutExtension: false,
+
+  // Field in collection to store migration applied date
+  dateField: 'appliedAt',
+
   // The file extension to create migrations and search for in migration dir 
   migrationFileExtension: ".js",
 

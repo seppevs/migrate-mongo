@@ -74,6 +74,18 @@ module.exports = {
   // The mongodb collection where the applied changes are stored. Only edit this when really necessary.
   changelogCollectionName: "changelog",
 
+  // Field in collection to store migration name
+  nameField: 'fileName',
+
+  // Prefix for migration name
+  namePrefix: '',
+
+  // Whether name should include file extension
+  nameWithoutExtension: false,
+
+  // Field in collection to store migration applied date
+  dateField: 'appliedAt',
+
   // The file extension to create migrations and search for in migration dir 
   migrationFileExtension: ".js",
 
@@ -278,8 +290,8 @@ module.exports = {
     const session = client.startSession();
     try {
         await session.withTransaction(async () => {
-            await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: true}});
-            await db.collection('albums').updateOne({artist: 'The Doors'}, {$set: {stars: 5}});
+            await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: true}}, {session});
+            await db.collection('albums').updateOne({artist: 'The Doors'}, {$set: {stars: 5}}, {session});
         });
     } finally {
       await session.endSession();
@@ -290,8 +302,8 @@ module.exports = {
     const session = client.startSession();
     try {
         await session.withTransaction(async () => {
-            await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: false}});
-            await db.collection('albums').updateOne({artist: 'The Doors'}, {$set: {stars: 0}});
+            await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: false}}, {session});
+            await db.collection('albums').updateOne({artist: 'The Doors'}, {$set: {stars: 0}}, {session});
         });
     } finally {
       await session.endSession();

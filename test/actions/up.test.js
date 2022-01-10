@@ -19,18 +19,22 @@ describe("up", () => {
     return sinon.stub().returns(
       Promise.resolve([
         {
+          file: "20160605123224-first_applied_migration.js",
           fileName: "20160605123224-first_applied_migration.js",
           appliedAt: new Date()
         },
         {
+          file: "20160606093207-second_applied_migration.js",
           fileName: "20160606093207-second_applied_migration.js",
           appliedAt: new Date()
         },
         {
+          file: "20160607173840-first_pending_migration.js",
           fileName: "20160607173840-first_pending_migration.js",
           appliedAt: "PENDING"
         },
         {
+          file: "20160608060209-second_pending_migration.js",
           fileName: "20160608060209-second_pending_migration.js",
           appliedAt: "PENDING"
         }
@@ -42,7 +46,9 @@ describe("up", () => {
     return {
       shouldExist: sinon.stub().returns(Promise.resolve()),
       read: sinon.stub().returns({
-        changelogCollectionName: "changelog"
+        changelogCollectionName: "changelog",
+        dateField: "appliedAt",
+        nameField: "fileName",
       })
     };
   }
