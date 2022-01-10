@@ -6,7 +6,12 @@
 migrate-mongo-alt is a database migration tool for MongoDB running in Node.js 
 
 </p>
-    
+
+## Fork notice
+
+This is a fork of the original [`migrate-mongo`](https://github.com/seppevs/migrate-mongo) project, which includes
+some PRs from the original project. See `CHANGELOG.md` for the change history.
+
 ## Installation
 ````bash
 $ npm install -g migrate-mongo-alt
