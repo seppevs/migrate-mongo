@@ -5,13 +5,13 @@
 
 [![tippin.me](https://badgen.net/badge/%E2%9A%A1%EF%B8%8Ftippin.me/@seppevs/F0918E)](https://tippin.me/@seppevs)
 
-migrate-mongo is a database migration tool for MongoDB running in Node.js 
+migrate-mongo-alt is a database migration tool for MongoDB running in Node.js 
 
 </p>
     
 ## Installation
 ````bash
-$ npm install -g migrate-mongo
+$ npm install -g migrate-mongo-alt
 ````
 
 ## CLI Usage

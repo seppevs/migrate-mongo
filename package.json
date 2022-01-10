@@ -1,6 +1,6 @@
 {
-  "name": "migrate-mongo",
-  "version": "11.0.0",
+  "name": "migrate-mongo-alt",
+  "version": "9.0.0",
   "description": "A database migration tool for MongoDB in Node",
   "main": "lib/migrate-mongo.js",
   "bin": {
@@ -31,6 +31,7 @@
     "fn-args": "^5.0.0",
     "fs-extra": "^10.0.1",
     "lodash": "^4.17.21",
+    "mongodb": "^4.3.0",
     "p-each-series": "^2.2.0"
   },
   "peerDependencies": {
