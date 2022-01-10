@@ -44,7 +44,9 @@ describe("status", () => {
     return {
       shouldExist: sinon.stub().returns(Promise.resolve()),
       read: sinon.stub().returns({
-        changelogCollectionName: "changelog"
+        changelogCollectionName: "changelog",
+        dateField: "appliedAt",
+        nameField: "fileName",
       })
     };
   }
@@ -86,7 +88,19 @@ describe("status", () => {
   function enabledFileHash(configContent) {
     configContent.read.returns({
       changelogCollectionName: "changelog",
-      useFileHash: true
+      useFileHash: true,
+      dateField: "appliedAt",
+      nameField: "fileName",
+    })
+  }
+
+  function makeCustomConfig(configContent) {
+    configContent.read.returns({
+      changelogCollectionName: "changelog",
+      dateField: "run_on",
+      nameField: "name",
+      namePrefix: "/",
+      nameWithoutExtension: true,
     })
   }
 
@@ -103,6 +117,23 @@ describe("status", () => {
             fileName: "20160512091701-second_migration.js",
             fileHash: "18b4d9c95a8678ae3a6dd3ae5b8961737a6c3dd65e3e655a5f5718d97a0bff70",
             appliedAt: new Date("2016-06-09T20:10:12.123Z")
+          }
+        ])
+      )
+    })
+  }
+
+  function addCustomFieldsToChangelog(changelog) {
+    changelog.find.returns({
+      toArray: sinon.stub().returns(
+        Promise.resolve([
+          {
+            name: "/20160509113224-first_migration",
+            run_on: new Date("2016-06-03T20:10:12.123Z")
+          },
+          {
+            name: "/20160512091701-second_migration",
+            run_on: new Date("2016-06-09T20:10:12.123Z")
           }
         ])
       )
@@ -199,15 +230,18 @@ describe("status", () => {
     expect(statusItems).to.deep.equal([
       {
         appliedAt: "2016-06-03T20:10:12.123Z",
-        fileName: "20160509113224-first_migration.js"
+        file: "20160509113224-first_migration.js",
+        fileName: "20160509113224-first_migration.js",
       },
       {
         appliedAt: "2016-06-09T20:10:12.123Z",
-        fileName: "20160512091701-second_migration.js"
+        file: "20160512091701-second_migration.js",
+        fileName: "20160512091701-second_migration.js",
       },
       {
         appliedAt: "PENDING",
-        fileName: "20160513155321-third_migration.js"
+        file: "20160513155321-third_migration.js",
+        fileName: "20160513155321-third_migration.js",
       }
     ]);
   });
@@ -218,18 +252,44 @@ describe("status", () => {
     expect(statusItems).to.deep.equal([
       {
         appliedAt: "PENDING",
+        file: "20160509113224-first_migration.js",
         fileName: "20160509113224-first_migration.js",
         fileHash: "0f295f21f63c66dc78d8dc091ce3c8bab8c56d8b74fb35a0c99f6d9953e37d1a",
       },
       {
         appliedAt: "PENDING",
+        file: "20160512091701-second_migration.js",
         fileName: "20160512091701-second_migration.js",
         fileHash: "18b4d9c95a8678ae3a6dd3ae5b8961737a6c3dd65e3e655a5f5718d97a0bff70",
       },
       {
         appliedAt: "PENDING",
+        file: "20160513155321-third_migration.js",
         fileName: "20160513155321-third_migration.js",
         fileHash: "1f9eb3b5eb70b2fb5b83fa0c660d859082f0bb615e835d29943d26fb0d352022",
+      }
+    ]);
+  });
+
+  it("it should use custom field names and migration names from config", async () => {
+    addCustomFieldsToChangelog(changelogCollection);
+    makeCustomConfig(config);
+    const statusItems = await status(db);
+    expect(statusItems).to.deep.equal([
+      {
+        run_on: "2016-06-03T20:10:12.123Z",
+        file: "20160509113224-first_migration.js",
+        name: "/20160509113224-first_migration",
+      },
+      {
+        run_on: "2016-06-09T20:10:12.123Z",
+        file: "20160512091701-second_migration.js",
+        name: "/20160512091701-second_migration",
+      },
+      {
+        run_on: "PENDING",
+        file: "20160513155321-third_migration.js",
+        name: "/20160513155321-third_migration",
       }
     ]);
   });
@@ -242,16 +302,19 @@ describe("status", () => {
       {
         appliedAt: "2016-06-03T20:10:12.123Z",
         fileName: "20160509113224-first_migration.js",
+        file: "20160509113224-first_migration.js",
         fileHash: "0f295f21f63c66dc78d8dc091ce3c8bab8c56d8b74fb35a0c99f6d9953e37d1a",
       },
       {
         appliedAt: "2016-06-09T20:10:12.123Z",
         fileName: "20160512091701-second_migration.js",
+        file: "20160512091701-second_migration.js",
         fileHash: "18b4d9c95a8678ae3a6dd3ae5b8961737a6c3dd65e3e655a5f5718d97a0bff70",
       },
       {
         appliedAt: "PENDING",
         fileName: "20160513155321-third_migration.js",
+        file: "20160513155321-third_migration.js",
         fileHash: "1f9eb3b5eb70b2fb5b83fa0c660d859082f0bb615e835d29943d26fb0d352022",
       }
     ]);
@@ -278,16 +341,19 @@ describe("status", () => {
       {
         appliedAt: "2016-06-03T20:10:12.123Z",
         fileName: "20160509113224-first_migration.js",
+        file: "20160509113224-first_migration.js",
         fileHash: "0f295f21f63c66dc78d8dc091ce3c8bab8c56d8b74fb35a0c99f6d9953e37d1a",
       },
       {
         appliedAt: "PENDING",
         fileName: "20160512091701-second_migration.js",
+        file: "20160512091701-second_migration.js",
         fileHash: "18b4d9c95a8678ae3a6dd3ae5b8961737a6c3dd65e3e655a5f5718d97a0bff71", // this hash is different
       },
       {
         appliedAt: "PENDING",
         fileName: "20160513155321-third_migration.js",
+        file: "20160513155321-third_migration.js",
         fileHash: "1f9eb3b5eb70b2fb5b83fa0c660d859082f0bb615e835d29943d26fb0d352022",
       }
     ]);
