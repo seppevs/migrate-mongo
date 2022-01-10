@@ -3,13 +3,13 @@
 
 [![Build Status](https://img.shields.io/travis/seppevs/migrate-mongo.svg?style=flat)](https://travis-ci.org/seppevs/migrate-mongo) [![Coverage Status](https://coveralls.io/repos/github/seppevs/migrate-mongo/badge.svg?branch=master)](https://coveralls.io/r/seppevs/migrate-mongo) [![NPM](https://img.shields.io/npm/v/migrate-mongo.svg?style=flat)](https://www.npmjs.org/package/migrate-mongo) [![Downloads](https://img.shields.io/npm/dm/migrate-mongo.svg?style=flat)](https://www.npmjs.org/package/migrate-mongo) [![Dependencies](https://david-dm.org/seppevs/migrate-mongo.svg)](https://david-dm.org/seppevs/migrate-mongo) [![Known Vulnerabilities](https://snyk.io/test/github/seppevs/migrate-mongo/badge.svg)](https://snyk.io/test/github/seppevs/migrate-mongo)
 
-migrate-mongo is a database migration tool for MongoDB running in Node.js 
+migrate-mongo-alt is a database migration tool for MongoDB running in Node.js 
 
 </p>
     
 ## Installation
 ````bash
-$ npm install -g migrate-mongo
+$ npm install -g migrate-mongo-alt
 ````
 
 ## CLI Usage
@@ -63,12 +63,9 @@ module.exports = {
 
     // TODO Change this to your database name:
     databaseName: "YOURDATABASENAME",
-
-    options: {
-      useNewUrlParser: true // removes a deprecation warning when connecting
-      //   connectTimeoutMS: 3600000, // increase connection timeout to 1 hour
-      //   socketTimeoutMS: 3600000, // increase socket timeout to 1 hour
-    }
+      
+    // mongo driver options
+    options: {}
   },
 
   // The migrations dir, can be an relative or absolute path. Only edit this when really necessary.
@@ -78,7 +75,7 @@ module.exports = {
   changelogCollectionName: "changelog",
 
   // The file extension to create migrations and search for in migration dir 
-  migrationFileExtension: ".js"
+  migrationFileExtension: ".js",
 
   // Enable the algorithm to create a checksum of the file contents and use that in the comparison to determin
   // if the file should be run.  Requires that scripts are coded to be run multiple times.
