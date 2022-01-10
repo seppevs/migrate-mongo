@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.0.1
+
+Update dependencies to latest versions where possible and address `npm audit` issues.
+
 ## 9.0.0
 
 - Update `mongodb` to 4.3.0
