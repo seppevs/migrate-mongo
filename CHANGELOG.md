@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.0.2
+
+Update the readme to include a URL to the mongo driver options
+
 ## 9.0.1
 
 Update dependencies to latest versions where possible and address `npm audit` issues.
