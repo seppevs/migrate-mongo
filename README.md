@@ -69,8 +69,13 @@ module.exports = {
     // TODO Change this to your database name:
     databaseName: "YOURDATABASENAME",
       
-    // mongo driver options
-    options: {}
+    // mongo connection options
+    // https://docs.mongodb.com/drivers/node/current/fundamentals/connection/#connection-options
+    options: {
+      // You may need this option if you are unable to connect
+      // https://docs.mongodb.com/drivers/node/current/fundamentals/connection/#connect-to-a-replica-set
+      directConnection: true
+    }
   },
 
   // The migrations dir, can be an relative or absolute path. Only edit this when really necessary.
