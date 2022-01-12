@@ -58,6 +58,9 @@ program
           console.log(`Created: ${config.migrationsDir}/${fileName}`);
         })
       )
+      .then(() => {
+        process.exit(0);
+      })
       .catch(err => handleError(err));
   });
 
