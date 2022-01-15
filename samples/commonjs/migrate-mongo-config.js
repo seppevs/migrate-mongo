@@ -16,7 +16,7 @@ const config = {
     }
   },
 
-  // optional context function that is called before each migration
+  // optional context function that is called before each migration, of which the object is passed as the third parameter to the up/down call
   // migrationFile: The name of the migration
   // operation: 'up' | 'down'
   // returns: object

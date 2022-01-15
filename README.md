@@ -148,7 +148,7 @@ module.exports = {
 
 Edit this content so it actually performs changes to your database. Don't forget to write the down part as well.
 The ````db```` object contains [the official MongoDB db object](https://www.npmjs.com/package/mongodb)
-The ````client```` object is a [MongoClient](https://mongodb.github.io/node-mongodb-native/3.3/api/MongoClient.html) instance (which you can omit if you don't use it).
+The ````client```` object is a [MongoClient](https://mongodb.github.io/node-mongodb-native/4.3/classes/MongoClient.html) instance (which you can omit if you don't use it).
 
 There are 3 options to implement the `up` and `down` functions of your migration: 
 1. Return a Promises
@@ -306,7 +306,7 @@ Note: this requires both:
 - migrate-mongo 7.0.0 or higher
 
 migrate-mongo will call your migration `up` and `down` function with a second argument: `client`.
-This `client` argument is an [MongoClient](https://mongodb.github.io/node-mongodb-native/3.3/api/MongoClient.html) instance, it gives you access to the `startSession` function.
+This `client` argument is an [MongoClient](https://mongodb.github.io/node-mongodb-native/4.3/classes/MongoClient.html) instance, it gives you access to the `startSession` function.
 
 Example:
 
@@ -430,7 +430,7 @@ const { config, up } = require('../lib/migrate-mongo');
 const myConfig = {
     mongodb: {
         url: "mongodb://localhost:27017/mydatabase",
-        options: { useNewUrlParser: true }
+        options: {}
     },
     migrationsDir: "migrations",
     changelogCollectionName: "changelog",

@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.0.1
+
+Update readme, docs in the samples dir
+
 ## 10.0.0
 
 **breaking change**: 
