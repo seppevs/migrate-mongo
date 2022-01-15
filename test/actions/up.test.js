@@ -49,6 +49,7 @@ describe("up", () => {
         changelogCollectionName: "changelog",
         dateField: "appliedAt",
         nameField: "fileName",
+        context: async ({ migrationFile, operation }) => ({ migrationFile, operation }),
       })
     };
   }
@@ -136,21 +137,10 @@ describe("up", () => {
     sinon.assert.callOrder(firstPendingMigration.up, secondPendingMigration.up);
   });
 
-  it("should be able to upgrade callback based migration that has both the `db` and `client` args", async () => {
+  it("should return context", async () => {
     firstPendingMigration = {
-      up(theDb, theClient, callback) {
-        return callback();
-      }
-    };
-    migrationsDir = mockMigrationsDir();
-    up = loadUpWithInjectedMocks();
-    await up(db, client);
-  });
-
-  it("should be able to upgrade callback based migration that has only the `db` arg", async () => {
-    firstPendingMigration = {
-      up(theDb, callback) {
-        return callback();
+      up(theDb, theClient, context) {
+        expect(context.operation).to.equal('up')
       }
     };
     migrationsDir = mockMigrationsDir();

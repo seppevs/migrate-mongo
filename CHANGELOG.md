@@ -1,5 +1,17 @@
 # Changelog
 
+## 10.0.0
+
+**breaking change**: 
+
+- The `callback` parameter is no longer supported and has been removed.
+- The baseline `node` engine is `>=12` from `>=8`
+
+**new**: 
+
+- A `context` function can now be specified in the config that will pass context 
+data to each migration execution as the third parameter. See readme for more details.
+
 ## 9.0.3
 
 Update `package.json` repo url

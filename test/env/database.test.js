@@ -18,7 +18,8 @@ describe("database", () => {
           connectTimeoutMS: 3600000, // 1 hour
           socketTimeoutMS: 3600000 // 1 hour
         }
-      }
+      },
+      context: async ({ migrationFile, operation }) => ({ migrationFile, operation }),
     };
   }
 
