@@ -80,6 +80,12 @@ module.exports = {
       directConnection: true
     }
   },
+    
+  // optional context function that is called before each migration
+  // migrationFile: The name of the migration
+  // operation: 'up' | 'down'
+  // returns: object
+  context: async ({ migrationFile, operation }) => { return {} },
 
   // The migrations dir, can be an relative or absolute path. Only edit this when really necessary.
   migrationsDir: "migrations",
@@ -125,14 +131,14 @@ Created: migrations/20160608155948-blacklist_the_beatles.js
 A new migration file is created in the 'migrations' directory:
 ````javascript
 module.exports = {
-  up(db, client) {
+  up(db, client, context) {
     // TODO write your migration here. Return a Promise (and/or use async & await).
     // See https://github.com/seppevs/migrate-mongo/#creating-a-new-migration-script
     // Example:
     // return db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: true}});
   },
 
-  down(db, client) {
+  down(db, client, context) {
     // TODO write the statements to rollback your migration (if possible)
     // Example:
     // return db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: false}});
@@ -147,12 +153,10 @@ The ````client```` object is a [MongoClient](https://mongodb.github.io/node-mong
 There are 3 options to implement the `up` and `down` functions of your migration: 
 1. Return a Promises
 2. Use async-await 
-3. Call a callback (DEPRECATED!)
 
 Always make sure the implementation matches the function signature:
 * `function up(db, client) { /* */ }` should return `Promise`
 * `async function up(db, client) { /* */ }` should contain `await` keyword(s) and return `Promise`
-* `function up(db, client, next) { /* */ }` should callback `next`
 
 #### Example 1: Return a Promise
 ````javascript
@@ -181,22 +185,6 @@ module.exports = {
     await db.collection('albums').updateOne({artist: 'The Doors'}, {$set: {stars: 0}});
     await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: false}});
   },
-};
-````
-
-#### Example 3: Call a callback (deprecated)
-Callbacks are supported for backwards compatibility.
-New migration scripts should be written using Promises and/or async & await. It's easier to read and write.
-
-````javascript
-module.exports = {
-  up(db, callback) {
-    return db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: true}}, callback);
-  },
-
-  down(db, callback) {
-    return db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: false}}, callback);
-  }
 };
 ````
 
@@ -324,7 +312,7 @@ Example:
 
 ````javascript
 module.exports = {
-  async up(db, client) {
+  async up(db, client, context) {
     const session = client.startSession();
     try {
         await session.withTransaction(async () => {
@@ -336,7 +324,7 @@ module.exports = {
     }
   },
 
-  async down(db, client) {
+  async down(db, client, context) {
     const session = client.startSession();
     try {
         await session.withTransaction(async () => {

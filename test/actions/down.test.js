@@ -37,6 +37,7 @@ describe("down", () => {
         changelogCollectionName: "changelog",
         dateField: "appliedAt",
         nameField: "fileName",
+        context: async ({ migrationFile, operation }) => ({ migrationFile, operation }),
       })
     };
   }
@@ -120,26 +121,15 @@ describe("down", () => {
     expect(migration.down.called).to.equal(true);
   });
 
-  it("should be able to downgrade callback based migration that has both the `db` and `client` arguments", async () => {
+  it("should return context", async () => {
     migration = {
-      down(theDb, theClient, callback) {
-        return callback();
+      down(theDb, theClient, context) {
+        expect(context.operation).to.equal('down')
       }
     };
     migrationsDir = mockMigrationsDir();
     down = loadDownWithInjectedMocks();
     await down(db, client);
-  });
-
-  it("should be able to downgrade callback based migration that has only the `db` argument", async () => {
-    migration = {
-      down(theDb, callback) {
-        return callback();
-      }
-    };
-    migrationsDir = mockMigrationsDir();
-    down = loadDownWithInjectedMocks();
-    await down(db);
   });
 
   /* eslint no-unused-vars: "off" */

@@ -16,6 +16,12 @@ const config = {
     }
   },
 
+  // optional context function that is called before each migration
+  // migrationFile: The name of the migration
+  // operation: 'up' | 'down'
+  // returns: object
+  context: async ({ migrationFile, operation }) => { return {} },
+
   // The migrations dir, can be an relative or absolute path. Only edit this when really necessary.
   migrationsDir: "migrations",
 
