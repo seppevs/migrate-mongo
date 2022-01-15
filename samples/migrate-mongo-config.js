@@ -40,6 +40,12 @@ const config = {
   // Field in collection to store migration applied date
   dateField: 'appliedAt',
 
+  // The mongodb collection where the lock will be created.
+  lockCollectionName: "changelog_lock",
+
+  // The value in seconds for the TTL index that will be used for the lock. Value of 0 will disable the feature.
+  lockTtl: 0,
+
   // The file extension to create migrations and search for in migration dir 
   migrationFileExtension: ".js",
 

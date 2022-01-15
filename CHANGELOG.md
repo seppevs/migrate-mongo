@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.1.0
+
+- Add [soft locks PR](https://github.com/seppevs/migrate-mongo/pull/262) to prevent multiple migration execution by @daveboulard
+
 ## 10.0.1
 
 Update readme, docs in the samples dir

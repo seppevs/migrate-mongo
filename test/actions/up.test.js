@@ -7,6 +7,7 @@ describe("up", () => {
   let up;
   let status;
   let config;
+  let lock;
   let migrationsDir;
   let db;
   let client;
@@ -14,6 +15,7 @@ describe("up", () => {
   let firstPendingMigration;
   let secondPendingMigration;
   let changelogCollection;
+  let changelogLockCollection;
 
   function mockStatus() {
     return sinon.stub().returns(
@@ -47,6 +49,8 @@ describe("up", () => {
       shouldExist: sinon.stub().returns(Promise.resolve()),
       read: sinon.stub().returns({
         changelogCollectionName: "changelog",
+        lockCollectionName: "changelog_lock",
+        lockTtl: 10,
         dateField: "appliedAt",
         nameField: "fileName",
         context: async ({ migrationFile, operation }) => ({ migrationFile, operation }),
@@ -70,6 +74,7 @@ describe("up", () => {
     const mock = {};
     mock.collection = sinon.stub();
     mock.collection.withArgs("changelog").returns(changelogCollection);
+    mock.collection.withArgs("changelog_lock").returns(changelogLockCollection);
     return mock;
   }
 
@@ -91,11 +96,33 @@ describe("up", () => {
     };
   }
 
+  function mockChangelogLockCollection() {
+    const findStub = {
+      toArray: () => {
+        return [];
+      }
+    }
+
+    return {
+      insertOne: sinon.stub().returns(Promise.resolve()),
+      createIndex: sinon.stub().returns(Promise.resolve()),
+      find: sinon.stub().returns(findStub),
+      deleteMany: sinon.stub().returns(Promise.resolve()),
+    }
+  }
+
   function loadUpWithInjectedMocks() {
     return proxyquire("../../lib/actions/up", {
       "./status": status,
       "../env/config": config,
-      "../env/migrationsDir": migrationsDir
+      "../env/migrationsDir": migrationsDir,
+      "../utils/lock": lock
+    });
+  }
+
+  function loadLockWithInjectedMocks() {
+    return proxyquire("../../lib/utils/lock", {
+      "../env/config": config
     });
   }
 
@@ -103,6 +130,7 @@ describe("up", () => {
     firstPendingMigration = mockMigration();
     secondPendingMigration = mockMigration();
     changelogCollection = mockChangelogCollection();
+    changelogLockCollection = mockChangelogLockCollection();
 
     status = mockStatus();
     config = mockConfig();
@@ -110,6 +138,7 @@ describe("up", () => {
     db = mockDb();
     client = mockClient();
 
+    lock = loadLockWithInjectedMocks();
     up = loadUpWithInjectedMocks();
   });
 
@@ -193,6 +222,65 @@ describe("up", () => {
     } catch (err) {
       expect(err.message).to.deep.equal(
         "Could not update changelog: Kernel panic"
+      );
+    }
+  });
+
+  it("should lock if feature is enabled", async() => {
+    await up(db);
+    expect(changelogLockCollection.createIndex.called).to.equal(true);
+    expect(changelogLockCollection.find.called).to.equal(true);
+    expect(changelogLockCollection.insertOne.called).to.equal(true);
+    expect(changelogLockCollection.deleteMany.called).to.equal(true);
+  });
+
+  it("should ignore lock if feature is disabled", async() => {
+    config.read = sinon.stub().returns({
+      changelogCollectionName: "changelog",
+      lockCollectionName: "changelog_lock",
+      lockTtl: 0
+    });
+    const findStub = {
+      toArray: () => {
+        return [{ createdAt: new Date() }];
+      }
+    }
+    changelogLockCollection.find.returns(findStub);
+
+    await up(db);
+    expect(changelogLockCollection.createIndex.called).to.equal(false);
+    expect(changelogLockCollection.find.called).to.equal(false);
+    expect(changelogLockCollection.insertOne.called).to.equal(false);
+    expect(changelogLockCollection.deleteMany.called).to.equal(false);
+  });
+
+  it("should yield an error when unable to create a lock", async() => {
+    changelogLockCollection.insertOne.returns(Promise.reject(new Error("Kernel panic")));
+
+    try {
+      await up(db);
+      expect.fail("Error was not thrown");
+    } catch (err) {
+      expect(err.message).to.deep.equal(
+        "Could not create a lock: Kernel panic"
+      );
+    }
+  });
+
+  it("should yield an error when changelog is locked", async() => {
+    const findStub = {
+      toArray: () => {
+        return [{ createdAt: new Date() }];
+      }
+    }
+    changelogLockCollection.find.returns(findStub);
+
+    try {
+      await up(db);
+      expect.fail("Error was not thrown");
+    } catch (err) {
+      expect(err.message).to.deep.equal(
+        "Could not migrate up, a lock is in place."
       );
     }
   });
