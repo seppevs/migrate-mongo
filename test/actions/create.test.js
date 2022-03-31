@@ -21,6 +21,9 @@ describe("create", () => {
   function mockConfig() {
     return {
       shouldExist: sinon.stub().returns(Promise.resolve()),
+      read: sinon.stub().returns(Promise.resolve({
+        moduleSystem: 'commonjs',
+      }))
     };
   }
 
@@ -79,7 +82,7 @@ describe("create", () => {
     const filename = await create("my_description");
     expect(fs.copy.called).to.equal(true);
     expect(fs.copy.getCall(0).args[0]).to.equal(
-      path.join(__dirname, "../../samples/migration.js")
+      path.join(__dirname, "../../samples/commonjs/migration.js")
     );
     expect(fs.copy.getCall(0).args[1]).to.equal(
       path.join(process.cwd(), "migrations", "20160609080700-my_description.js")
@@ -96,7 +99,7 @@ describe("create", () => {
     const filename = await create("my_description");
     expect(fs.copy.called).to.equal(true);
     expect(fs.copy.getCall(0).args[0]).to.equal(
-      path.join(__dirname, "../../samples/migration-typescript.ts")
+      path.join(__dirname, "../../samples/commonjs/migration-typescript.ts")
     );
     expect(fs.copy.getCall(0).args[1]).to.equal(
       path.join(process.cwd(), "migrations", "20160609080700-my_description.ts")
@@ -112,7 +115,7 @@ describe("create", () => {
     await create("this description contains spaces");
     expect(fs.copy.called).to.equal(true);
     expect(fs.copy.getCall(0).args[0]).to.equal(
-      path.join(__dirname, "../../samples/migration.js")
+      path.join(__dirname, "../../samples/commonjs/migration.js")
     );
     expect(fs.copy.getCall(0).args[1]).to.equal(
       path.join(
