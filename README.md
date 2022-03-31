@@ -263,6 +263,31 @@ $ npm init --yes
 Now you have a package.json file, and you can install your favorite npm modules that might help you in your migration scripts.
 For example, one of the very useful [promise-fun](https://github.com/sindresorhus/promise-fun) npm modules.
 
+
+### Using ESM (ECMAScript Modules) instead of CommonJS
+Since migrate-mongo 7.0.0, it's possible to use ESM instead of CommonJS.
+
+#### Using ESM when initializing a new project
+Pass the `-m esm` option to the `init` action:
+````bash
+$ migrate-mongo init -m esm
+````
+
+It's also required to have package.json file in the root of your project with `"type": "module"`.
+Create a new package.json file:
+````bash
+$ npm init --yes
+````
+
+Then edit this package.json file, and add:
+````bash
+"type": "module"
+````
+
+When you create migration files with `migrate-mongo create`, they will be prepared for you in ESM style.
+
+Please note that CommonJS is still the default module loading system.
+
 ### Using MongoDB's Transactions API
 You can make use of the [MongoDB Transaction API](https://docs.mongodb.com/manual/core/transactions/) in your migration scripts.
 

@@ -29,6 +29,7 @@ describe("init", () => {
   }
 
   beforeEach(() => {
+    global.options = { module: 'commonjs' };
     migrationsDir = mockMigrationsDir();
     config = mockConfig();
     fs = mockFs();
@@ -82,7 +83,7 @@ describe("init", () => {
 
     const source = fs.copy.getCall(0).args[0];
     expect(source).to.equal(
-      path.join(__dirname, "../../samples/migrate-mongo-config.js")
+      path.join(__dirname, "../../samples/commonjs/migrate-mongo-config.js")
     );
 
     const destination = fs.copy.getCall(0).args[1];
