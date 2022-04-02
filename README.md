@@ -3,7 +3,9 @@
 
 [![Build Status](https://img.shields.io/travis/theogravity/migrate-mongo-alt.svg?style=flat)](https://travis-ci.org/theogravity/migrate-mongo-alt) [![Coverage Status](https://coveralls.io/repos/github/theogravity/migrate-mongo-alt/badge.svg?branch=master)](https://coveralls.io/r/theogravity/migrate-mongo-alt) [![NPM](https://img.shields.io/npm/v/migrate-mongo-alt.svg?style=flat)](https://www.npmjs.org/package/migrate-mongo-alt) [![Downloads](https://img.shields.io/npm/dm/migrate-mongo-alt.svg?style=flat)](https://www.npmjs.org/package/migrate-mongo-alt) [![Dependencies](https://david-dm.org/theogravity/migrate-mongo-alt.svg)](https://david-dm.org/theogravity/migrate-mongo-alt) [![Known Vulnerabilities](https://snyk.io/test/github/theogravity/migrate-mongo-alt/badge.svg)](https://snyk.io/test/github/theogravity/migrate-mongo-alt)
 
-migrate-mongo-alt is a database migration tool for MongoDB running in Node.js 
+[![tippin.me](https://badgen.net/badge/%E2%9A%A1%EF%B8%8Ftippin.me/@seppevs/F0918E)](https://tippin.me/@seppevs)
+
+migrate-mongo-alt is a database migration tool for MongoDB running in Node.js
 
 </p>
 
@@ -75,6 +77,8 @@ module.exports = {
       // You may need this option if you are unable to connect
       // https://docs.mongodb.com/drivers/node/current/fundamentals/connection/#connect-to-a-replica-set
       directConnection: true
+      //   connectTimeoutMS: 3600000, // increase connection timeout to 1 hour
+      //   socketTimeoutMS: 3600000, // increase socket timeout to 1 hour
     }
   },
     
