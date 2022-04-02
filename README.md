@@ -5,7 +5,7 @@
 
 [![tippin.me](https://badgen.net/badge/%E2%9A%A1%EF%B8%8Ftippin.me/@seppevs/F0918E)](https://tippin.me/@seppevs)
 
-migrate-mongo-alt is a database migration tool for MongoDB running in Node.js 
+migrate-mongo-alt is a database migration tool for MongoDB running in Node.js
 
 </p>
 
@@ -78,6 +78,8 @@ module.exports = {
       // You may need this option if you are unable to connect
       // https://docs.mongodb.com/drivers/node/current/fundamentals/connection/#connect-to-a-replica-set
       directConnection: true
+      //   connectTimeoutMS: 3600000, // increase connection timeout to 1 hour
+      //   socketTimeoutMS: 3600000, // increase socket timeout to 1 hour
     }
   },
     
