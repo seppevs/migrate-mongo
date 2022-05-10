@@ -131,7 +131,7 @@ There are 3 options to implement the `up` and `down` functions of your migration
 
 Always make sure the implementation matches the function signature:
 * `function up(db, client) { /* */ }` should return `Promise`
-* `function async up(db, client) { /* */ }` should contain `await` keyword(s) and return `Promise`
+* `async function up(db, client) { /* */ }` should contain `await` keyword(s) and return `Promise`
 * `function up(db, client, next) { /* */ }` should callback `next`
 
 #### Example 1: Return a Promise
