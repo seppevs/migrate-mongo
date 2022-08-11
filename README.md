@@ -308,8 +308,8 @@ module.exports = {
     const session = client.startSession();
     try {
         await session.withTransaction(async () => {
-            await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: true}});
-            await db.collection('albums').updateOne({artist: 'The Doors'}, {$set: {stars: 5}});
+            await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: true}}, {session});
+            await db.collection('albums').updateOne({artist: 'The Doors'}, {$set: {stars: 5}}, {session});
         });
     } finally {
       await session.endSession();
@@ -320,8 +320,8 @@ module.exports = {
     const session = client.startSession();
     try {
         await session.withTransaction(async () => {
-            await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: false}});
-            await db.collection('albums').updateOne({artist: 'The Doors'}, {$set: {stars: 0}});
+            await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: false}}, {session});
+            await db.collection('albums').updateOne({artist: 'The Doors'}, {$set: {stars: 0}}, {session});
         });
     } finally {
       await session.endSession();
