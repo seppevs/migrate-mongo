@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.2.0
+
+- For `migrationFileExtension` using a value of `.ts`, a typescript template file will be used that comes with proper types
+
 ## 10.1.0
 
 - Add [soft locks PR](https://github.com/seppevs/migrate-mongo/pull/262) to prevent multiple migration execution by @daveboulard

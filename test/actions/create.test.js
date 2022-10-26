@@ -99,7 +99,7 @@ describe("create", () => {
     const filename = await create("my_description");
     expect(fs.copy.called).to.equal(true);
     expect(fs.copy.getCall(0).args[0]).to.equal(
-      path.join(__dirname, "../../samples/commonjs/migration.js")
+      path.join(__dirname, "../../samples/commonjs/migration-typescript.ts")
     );
     expect(fs.copy.getCall(0).args[1]).to.equal(
       path.join(process.cwd(), "migrations", "20160609080700-my_description.ts")
