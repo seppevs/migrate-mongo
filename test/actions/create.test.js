@@ -91,6 +91,35 @@ describe("create", () => {
     clock.restore();
   });
 
+  it("should create a new migration file and yield the filename with custom formatting", async () => {
+    const configWithTimestamp = {
+      read: sinon.stub().returns(Promise.resolve({
+        moduleSystem: 'commonjs',
+        timestampFormat: 'yyyy-MM-dd-HH:mm'
+      }))
+    };
+
+    const createWithTimestamp = proxyquire("../../lib/actions/create", {
+      "../env/migrationsDir": migrationsDir,
+      "../env/config": configWithTimestamp,
+      "fs-extra": fs
+    });
+
+    const clock = sinon.useFakeTimers(
+      new Date("2016-06-09T08:07:00.077Z").getTime()
+    );
+    const filename = await createWithTimestamp("my_description");
+    expect(fs.copy.called).to.equal(true);
+    expect(fs.copy.getCall(0).args[0]).to.equal(
+      path.join(__dirname, "../../samples/commonjs/migration.js")
+    );
+    expect(fs.copy.getCall(0).args[1]).to.equal(
+      path.join(process.cwd(), "migrations", "2016-06-09-08:07-my_description.js")
+    );
+    expect(filename).to.equal("2016-06-09-08:07-my_description.js");
+    clock.restore();
+  });
+
   it("should create a new migration file and yield the filename with custom extension", async () => {
     const clock = sinon.useFakeTimers(
       new Date("2016-06-09T08:07:00.077Z").getTime()
