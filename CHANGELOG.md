@@ -1,5 +1,14 @@
 # Changelog
 
+## 11.0.0
+
+- Rebased against the repo that this project is forked from, [`seppevs/migrate-mongo`](https://github.com/seppevs/migrate-mongo)
+  * This mainly adds ESM support
+
+Breaking:
+
+- Moves the `mongodb` dependency to a peer dependency, and `mongodb` is no longer included with this package
+
 ## 10.2.0
 
 - For `migrationFileExtension` using a value of `.ts`, a typescript template file will be used that comes with proper types
