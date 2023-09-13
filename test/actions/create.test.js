@@ -91,6 +91,42 @@ describe("create", () => {
     clock.restore();
   });
 
+  it("should create a new migration file and yield the filename using typescript", async () => {
+    config = {
+      shouldExist: sinon.stub().returns(Promise.resolve()),
+      read: sinon.stub().returns(Promise.resolve({
+        moduleSystem: 'commonjs',
+        migrationFileExtension: '.ts'
+      }))
+    };
+
+    migrationsDir = {
+      shouldExist: sinon.stub().returns(Promise.resolve()),
+      resolveMigrationFileExtension: sinon.stub().returns('.ts'),
+      doesSampleMigrationExist: sinon.stub().returns(Promise.resolve(false)),
+    };
+
+    create = proxyquire("../../lib/actions/create", {
+      "../env/migrationsDir": migrationsDir,
+      "../env/config": config,
+      "fs-extra": fs
+    });
+
+    const clock = sinon.useFakeTimers(
+      new Date("2016-06-09T08:07:00.077Z").getTime()
+    );
+    const filename = await create("my_description");
+    expect(fs.copy.called).to.equal(true);
+    expect(fs.copy.getCall(0).args[0]).to.equal(
+      path.join(__dirname, "../../samples/commonjs/migration-typescript.ts")
+    );
+    expect(fs.copy.getCall(0).args[1]).to.equal(
+      path.join(process.cwd(), "migrations", "20160609080700-my_description.ts")
+    );
+    expect(filename).to.equal("20160609080700-my_description.ts");
+    clock.restore();
+  });
+
   it("should create a new migration file and yield the filename with custom extension", async () => {
     const clock = sinon.useFakeTimers(
       new Date("2016-06-09T08:07:00.077Z").getTime()

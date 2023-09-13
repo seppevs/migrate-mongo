@@ -1,5 +1,11 @@
 # Changelog
 
+## 11.0.1
+
+Fix bug where you cannot create a migration if you did not have the config option `moduleSystem` defined.
+
+By default `moduleSystem` is `commonjs`.
+
 ## 11.0.0
 
 - Rebased against the repo that this project is forked from, [`seppevs/migrate-mongo`](https://github.com/seppevs/migrate-mongo)
