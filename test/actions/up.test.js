@@ -16,6 +16,7 @@ describe("up", () => {
   let secondPendingMigration;
   let changelogCollection;
   let changelogLockCollection;
+  let firstManualMigration;
 
   function mockStatus() {
     return sinon.stub().returns(
@@ -39,7 +40,13 @@ describe("up", () => {
           file: "20160608060209-second_pending_migration.js",
           fileName: "20160608060209-second_pending_migration.js",
           appliedAt: "PENDING"
-        }
+        },
+        {
+          file: "20160608060210-first_manual_migration.js",
+          fileName: "20160608060210-first_manual_migration.js",
+          appliedAt: new Date(),
+          appliedManually: true,
+        },
       ])
     );
   }
@@ -67,6 +74,9 @@ describe("up", () => {
     mock.loadMigration
       .withArgs("20160608060209-second_pending_migration.js")
       .returns(Promise.resolve(secondPendingMigration));
+    mock.loadMigration
+      .withArgs("20160608060210-first_manual_migration.js")
+      .returns(Promise.resolve(firstManualMigration));
     return mock;
   }
 
@@ -98,9 +108,7 @@ describe("up", () => {
 
   function mockChangelogLockCollection() {
     const findStub = {
-      toArray: () => {
-        return [];
-      }
+      toArray: () => []
     }
 
     return {
@@ -129,6 +137,7 @@ describe("up", () => {
   beforeEach(() => {
     firstPendingMigration = mockMigration();
     secondPendingMigration = mockMigration();
+    firstManualMigration = mockMigration();
     changelogCollection = mockChangelogCollection();
     changelogLockCollection = mockChangelogLockCollection();
 
@@ -140,6 +149,7 @@ describe("up", () => {
 
     lock = loadLockWithInjectedMocks();
     up = loadUpWithInjectedMocks();
+    global.options = {};
   });
 
   it("should fetch the status", async () => {
@@ -241,9 +251,7 @@ describe("up", () => {
       lockTtl: 0
     });
     const findStub = {
-      toArray: () => {
-        return [{ createdAt: new Date() }];
-      }
+      toArray: () => [{ createdAt: new Date() }]
     }
     changelogLockCollection.find.returns(findStub);
 
@@ -269,9 +277,7 @@ describe("up", () => {
 
   it("should yield an error when changelog is locked", async() => {
     const findStub = {
-      toArray: () => {
-        return [{ createdAt: new Date() }];
-      }
+      toArray: () => [{ createdAt: new Date() }]
     }
     changelogLockCollection.find.returns(findStub);
 
@@ -283,5 +289,12 @@ describe("up", () => {
         "Could not migrate up, a lock is in place."
       );
     }
+  });
+
+  it("should be able to run a manual migration", async () => {
+    global.options = { migrationFile: "20160608060210-first_manual_migration.js" };
+    await up(db);
+    expect(firstManualMigration.up.called).to.equal(true);
+    expect(changelogCollection.insertOne.called).to.equal(true);
   });
 });

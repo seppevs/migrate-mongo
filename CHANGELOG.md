@@ -1,5 +1,12 @@
 # Changelog
 
+## 11.1.0
+
+Added a modification of @bdcorps PR [Add custom migration file option to up](https://github.com/seppevs/migrate-mongo/pull/251) which adds the `--migration-file`
+flag to the `up` and `down` commands allowing you to specify a single migration file to run out-of-band.
+
+See README.md in the `up` and `down` sections for usage info.
+
 ## 11.0.1
 
 Fix bug where you cannot create a migration if you did not have the config option `moduleSystem` defined.

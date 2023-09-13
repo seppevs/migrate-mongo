@@ -14,6 +14,7 @@ describe("down", () => {
   let migration;
   let changelogCollection;
   let changelogLockCollection;
+  global.options = {};
 
   function mockStatus() {
     return sinon.stub().returns(
@@ -21,12 +22,20 @@ describe("down", () => {
         {
           file: "20160609113224-first_migration.js",
           fileName: "20160609113224-first_migration.js",
+          appliedManually: false,
           appliedAt: new Date()
         },
         {
           file: "20160609113225-last_migration.js",
           fileName: "20160609113225-last_migration.js",
+          appliedManually: false,
           appliedAt: new Date()
+        },
+        {
+          file: "20160609113225-manual_migration.js",
+          fileName: "20160609113225-manual_migration.js",
+          appliedManually: true,
+          appliedAt: new Date(),
         }
       ])
     );
@@ -74,15 +83,14 @@ describe("down", () => {
 
   function mockChangelogCollection() {
     return {
-      deleteOne: sinon.stub().returns(Promise.resolve())
+      deleteOne: sinon.stub().returns(Promise.resolve()),
+      deleteMany: sinon.stub().returns(Promise.resolve())
     };
   }
 
   function mockChangelogLockCollection() {
     const findStub = {
-      toArray: () => {
-        return [];
-      }
+      toArray: () => []
     }
 
     return {
@@ -131,7 +139,7 @@ describe("down", () => {
   it("should yield empty list when nothing to downgrade", async () => {
     status.returns(
       Promise.resolve([
-        { fileName: "20160609113224-some_migration.js", appliedAt: "PENDING" }
+        { fileName: "20160609113224-some_migration.js", "appliedManually": false, appliedAt: "PENDING" }
       ])
     );
     const migrated = await down(db);
@@ -220,9 +228,7 @@ describe("down", () => {
       lockTtl: 0
     });
     const findStub = {
-      toArray: () => {
-        return [{ createdAt: new Date() }];
-      }
+      toArray: () => [{ createdAt: new Date() }]
     }
     changelogLockCollection.find.returns(findStub);
 
@@ -246,9 +252,7 @@ describe("down", () => {
 
   it("should yield an error when changelog is locked", async() => {
     const findStub = {
-      toArray: () => {
-        return [{ createdAt: new Date() }];
-      }
+      toArray: () => [{ createdAt: new Date() }]
     }
     changelogLockCollection.find.returns(findStub);
 
@@ -260,5 +264,14 @@ describe("down", () => {
         "Could not migrate down, a lock is in place."
       );
     }
+  });
+
+  it("should downgrade a manual migration", async () => {
+    global.options = { migrationFile: "20160609113225-manual_migration.js" };
+
+    await down(db);
+    expect(migration.down.called).to.equal(true);
+    expect(changelogCollection.deleteMany.called).to.equal(true);
+    expect(changelogCollection.deleteMany.callCount).to.equal(1);
   });
 });

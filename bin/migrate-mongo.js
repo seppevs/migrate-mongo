@@ -24,7 +24,7 @@ function printStatusTable(statusItems) {
     statusItems.forEach(item => table.push(_.values(item)));
     console.log(table.toString());
   })
-  
+
 }
 
 program.version(pkgjson.version);
@@ -53,7 +53,7 @@ program
     global.options = options;
     migrateMongo
       .create(description)
-      .then(fileName => 
+      .then(fileName =>
         migrateMongo.config.read().then(config => {
           console.log(`Created: ${config.migrationsDir}/${fileName}`);
         })
@@ -65,13 +65,18 @@ program
   .command("up")
   .description("run all pending database migrations")
   .option("-f --file <file>", "use a custom config file")
+  .option("-m --migration-file <migration-file>", "(re-)runs a single migration file")
   .action(options => {
     global.options = options;
     migrateMongo.database
       .connect()
       .then(({db, client}) => migrateMongo.up(db, client))
       .then(migrated => {
-        printMigrated(migrated);
+        if (global.options.migrationFile) {
+          console.log(`MIGRATED UP MANUALLY: ${migrated[0]}`);
+        } else {
+          printMigrated(migrated);
+        }
       })
       .then(() => {
         process.exit(0);
@@ -86,6 +91,7 @@ program
   .command("down")
   .description("undo the last applied database migration")
   .option("-f --file <file>", "use a custom config file")
+  .option("-m --migration-file <migration-file>", "(re-)runs a single migration file")
   .action(options => {
     global.options = options;
     migrateMongo.database
@@ -93,7 +99,11 @@ program
       .then(({db, client}) => migrateMongo.down(db, client))
       .then(migrated => {
         migrated.forEach(migratedItem => {
-          console.log(`MIGRATED DOWN: ${migratedItem}`);
+          if (global.options.migrationFile) {
+            console.log(`MIGRATED DOWN MANUALLY: ${migratedItem}`);
+          } else {
+            console.log(`MIGRATED DOWN: ${migratedItem}`);
+          }
         });
       })
       .then(() => {
