@@ -237,8 +237,24 @@ $ migrate-mongo status
 └─────────────────────────────────────────┴──────────────────────────┘
 ````
 
+#### Flag: --migration-file
+
+Selectively targets a migration file to migrate up on. 
+
+*Be careful when using this flag, it does not guard against running the same migration multiple times.*
+
+- Migration locks are ignored when using this flag. 
+- An entry will be added to the changelog with `appliedManually` set to `true`.
+
+```bash
+$ migrate-mongo up --migration-file 20160608155948-blacklist_the_beatles.js
+MIGRATED UP MANUALLY: 20160608155948-blacklist_the_beatles.js
+```
+
 ### Migrate down
-With this command, migrate-mongo will revert (only) the last applied migration
+With this command, migrate-mongo will revert (only) the last applied migration. 
+
+*Manually applied migrations are skipped and must use the `--migration-file` flag to revert.*
 
 ````bash
 $ migrate-mongo down
@@ -254,6 +270,18 @@ $ migrate-mongo status
 │ 20160608155948-blacklist_the_beatles.js │ PENDING    │
 └─────────────────────────────────────────┴────────────┘
 ````
+
+#### Flag: --migration-file
+
+Selectively targets a migration file to migrate down on. 
+
+- Migration locks are ignored when using this flag 
+- all entries matching the migration file name in the changelog are removed regardless if they have manually applied status or not
+
+```bash
+$ migrate-mongo down --migration-file 20160608155948-blacklist_the_beatles.js
+MIGRATED DOWN MANUALLY: 20160608155948-blacklist_the_beatles.js
+```
 
 ## Advanced Features
 
