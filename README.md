@@ -107,7 +107,8 @@ module.exports = {
   // Field in collection to store migration applied date
   dateField: 'appliedAt',
 
-  // The file extension to create migrations and search for in migration dir 
+  // The file extension to create migrations and search for in migration dir
+  // Valid options are ".js" and ".ts"
   migrationFileExtension: ".js",
 
   // Enable the algorithm to create a checksum of the file contents and use that in the comparison to determin
@@ -118,7 +119,10 @@ module.exports = {
   lockCollectionName: "changelog_lock",
 
   // The value in seconds for the TTL index that will be used for the lock. Value of 0 will disable the feature.
-  lockTtl: 0
+  lockTtl: 0,
+  
+  // Module system to use. One of: 'commonjs', 'esm'
+  moduleSystem: 'commonjs'
 };
 ````
 
