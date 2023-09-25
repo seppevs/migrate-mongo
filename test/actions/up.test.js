@@ -162,7 +162,8 @@ describe("up", () => {
     expect(changelogCollection.insertOne.callCount).to.equal(2);
     expect(changelogCollection.insertOne.getCall(0).args[0]).to.deep.equal({
       appliedAt: new Date("2016-06-09T08:07:00.077Z"),
-      fileName: "20160607173840-first_pending_migration.js"
+      fileName: "20160607173840-first_pending_migration.js",
+      migrationBlock: 1465459620077
     });
     clock.restore();
   });
