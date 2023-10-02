@@ -75,6 +75,8 @@ program
       .then(({db, client}) => migrateMongo.up(db, client))
       .then(migrated => {
         printMigrated(migrated);
+      })
+      .then(() => {
         process.exit(0);
       })
       .catch(err => {
@@ -96,6 +98,8 @@ program
         migrated.forEach(migratedItem => {
           console.log(`MIGRATED DOWN: ${migratedItem}`);
         });
+      })
+      .then(() => {
         process.exit(0);
       })
       .catch(err => {
