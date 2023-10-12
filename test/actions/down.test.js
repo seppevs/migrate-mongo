@@ -17,10 +17,12 @@ describe("down", () => {
     return sinon.stub().returns(
       Promise.resolve([
         {
+          file: "20160609113224-first_migration.js",
           fileName: "20160609113224-first_migration.js",
           appliedAt: new Date()
         },
         {
+          file: "20160609113225-last_migration.js",
           fileName: "20160609113225-last_migration.js",
           appliedAt: new Date()
         }
@@ -31,7 +33,11 @@ describe("down", () => {
   function mockConfig() {
     return {
       shouldExist: sinon.stub().returns(Promise.resolve()),
-      read: sinon.stub().returns({ changelogCollectionName: "changelog" })
+      read: sinon.stub().returns({
+        changelogCollectionName: "changelog",
+        dateField: "appliedAt",
+        nameField: "fileName",
+      })
     };
   }
 
