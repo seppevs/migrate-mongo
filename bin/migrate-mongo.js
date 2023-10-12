@@ -32,7 +32,9 @@ program.version(pkgjson.version);
 program
   .command("init")
   .description("initialize a new migration project")
-  .action(() =>
+  .option("-m --module <module loading system>", "module loading system (commonjs (DEFAULT) or esm)")
+  .action(options => {
+    global.options = options;
     migrateMongo
       .init()
       .then(() =>
@@ -41,7 +43,7 @@ program
         )
       )
       .catch(err => handleError(err))
-  );
+  });
 
 program
   .command("create [description]")
@@ -56,6 +58,9 @@ program
           console.log(`Created: ${config.migrationsDir}/${fileName}`);
         })
       )
+      .then(() => {
+        process.exit(0);
+      })
       .catch(err => handleError(err));
   });
 

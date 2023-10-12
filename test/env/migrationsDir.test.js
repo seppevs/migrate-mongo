@@ -8,6 +8,7 @@ describe("migrationsDir", () => {
   let migrationsDir;
   let fs;
   let config;
+  let moduleLoader;
 
   function mockFs() {
     return {
@@ -26,12 +27,20 @@ describe("migrationsDir", () => {
     };
   }
 
+  function mockModuleLoader() {
+    return {
+      import: sinon.stub(),
+    };
+  }
+
   beforeEach(() => {
     fs = mockFs();
     config = mockConfig();
+    moduleLoader = mockModuleLoader();
     migrationsDir = proxyquire("../../lib/env/migrationsDir", {
       "fs-extra": fs,
-      "./config": config
+      "./config": config,
+      "../utils/module-loader": moduleLoader
     });
   });
 
@@ -165,8 +174,16 @@ describe("migrationsDir", () => {
         await migrationsDir.loadMigration("someFile.js");
         expect.fail("Error was not thrown");
       } catch (err) {
-        expect(err.message).to.match(new RegExp(`Cannot find module '${pathToMigration}'`));
+        expect(err.message).to.have.string(`Cannot find module '${pathToMigration}'`);
       }
+    });
+
+    it("should fall back to using 'import' if Node requires the use of ESM", async () => {
+      const error = new Error('ESM required');
+      error.code = 'ERR_REQUIRE_ESM';
+      moduleLoader.require = sinon.stub().throws(error);
+      await migrationsDir.loadMigration("someFile.js");
+      expect(moduleLoader.import.called).to.equal(true);
     });
   });
 

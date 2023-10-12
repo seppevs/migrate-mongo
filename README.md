@@ -3,6 +3,8 @@
 
 [![Build Status](https://img.shields.io/travis/seppevs/migrate-mongo.svg?style=flat)](https://travis-ci.org/seppevs/migrate-mongo) [![Coverage Status](https://coveralls.io/repos/github/seppevs/migrate-mongo/badge.svg?branch=master)](https://coveralls.io/r/seppevs/migrate-mongo) [![NPM](https://img.shields.io/npm/v/migrate-mongo.svg?style=flat)](https://www.npmjs.org/package/migrate-mongo) [![Downloads](https://img.shields.io/npm/dm/migrate-mongo.svg?style=flat)](https://www.npmjs.org/package/migrate-mongo) [![Dependencies](https://david-dm.org/seppevs/migrate-mongo.svg)](https://david-dm.org/seppevs/migrate-mongo) [![Known Vulnerabilities](https://snyk.io/test/github/seppevs/migrate-mongo/badge.svg)](https://snyk.io/test/github/seppevs/migrate-mongo)
 
+[![tippin.me](https://badgen.net/badge/%E2%9A%A1%EF%B8%8Ftippin.me/@seppevs/F0918E)](https://tippin.me/@seppevs)
+
 migrate-mongo is a database migration tool for MongoDB running in Node.js 
 
 </p>
@@ -141,7 +143,7 @@ There are 3 options to implement the `up` and `down` functions of your migration
 
 Always make sure the implementation matches the function signature:
 * `function up(db, client) { /* */ }` should return `Promise`
-* `function async up(db, client) { /* */ }` should contain `await` keyword(s) and return `Promise`
+* `async function up(db, client) { /* */ }` should contain `await` keyword(s) and return `Promise`
 * `function up(db, client, next) { /* */ }` should callback `next`
 
 #### Example 1: Return a Promise
@@ -275,6 +277,31 @@ $ npm init --yes
 Now you have a package.json file, and you can install your favorite npm modules that might help you in your migration scripts.
 For example, one of the very useful [promise-fun](https://github.com/sindresorhus/promise-fun) npm modules.
 
+
+### Using ESM (ECMAScript Modules) instead of CommonJS
+Since migrate-mongo 7.0.0, it's possible to use ESM instead of CommonJS.
+
+#### Using ESM when initializing a new project
+Pass the `-m esm` option to the `init` action:
+````bash
+$ migrate-mongo init -m esm
+````
+
+It's also required to have package.json file in the root of your project with `"type": "module"`.
+Create a new package.json file:
+````bash
+$ npm init --yes
+````
+
+Then edit this package.json file, and add:
+````bash
+"type": "module"
+````
+
+When you create migration files with `migrate-mongo create`, they will be prepared for you in ESM style.
+
+Please note that CommonJS is still the default module loading system.
+
 ### Using MongoDB's Transactions API
 You can make use of the [MongoDB Transaction API](https://docs.mongodb.com/manual/core/transactions/) in your migration scripts.
 
@@ -293,8 +320,8 @@ module.exports = {
     const session = client.startSession();
     try {
         await session.withTransaction(async () => {
-            await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: true}});
-            await db.collection('albums').updateOne({artist: 'The Doors'}, {$set: {stars: 5}});
+            await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: true}}, {session});
+            await db.collection('albums').updateOne({artist: 'The Doors'}, {$set: {stars: 5}}, {session});
         });
     } finally {
       await session.endSession();
@@ -305,8 +332,8 @@ module.exports = {
     const session = client.startSession();
     try {
         await session.withTransaction(async () => {
-            await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: false}});
-            await db.collection('albums').updateOne({artist: 'The Doors'}, {$set: {stars: 0}});
+            await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: false}}, {session});
+            await db.collection('albums').updateOne({artist: 'The Doors'}, {$set: {stars: 0}}, {session});
         });
     } finally {
       await session.endSession();
