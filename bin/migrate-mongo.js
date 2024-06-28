@@ -1,7 +1,8 @@
 #! /usr/bin/env node
 
 const program = require("commander");
-const _ = require("lodash");
+const _isEmpty = require("lodash.isempty");
+const _values = require("lodash.values");
 const Table = require("cli-table3");
 const migrateMongo = require("../lib/migrate-mongo");
 const pkgjson = require("../package.json");
@@ -21,7 +22,7 @@ function printStatusTable(statusItems) {
   return migrateMongo.config.read().then(config => {
     const useFileHash = config.useFileHash === true;
     const table = new Table({ head: useFileHash ? ["Filename", "Hash", "Applied At"] : ["Filename", "Applied At"]});
-    statusItems.forEach(item => table.push(_.values(item)));
+    statusItems.forEach(item => table.push(_values(item)));
     console.log(table.toString());
   })
   
@@ -123,6 +124,6 @@ program
 
 program.parse(process.argv);
 
-if (_.isEmpty(program.rawArgs)) {
+if (_isEmpty(program.rawArgs)) {
   program.outputHelp();
 }
