@@ -1,5 +1,11 @@
 # Changelog
 
+## 12.0.0
+
+- Rebased against the repo that this project is forked from, [`seppevs/migrate-mongo`](migrate-mongo)
+  * Rebase is against v11.0.0
+- [@sam-myers](https://github.com/sam-myers): Add oplog logging to print oplog timestamps, which is useful for MongoDB Atlas point-in-time restores. In the event of a faulty migration, this will allow restoration of the database to the exact last possible moment via the Atlas UI.
+
 ## 11.1.0
 
 Added a modification of @bdcorps PR [Add custom migration file option to up](https://github.com/seppevs/migrate-mongo/pull/251) which adds the `--migration-file`
