@@ -70,9 +70,13 @@ module.exports = {
 
     // TODO Change this to your database name:
     databaseName: "YOURDATABASENAME",
-
+      
+    // mongo connection options
+    // https://docs.mongodb.com/drivers/node/current/fundamentals/connection/#connection-options
     options: {
-      useNewUrlParser: true // removes a deprecation warning when connecting
+      // You may need this option if you are unable to connect
+      // https://docs.mongodb.com/drivers/node/current/fundamentals/connection/#connect-to-a-replica-set
+      directConnection: true
       //   connectTimeoutMS: 3600000, // increase connection timeout to 1 hour
       //   socketTimeoutMS: 3600000, // increase socket timeout to 1 hour
       // You may need this option if you are unable to connect
