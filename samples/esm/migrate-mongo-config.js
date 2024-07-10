@@ -57,4 +57,3 @@ const config = {
     moduleSystem: 'esm',
 };
 
-export default config;

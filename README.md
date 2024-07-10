@@ -79,6 +79,11 @@ module.exports = {
       directConnection: true
       //   connectTimeoutMS: 3600000, // increase connection timeout to 1 hour
       //   socketTimeoutMS: 3600000, // increase socket timeout to 1 hour
+      // You may need this option if you are unable to connect
+      // https://docs.mongodb.com/drivers/node/current/fundamentals/connection/#connect-to-a-replica-set
+      directConnection: true
+      //   connectTimeoutMS: 3600000, // increase connection timeout to 1 hour
+      //   socketTimeoutMS: 3600000, // increase socket timeout to 1 hour
     }
   },
     
@@ -167,7 +172,7 @@ There are 3 options to implement the `up` and `down` functions of your migration
 
 Always make sure the implementation matches the function signature:
 * `function up(db, client) { /* */ }` should return `Promise`
-* `function async up(db, client) { /* */ }` should contain `await` keyword(s) and return `Promise`
+* `async function up(db, client) { /* */ }` should contain `await` keyword(s) and return `Promise`
 
 #### Example 1: Return a Promise
 ````javascript
