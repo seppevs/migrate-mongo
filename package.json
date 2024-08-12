@@ -1,7 +1,7 @@
 {
-  "name": "migrate-mongo",
-  "version": "11.0.0",
-  "description": "A database migration tool for MongoDB in Node",
+  "name": "savvato-migrate-mongo",
+  "version": "11.0.0-1",
+  "description": "Our fork of the migrate-mongo database migration tool for MongoDB in Node",
   "main": "lib/migrate-mongo.js",
   "bin": {
     "migrate-mongo": "bin/migrate-mongo.js"
