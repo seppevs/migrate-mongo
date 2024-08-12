@@ -5,7 +5,11 @@
 
 [![tippin.me](https://badgen.net/badge/%E2%9A%A1%EF%B8%8Ftippin.me/@seppevs/F0918E)](https://tippin.me/@seppevs)
 
-migrate-mongo is a database migration tool for MongoDB running in Node.js 
+savvato-migrate-mongo is a fork of the migrate-mongo database migration tool for MongoDB running in Node.js. 
+
+This fork allows you to set a -md command line parameter to specify a custom migrations directory. This is useful when you have multiple migration types and want to keep the migrations separate. This is because by default migrate-mongo will process all the migrations in a directory, and you may want to process one type, then another type, etc. Without the -md parameter, you would have to do something complicated like, move the migrations in and out of the migrations directory to process them, or editing the config file before processing each type.
+
+We don't generally update this fork with the latest changes from the original migrate-mongo, so if you want the latest features, you should use the original migrate-mongo.
 
 </p>
     
