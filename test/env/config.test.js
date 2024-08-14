@@ -142,5 +142,33 @@ describe("config", () => {
       await config.read();
       expect(moduleLoader.import.called).to.equal(true);
     });
+
+    it("should return an object with the migrationsDir property set if the command line parameter is set", async () => {
+
+        const expected = { migrationsDir: "some/other/dir" };
+        moduleLoader.require = sinon.stub().returns({migrationsDir: "the/initial/dir"});
+
+        // set process.argv to simulate the -md command line parameter
+        const originalArgv = process.argv;
+        process.argv = [...originalArgv, "-md", expected.migrationsDir];
+
+        const actual = await config.read();
+        expect(actual).to.deep.equal(expected);
+    });
+
+    it("should use the config file migrationsDir property if the command line parameter is not set", async () => {
+
+      const origConfig = { migrationsDir: "the/orig/path" };
+      moduleLoader.require = sinon.stub().returns(origConfig);
+
+        // set process.argv to simulate the -md command line parameter
+        const originalArgv = process.argv;
+        // originalArgv, filter the -md command line parameter and its value
+        process.argv = originalArgv.filter(arg => arg !== "-md" && arg !== origConfig.migrationsDir);
+
+      const actual = await config.read();
+      expect(actual).to.deep.equal(origConfig);
+    });
+
   });
 });
