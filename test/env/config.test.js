@@ -142,5 +142,35 @@ describe("config", () => {
       await config.read();
       expect(moduleLoader.import.called).to.equal(true);
     });
+
+    it("should handle ESM modules with default export", async () => {
+      const expectedConfig = {
+        mongodb: {
+          url: 'mongodb://localhost:27017',
+          databaseName: 'test'
+        }
+      };
+      
+      moduleLoader.require = sinon.stub().resolves({
+        default: expectedConfig
+      });
+      
+      const actual = await config.read();
+      expect(actual).to.deep.equal(expectedConfig);
+    });
+
+    it("should handle regular CommonJS modules", async () => {
+      const expectedConfig = {
+        mongodb: {
+          url: 'mongodb://localhost:27017',
+          databaseName: 'test'
+        }
+      };
+      
+      moduleLoader.require = sinon.stub().resolves(expectedConfig);
+      
+      const actual = await config.read();
+      expect(actual).to.deep.equal(expectedConfig);
+    });
   });
 });
