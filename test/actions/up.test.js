@@ -200,8 +200,16 @@ describe("up", () => {
   it("should populate the changelog with info about the upgraded migrations (using file hash)", async () => {
     config.read = sinon.stub().returns({
       changelogCollectionName: "changelog",
-      useFileHash:  true,
-    })
+      lockCollectionName: "changelog_lock",
+      lockTtl: 0,
+      useFileHash: true,
+    });
+    const findStub = {
+      toArray: () => {
+        return [{ createdAt: new Date() }];
+      }
+    }
+    changelogLockCollection.find.returns(findStub);
 
     const clock = sinon.useFakeTimers(
       new Date("2016-06-09T08:07:00.077Z").getTime()
