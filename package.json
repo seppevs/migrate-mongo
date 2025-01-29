@@ -1,6 +1,6 @@
 {
   "name": "migrate-mongo",
-  "version": "11.0.1",
+  "version": "11.1.0",
   "description": "A database migration tool for MongoDB in Node",
   "main": "lib/migrate-mongo.js",
   "bin": {
@@ -30,7 +30,13 @@
     "date-fns": "^2.28.0",
     "fn-args": "^5.0.0",
     "fs-extra": "^10.0.1",
-    "lodash": "^4.17.21",
+    "lodash.filter": "^4.6.0",
+    "lodash.find": "^4.6.0",
+    "lodash.get": "^4.4.2",
+    "lodash.isempty": "^4.4.0",
+    "lodash.last": "^3.0.0",
+    "lodash.values": "^4.3.0",
+    "npm": "^10.8.1",
     "p-each-series": "^2.2.0"
   },
   "peerDependencies": {
