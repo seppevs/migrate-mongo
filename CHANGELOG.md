@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [12.1.1] - 2025-01-29
+- Fix issue when no soft lock is defined in config file
+
 ## [12.1.0] - 2025-01-29
 - Add soft lock feature (https://github.com/seppevs/migrate-mongo/pull/262)
 
