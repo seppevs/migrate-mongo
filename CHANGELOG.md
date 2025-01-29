@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [12.0.0] - 2025-01-29
+- Fix "No url defined in config file" when using ESM ([`f086575`](https://github.com/seppevs/migrate-mongo/commit/f086575f6ec55411dca4f2cf9d24a19cb7c41696))
+- fix: Bump deprecated eslint from 7.31.0 to 9.15.0 ([`63c37fa`](https://github.com/seppevs/migrate-mongo/commit/63c37fa0231ffbc192477d1449fcad7b478b5f42))
+- Replace Lodash with Smaller Modular Packages ([`b08b924`](https://github.com/seppevs/migrate-mongo/commit/b08b924c35aea0ab5a1d0266703017f12a383344))
+- add type annotations in sample migrations ([`55f8c0b`](https://github.com/seppevs/migrate-mongo/commit/55f8c0badeedde1ae533cb77a912c623606c8d45))
+- Update package.json to support Mongo 7 ([`f33228f`](https://github.com/seppevs/migrate-mongo/commit/f33228f58d5c02402b355cbbbf0579051691f05b))
+- feat: remove date-fns dep (https://github.com/seppevs/migrate-mongo/pull/436/)
+- Update README.md site with dependencies seems to be down (https://github.com/seppevs/migrate-mongo/pull/444)
+- Fix up/down command console output when logger replaces it (https://github.com/seppevs/migrate-mongo/pull/365)
+- typo: mistake with async function signature in README.md (https://github.com/seppevs/migrate-mongo/pull/333)
+- Enable rollback of all scripts from same migration ([`f67f6d4`](https://github.com/seppevs/migrate-mongo/commit/f67f6d43540773161ba913dd09c14ebf44e61594))
+
 ## [11.0.0] - 2023-09-25
 - Upgrade mongodb to version 6 ([`1f020ab`](https://github.com/seppevs/migrate-mongo/commit/1f020ab8a3fafef826eb8c68e844ed94f3d9666e))
 - docs: CHANGELOG ([`47740cb`](https://github.com/seppevs/migrate-mongo/commit/47740cb81bd8108631eaf2fe6b3fd4b4ba2aec92))
@@ -11,7 +23,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - typo: function async > async function ([`282cd6e`](https://github.com/seppevs/migrate-mongo/commit/282cd6e1527f02a282bbadc29ee61aa0c67bc0b4))
 - fix: exit from process after create command is done ([`addeabf`](https://github.com/seppevs/migrate-mongo/commit/addeabf1c781752771f923370d83f5edfc1a335f))
 - docs: added '{session}' options to Transactions API samples ([`47fa544`](https://github.com/seppevs/migrate-mongo/commit/47fa544a1c249e473135df06f6befa1b6a3caaaf))
-
 
 ## [10.0.0] - 2023-04-11
 
