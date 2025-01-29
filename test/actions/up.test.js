@@ -168,6 +168,28 @@ describe("up", () => {
     clock.restore();
   });
 
+  it("should populate the changelog with info about the upgraded migrations (using file hash)", async () => {
+    config.read = sinon.stub().returns({
+      changelogCollectionName: "changelog",
+      useFileHash:  true,
+    })
+
+    const clock = sinon.useFakeTimers(
+      new Date("2016-06-09T08:07:00.077Z").getTime()
+    );
+    await up(db);
+
+    expect(changelogCollection.insertOne.called).to.equal(true);
+    expect(changelogCollection.insertOne.callCount).to.equal(2);
+    expect(changelogCollection.insertOne.getCall(0).args[0]).to.deep.equal({
+      appliedAt: new Date("2016-06-09T08:07:00.077Z"),
+      "fileHash": undefined,
+      fileName: "20160607173840-first_pending_migration.js",
+      migrationBlock: 1465459620077
+    });
+    clock.restore();
+  });
+
   it("should yield a list of upgraded migration file names", async () => {
     const upgradedFileNames = await up(db);
     expect(upgradedFileNames).to.deep.equal([

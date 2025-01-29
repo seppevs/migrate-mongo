@@ -92,6 +92,24 @@ describe("init", () => {
     );
   });
 
+  it("should copy the sample config file to the current working directory", async () => {
+    global.options.module = 'esm';
+    await init();
+    expect(fs.copy.called).to.equal(true);
+    expect(fs.copy.callCount).to.equal(1);
+
+    const source = fs.copy.getCall(0).args[0];
+    expect(source).to.equal(
+      path.join(__dirname, "../../samples/esm/migrate-mongo-config.js")
+    );
+
+    const destination = fs.copy.getCall(0).args[1];
+    expect(destination).to.equal(
+      path.join(process.cwd(), "migrate-mongo-config.js")
+    );
+  });
+
+
   it("should yield errors that occurred when copying the sample config", async () => {
     fs.copy.returns(Promise.reject(new Error("No space left on device")));
     try {
