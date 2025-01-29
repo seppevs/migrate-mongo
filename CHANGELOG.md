@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [12.1.0] - 2025-01-29
+- Add soft lock feature (https://github.com/seppevs/migrate-mongo/pull/262)
+
+## [12.0.1] - 2025-01-29
+- Fix "No url defined in config file" when using ESM (https://github.com/seppevs/migrate-mongo/issues/458)
+
 ## [12.0.0] - 2025-01-29
 - Fix "No url defined in config file" when using ESM ([`f086575`](https://github.com/seppevs/migrate-mongo/commit/f086575f6ec55411dca4f2cf9d24a19cb7c41696))
 - fix: Bump deprecated eslint from 7.31.0 to 9.15.0 ([`63c37fa`](https://github.com/seppevs/migrate-mongo/commit/63c37fa0231ffbc192477d1449fcad7b478b5f42))
