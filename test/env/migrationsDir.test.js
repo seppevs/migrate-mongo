@@ -178,10 +178,27 @@ describe("migrationsDir", () => {
       }
     });
 
-    it("should fall back to using 'import' if Node requires the use of ESM", async () => {
+    it("should use CommonJS default", async () => {
+      moduleLoader.require = sinon.stub().returns({ up: sinon.stub(), down: sinon.stub() });
+      await migrationsDir.loadMigration("someFile.js");
+      expect(moduleLoader.require.called).to.equal(true);
+      expect(moduleLoader.import.called).to.equal(false);
+    });
+
+    it("should fall back to using 'import' if Node requires the use of ESM (default export)", async () => {
       const error = new Error('ESM required');
       error.code = 'ERR_REQUIRE_ESM';
       moduleLoader.require = sinon.stub().throws(error);
+      moduleLoader.import = sinon.stub().returns({ default: () => sinon.stub() });
+      await migrationsDir.loadMigration("someFile.js");
+      expect(moduleLoader.import.called).to.equal(true);
+    });
+
+    it("should fall back to using 'import' if Node requires the use of ESM (no default export)", async () => {
+      const error = new Error('ESM required');
+      error.code = 'ERR_REQUIRE_ESM';
+      moduleLoader.require = sinon.stub().throws(error);
+      moduleLoader.import = sinon.stub().returns({ up: sinon.stub(), down: sinon.stub() });
       await migrationsDir.loadMigration("someFile.js");
       expect(moduleLoader.import.called).to.equal(true);
     });
