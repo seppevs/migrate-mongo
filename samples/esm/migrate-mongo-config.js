@@ -22,6 +22,12 @@ const config = {
     // The mongodb collection where the applied changes are stored. Only edit this when really necessary.
     changelogCollectionName: "changelog",
 
+    // The mongodb collection where the lock will be created.
+    lockCollectionName: "changelog_lock",
+
+    // The value in seconds for the TTL index that will be used for the lock. Value of 0 will disable the feature.
+    lockTtl: 0,
+
     // The file extension to create migrations and search for in migration dir
     migrationFileExtension: ".js",
 
