@@ -36,7 +36,6 @@
     "lodash.isempty": "^4.4.0",
     "lodash.last": "^3.0.0",
     "lodash.values": "^4.3.0",
-    "npm": "^10.8.1",
     "p-each-series": "^2.2.0"
   },
   "peerDependencies": {
