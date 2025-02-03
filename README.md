@@ -261,6 +261,10 @@ $ migrate-mongo down -b
 All actions (except ```init```) accept an optional ````-f```` or ````--file```` option to specify a path to a custom config file.
 By default, migrate-mongo will look for a ````migrate-mongo-config.js```` config file in of the current directory.
 
+### Using a custom timestamp format
+If you want to change the timestamp formatting, add a ````timestampFormat```` field to the config file.
+The format ````yyyyMMddHHmmss```` is used by default or if none is provided.
+
 #### Example:
 
 ````bash
