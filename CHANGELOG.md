@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [12.1.3] - 2025-02-03
+- Remove accidentally added npm dependency (https://github.com/seppevs/migrate-mongo/pull/460)
+- Fix snyk issues
+
 ## [12.1.2] - 2025-01-29
 - Update ESM config with soft lock settings
 
