@@ -143,6 +143,15 @@ describe("config", () => {
       expect(moduleLoader.import.called).to.equal(true);
     });
 
+    it("should fall back to using 'import' if Node requires the use of ESM (top-level await)", async () => {
+      const error = new Error('ESM required');
+      error.code = 'ERR_REQUIRE_ASYNC_MODULE';
+      moduleLoader.require = sinon.stub().throws(error);
+      moduleLoader.import.returns({});
+      await config.read();
+      expect(moduleLoader.import.called).to.equal(true);
+    });
+
     it("should handle ESM modules with default export", async () => {
       const expectedConfig = {
         mongodb: {
