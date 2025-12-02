@@ -21,7 +21,7 @@
     "url": "https://github.com/seppevs/migrate-mongo.git"
   },
   "engines": {
-    "node": ">=8"
+    "node": ">=20.0.0"
   },
   "preferGlobal": true,
   "dependencies": {

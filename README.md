@@ -3,9 +3,14 @@
 
 [![Coverage Status](https://coveralls.io/repos/github/seppevs/migrate-mongo/badge.svg?branch=master)](https://coveralls.io/r/seppevs/migrate-mongo) [![NPM](https://img.shields.io/npm/v/migrate-mongo.svg?style=flat)](https://www.npmjs.org/package/migrate-mongo) [![Downloads](https://img.shields.io/npm/dm/migrate-mongo.svg?style=flat)](https://www.npmjs.org/package/migrate-mongo) [![Known Vulnerabilities](https://snyk.io/test/github/seppevs/migrate-mongo/badge.svg)](https://snyk.io/test/github/seppevs/migrate-mongo)
 
-migrate-mongo is a database migration tool for MongoDB running in Node.js 
+migrate-mongo is a database migration tool for MongoDB running in Node.js
 
 </p>
+
+## Requirements
+
+- Node.js >=20.0.0
+- MongoDB 4.x, 5.x, 6.x, or 7.x
     
 ## Installation
 ````bash
