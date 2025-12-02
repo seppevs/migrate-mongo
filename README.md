@@ -278,7 +278,7 @@ $ migrate-mongo status -f '~/configs/albums-migrations.js'
 ````
 
 ### Using a custom migrations directory
-All actions (except ```init```) accept an optional ````-md```` or ````--migrations-dir```` option to specify a path to a custom migrations directory. This will override the migrationsDir property in the config file.
+All actions (except ```init```) accept an optional ````--migrations-dir```` option to specify a path to a custom migrations directory. This will override the migrationsDir property in the config file.
 
 By default, migrate-mongo will look for a ````migrations```` directory in the current directory.
 

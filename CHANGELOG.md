@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [13.0.1] - 2025-12-02
+- Remove -md from README, this option does not exist
+
 ## [13.0.0] - 2025-12-02
 - Remove date-fns dependency (https://github.com/seppevs/migrate-mongo/issues/467)
 - Fix npm audit vulnerability in @babel/runtime (https://github.com/seppevs/migrate-mongo/issues/466)
