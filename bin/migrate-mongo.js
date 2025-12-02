@@ -50,6 +50,7 @@ program
   .command("create [description]")
   .description("create a new database migration with the provided description")
   .option("-f --file <file>", "use a custom config file")
+  .option("--migrations-dir <migrationsDir>", "use a custom migrations directory")
   .action((description, options) => {
     global.options = options;
     migrateMongo
@@ -69,6 +70,7 @@ program
   .command("up")
   .description("run all pending database migrations")
   .option("-f --file <file>", "use a custom config file")
+  .option("--migrations-dir <migrationsDir>", "use a custom migrations directory")
   .action(options => {
     global.options = options;
     migrateMongo.database
@@ -91,6 +93,7 @@ program
   .description("undo the last applied database migration")
   .option("-f --file <file>", "use a custom config file")
   .option("-b --block", "rollback all scripts from the same migration block")
+  .option("--migrations-dir <migrationsDir>", "use a custom migrations directory")
   .action(options => {
     global.options = options;
     migrateMongo.database
@@ -113,6 +116,7 @@ program
   .command("status")
   .description("print the changelog of the database")
   .option("-f --file <file>", "use a custom config file")
+  .option("--migrations-dir <migrationsDir>", "use a custom migrations directory")
   .action(options => {
     global.options = options;
     migrateMongo.database

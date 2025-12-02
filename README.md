@@ -275,8 +275,20 @@ $ migrate-mongo status -f '~/configs/albums-migrations.js'
 ├─────────────────────────────────────────┼────────────┤
 │ 20160608155948-blacklist_the_beatles.js │ PENDING    │
 └─────────────────────────────────────────┴────────────┘
-
 ````
+
+### Using a custom migrations directory
+All actions (except ```init```) accept an optional ````-md```` or ````--migrations-dir```` option to specify a path to a custom migrations directory. This will override the migrationsDir property in the config file.
+
+By default, migrate-mongo will look for a ````migrations```` directory in the current directory.
+
+#### Example:
+
+````bash
+$ migrate-mongo create blacklist_the_doors --migrations-dir ~/migrations/albums
+Created: ~/migrations/albums/20160608155949-blacklist_the_doors.js
+````
+
 
 ### Using npm packages in your migration scripts
 You can use use Node.js modules (or require other modules) in your migration scripts.

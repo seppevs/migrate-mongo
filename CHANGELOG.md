@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
-## [12.1.4] - 2025-12-02
+## [13.0.0] - 2025-12-02
 - Remove date-fns dependency (https://github.com/seppevs/migrate-mongo/issues/467)
 - Fix npm audit vulnerability in @babel/runtime (https://github.com/seppevs/migrate-mongo/issues/466)
 - Fix README typo about ES modules version (https://github.com/seppevs/migrate-mongo/pull/463)
@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Upgrade dependencies to latest versions (cli-table3, commander, fn-args, fs-extra, eslint, etc.)
 - Remove p-each-series dependency, replace with native for...of loop
 - Fix CLI by removing lodash.isempty/values and updating commander usage
+- Add -md/--migrations-dir command line parameter (https://github.com/seppevs/migrate-mongo/pull/449)
 - **BREAKING**: Update minimum Node.js version requirement to 20.0.0 (due to commander@14)
 
 ## [12.1.3] - 2025-02-03

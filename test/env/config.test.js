@@ -181,5 +181,55 @@ describe("config", () => {
       const actual = await config.read();
       expect(actual).to.deep.equal(expectedConfig);
     });
+
+    it("should override migrationsDir when -md option is provided", async () => {
+      const originalConfig = {
+        mongodb: { url: 'mongodb://localhost:27017' },
+        migrationsDir: './migrations'
+      };
+      const customMigrationsDir = './custom-migrations';
+      
+      moduleLoader.require = sinon.stub().resolves(originalConfig);
+      global.options = { migrationsDir: customMigrationsDir };
+      
+      const actual = await config.read();
+      expect(actual.migrationsDir).to.equal(customMigrationsDir);
+      
+      // Clean up
+      delete global.options;
+    });
+
+    it("should use config file migrationsDir when -md option is not provided", async () => {
+      const originalConfig = {
+        mongodb: { url: 'mongodb://localhost:27017' },
+        migrationsDir: './migrations'
+      };
+      
+      moduleLoader.require = sinon.stub().resolves(originalConfig);
+      delete global.options;
+      
+      const actual = await config.read();
+      expect(actual.migrationsDir).to.equal('./migrations');
+    });
+
+    it("should override migrationsDir in ESM modules when -md option is provided", async () => {
+      const originalConfig = {
+        mongodb: { url: 'mongodb://localhost:27017' },
+        migrationsDir: './migrations'
+      };
+      const customMigrationsDir = './custom-esm-migrations';
+      
+      const error = new Error('ESM required');
+      error.code = 'ERR_REQUIRE_ESM';
+      moduleLoader.require = sinon.stub().rejects(error);
+      moduleLoader.import = sinon.stub().resolves(originalConfig);
+      global.options = { migrationsDir: customMigrationsDir };
+      
+      const actual = await config.read();
+      expect(actual.migrationsDir).to.equal(customMigrationsDir);
+      
+      // Clean up
+      delete global.options;
+    });
   });
 });
