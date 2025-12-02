@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ## [12.1.4] - 2025-12-02
 - Remove date-fns dependency (https://github.com/seppevs/migrate-mongo/issues/467)
 - Fix npm audit vulnerability in @babel/runtime (https://github.com/seppevs/migrate-mongo/issues/466)
+- Fix README typo about ES modules version (https://github.com/seppevs/migrate-mongo/pull/463)
+- Remove deprecated lodash.get in favor of optional chaining (https://github.com/seppevs/migrate-mongo/pull/464)
+- Handle ERR_REQUIRE_ASYNC_MODULE for async ESM modules (https://github.com/seppevs/migrate-mongo/pull/470)
 
 ## [12.1.3] - 2025-02-03
 - Remove accidentally added npm dependency (https://github.com/seppevs/migrate-mongo/pull/460)
