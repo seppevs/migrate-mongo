@@ -98,7 +98,7 @@ Alternatively, you can also encode your database name in the url (and leave out 
 ````
 
 ### Creating a new migration script
-To create a new database migration script, just run the ````migrate-mongo create [description]```` command.
+To create a new database migration script, just run the ````migrate-mongo create [description]```` command (Make sure you are in the same directory as the migrations folder. `albums` here).
 
 For example:
 ````bash
