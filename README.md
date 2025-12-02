@@ -287,7 +287,7 @@ For example, one of the very useful [promise-fun](https://github.com/sindresorhu
 
 
 ### Using ESM (ECMAScript Modules) instead of CommonJS
-Since migrate-mongo 7.0.0, it's possible to use ESM instead of CommonJS.
+Since migrate-mongo 9.0.0, it's possible to use ESM instead of CommonJS.
 
 #### Using ESM when initializing a new project
 Pass the `-m esm` option to the `init` action:
