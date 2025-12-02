@@ -92,7 +92,7 @@ describe("init", () => {
     );
   });
 
-  it("should copy the sample config file to the current working directory", async () => {
+  it("should copy the sample config file to the current working directory (ESM)", async () => {
     global.options.module = 'esm';
     await init();
     expect(fs.copy.called).to.equal(true);

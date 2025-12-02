@@ -39,7 +39,7 @@ Usage: migrate-mongo [options] [command]
 
 ## Basic Usage
 ### Initialize a new project
-Make sure you have [Node.js](https://nodejs.org/en/) 10 (or higher) installed.  
+Make sure you have [Node.js](https://nodejs.org/en/) 20 (or higher) installed.  
 
 Create a directory where you want to store your migrations for your mongo database (eg. 'albums' here) and cd into it
 ````bash
