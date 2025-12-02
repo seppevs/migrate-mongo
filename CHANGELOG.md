@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Clarify README about working directory requirement (https://github.com/seppevs/migrate-mongo/pull/462)
 - Replace all remaining lodash dependencies with native JavaScript
 - Upgrade dependencies to latest versions (cli-table3, commander, fn-args, fs-extra, eslint, etc.)
+- Remove p-each-series dependency, replace with native for...of loop
 
 ## [12.1.3] - 2025-02-03
 - Remove accidentally added npm dependency (https://github.com/seppevs/migrate-mongo/pull/460)
