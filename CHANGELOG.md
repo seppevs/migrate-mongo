@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Remove deprecated lodash.get in favor of optional chaining (https://github.com/seppevs/migrate-mongo/pull/464)
 - Handle ERR_REQUIRE_ASYNC_MODULE for async ESM modules (https://github.com/seppevs/migrate-mongo/pull/470)
 - Clarify README about working directory requirement (https://github.com/seppevs/migrate-mongo/pull/462)
+- Replace all remaining lodash dependencies with native JavaScript
 
 ## [12.1.3] - 2025-02-03
 - Remove accidentally added npm dependency (https://github.com/seppevs/migrate-mongo/pull/460)
