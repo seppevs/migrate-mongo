@@ -27,7 +27,6 @@
   "dependencies": {
     "cli-table3": "^0.6.1",
     "commander": "^9.1.0",
-    "date-fns": "^2.28.0",
     "fn-args": "^5.0.0",
     "fs-extra": "^10.0.1",
     "lodash.filter": "^4.6.0",
