@@ -247,6 +247,27 @@ describe("up", () => {
     }
   });
 
+  it("should include errInfo as additionalInfo when MongoDB error has it", async () => {
+    const mongoError = new Error("Document failed validation");
+    mongoError.errInfo = {
+      failingDocumentId: "66d1826cb0fcad2724e40e14",
+      details: {
+        operatorName: "$jsonSchema",
+        schemaRulesNotSatisfied: [{ operatorName: "required" }]
+      }
+    };
+    secondPendingMigration.up.returns(Promise.reject(mongoError));
+    try {
+      await up(db);
+      expect.fail("Error was not thrown");
+    } catch (err) {
+      expect(err.message).to.deep.equal(
+        "Could not migrate up 20160608060209-second_pending_migration.js: Document failed validation"
+      );
+      expect(err.additionalInfo).to.deep.equal(mongoError.errInfo);
+    }
+  });
+
   it("should yield an error + items already migrated when unable to update the changelog", async () => {
     changelogCollection.insertOne
       .onSecondCall()
