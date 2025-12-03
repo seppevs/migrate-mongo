@@ -10,7 +10,7 @@
     "test": "jest --coverage",
     "test:watch": "jest --watch",
     "test:ci": "jest --coverage --ci",
-    "integration-test": "jest test/integration.test.js --runInBand --detectOpenHandles --testPathIgnorePatterns=/node_modules/",
+    "test:integration": "jest test/integration.test.js --runInBand --detectOpenHandles --testPathIgnorePatterns=/node_modules/",
     "lint": "eslint lib/ test/",
     "lint:fix": "eslint lib/ test/ --fix"
   },

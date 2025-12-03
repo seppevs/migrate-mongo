@@ -4,6 +4,31 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [14.0.4] - 2025-12-03
+- Integrate integration tests into main CI workflow
+  - Run integration tests after unit tests in GitHub Actions
+  - Remove unnecessary MongoDB version matrix (tests use mongodb-memory-server)
+  - Rename script from `integration-test` to `test:integration` for consistency
+- Expand integration test suite to 56 comprehensive tests
+    - **ESM Module System** (4 tests): init -m esm, config, migration files, export syntax
+    - **Custom Configuration** (4 tests): -f flag, --migrations-dir, custom changelog, DB in URL
+    - **File Hash Feature** (4 tests): useFileHash storage, status display, modification detection
+    - **Migration Blocks** (4 tests): batch rollback with -b flag, block assignment, selective rollback
+    - **Sample Migration Override** (2 tests): custom templates, default fallback
+    - **Client Parameter** (3 tests): client availability in up/down, session support
+    - **File Extensions** (3 tests): .js files, async/await, promise syntax
+    - **Status Command** (3 tests): PENDING display, timestamps, chronological sorting
+    - **CLI Options** (4 tests): -V version, -h help, command help, invalid commands
+    - **Large-Scale Performance** (3 tests): 20+ files, bulk operations, 1000+ documents
+    - Total: 56 integration tests across 15 test suites
+    - Runtime: ~50 seconds, 1,116 lines of code
+    - Covers all documented features and error scenarios
+- Improve integration test suite with better organization and coverage
+    - Split single 214-line test into 22 focused tests across 5 suites
+    - Add comprehensive error scenario testing (8 new tests)
+    - Add multiple migration testing (4 new tests)
+    - Test edge cases: syntax errors, missing functions, invalid configs
+
 ## [14.0.3] - 2025-12-03
 - Add comprehensive integration tests
   - Test full migration lifecycle (init, create, up, down, status)
