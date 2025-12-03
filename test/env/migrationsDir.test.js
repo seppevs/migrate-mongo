@@ -1,7 +1,7 @@
-jest.mock("fs-extra");
+jest.mock("fs/promises");
 
 const path = require("path");
-const fs = require("fs-extra");
+const fs = require("fs/promises");
 const config = require("../../lib/env/config");
 const moduleLoader = require("../../lib/utils/module-loader");
 const migrationsDir = require("../../lib/env/migrationsDir");

@@ -1,7 +1,7 @@
-jest.mock("fs-extra");
+jest.mock("fs/promises");
 
 const path = require("path");
-const fs = require("fs-extra");
+const fs = require("fs/promises");
 const moduleLoader = require("../../lib/utils/module-loader");
 // Don't auto-mock config, we'll use the real implementation
 const config = require("../../lib/env/config");

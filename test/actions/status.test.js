@@ -1,4 +1,4 @@
-jest.mock("fs-extra");
+jest.mock("fs/promises");
 
 const migrationsDir = require("../../lib/env/migrationsDir");
 const config = require("../../lib/env/config");

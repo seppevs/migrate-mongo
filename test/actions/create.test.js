@@ -1,7 +1,7 @@
-jest.mock("fs-extra");
+jest.mock("fs/promises");
 
 const path = require("path");
-const fs = require("fs-extra");
+const fs = require("fs/promises");
 const config = require("../../lib/env/config");
 const migrationsDir = require("../../lib/env/migrationsDir");
 const create = require("../../lib/actions/create");
@@ -17,7 +17,7 @@ describe("create", () => {
     jest.spyOn(config, 'read').mockResolvedValue({
       moduleSystem: 'commonjs',
     });
-    fs.copy.mockResolvedValue();
+    fs.cp.mockResolvedValue();
   });
 
   it("should yield an error when called without a description", async () => {
@@ -47,11 +47,11 @@ describe("create", () => {
     
     const filename = await create("my_description");
     
-    expect(fs.copy).toHaveBeenCalled();
-    expect(fs.copy.mock.calls[0][0]).toBe(
+    expect(fs.cp).toHaveBeenCalled();
+    expect(fs.cp.mock.calls[0][0]).toBe(
       path.join(__dirname, "../../samples/commonjs/migration.js")
     );
-    expect(fs.copy.mock.calls[0][1]).toBe(
+    expect(fs.cp.mock.calls[0][1]).toBe(
       path.join(process.cwd(), "migrations", "20160609080700-my_description.js")
     );
     expect(filename).toBe("20160609080700-my_description.js");
@@ -66,11 +66,11 @@ describe("create", () => {
     jest.spyOn(migrationsDir, 'resolveMigrationFileExtension').mockReturnValue('.ts');
     const filename = await create("my_description");
     
-    expect(fs.copy).toHaveBeenCalled();
-    expect(fs.copy.mock.calls[0][0]).toBe(
+    expect(fs.cp).toHaveBeenCalled();
+    expect(fs.cp.mock.calls[0][0]).toBe(
       path.join(__dirname, "../../samples/commonjs/migration.js")
     );
-    expect(fs.copy.mock.calls[0][1]).toBe(
+    expect(fs.cp.mock.calls[0][1]).toBe(
       path.join(process.cwd(), "migrations", "20160609080700-my_description.ts")
     );
     expect(filename).toBe("20160609080700-my_description.ts");
@@ -84,11 +84,11 @@ describe("create", () => {
     
     await create("this description contains spaces");
     
-    expect(fs.copy).toHaveBeenCalled();
-    expect(fs.copy.mock.calls[0][0]).toBe(
+    expect(fs.cp).toHaveBeenCalled();
+    expect(fs.cp.mock.calls[0][0]).toBe(
       path.join(__dirname, "../../samples/commonjs/migration.js")
     );
-    expect(fs.copy.mock.calls[0][1]).toBe(
+    expect(fs.cp.mock.calls[0][1]).toBe(
       path.join(
         process.cwd(),
         "migrations",
@@ -100,7 +100,7 @@ describe("create", () => {
   });
 
   it("should yield errors that occurred when copying the file", async () => {
-    fs.copy.mockRejectedValue(new Error("Copy failed"));
+    fs.cp.mockRejectedValue(new Error("Copy failed"));
     await expect(create("my_description")).rejects.toThrow("Copy failed");
   });
 
@@ -112,11 +112,11 @@ describe("create", () => {
     const filename = await create("my_description");
     
     expect(migrationsDir.doesSampleMigrationExist).toHaveBeenCalled();
-    expect(fs.copy).toHaveBeenCalled();
-    expect(fs.copy.mock.calls[0][0]).toBe(
+    expect(fs.cp).toHaveBeenCalled();
+    expect(fs.cp.mock.calls[0][0]).toBe(
       path.join(process.cwd(), "migrations", "sample-migration.js")
     );
-    expect(fs.copy.mock.calls[0][1]).toBe(
+    expect(fs.cp.mock.calls[0][1]).toBe(
       path.join(process.cwd(), "migrations", "20160609080700-my_description.js")
     );
     expect(filename).toBe("20160609080700-my_description.js");

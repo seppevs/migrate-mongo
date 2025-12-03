@@ -1,5 +1,5 @@
 jest.mock("mongodb");
-jest.mock("fs-extra");
+jest.mock("fs/promises");
 
 const config = require("../../lib/env/config");
 const mongodb = require("mongodb");
