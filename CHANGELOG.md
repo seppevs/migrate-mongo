@@ -4,7 +4,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
-## [14.0.0] - TBD
+## [14.0.1] - 2025-12-03
+- Migrate test suite from Mocha/Sinon/Chai/Proxyquire to Jest
+  - Improves test maintainability and developer experience
+  - Maintains 100% code coverage
+- Remove fs-extra dependency in favor of native Node.js fs/promises API
+  - Reduces production dependencies from 3 to 2
+  - Eliminates deprecated dependency warnings
+  - Smaller bundle size
+- Migrate from Travis CI to GitHub Actions
+  - Fixes broken CI/coverage reporting (Travis CI discontinued free tier)
+  - Tests now run on Node.js 20.x and 22.x with MongoDB 4.4, 5.0, 6.0, 7.0
+  - Automated Coveralls integration
+  - Added CodeQL security scanning
+  - Added Dependabot for dependency updates
+  - Added automated NPM publishing workflow
+- Remove coveralls CLI dependency (GitHub Actions handles uploads)
+- Fix all npm deprecation warnings (glob@7, inflight)
+
+## [14.0.0] - 2025-12-03
 - **BREAKING**: Remove callback-based migration support
   - Migrations must now use Promises or async/await
   - The `up(db, client, callback)` and `down(db, client, callback)` signatures are no longer supported
