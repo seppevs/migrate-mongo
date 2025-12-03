@@ -163,7 +163,7 @@ describe("status", () => {
     ]);
   });
 
-  it("it should mark all scripts as pending when enabling for the first time", async () => {
+  it("should mark all scripts as pending when enabling for the first time", async () => {
     enabledFileHash();
     const statusItems = await status(db);
     expect(statusItems).toEqual([
@@ -188,7 +188,7 @@ describe("status", () => {
     ]);
   });
 
-  it("it should mark new scripts as pending with a file hash", async () => {
+  it("should mark new scripts as pending with a file hash", async () => {
     enabledFileHash();
     addHashToChangeLog();
     const statusItems = await status(db);
@@ -214,7 +214,7 @@ describe("status", () => {
     ]);
   });
 
-  it("it should mark changed scripts with pending", async () => {
+  it("should mark changed scripts with pending", async () => {
     enabledFileHash();
     addHashToChangeLog();
     jest.spyOn(migrationsDir, 'loadFileHash').mockImplementation((fileName) => {

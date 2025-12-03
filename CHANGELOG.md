@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [14.0.2] - 2025-12-03
+- Fix ESLint configuration after Jest migration
+  - Replace eslint-plugin-mocha with eslint-plugin-jest
+  - Configure Jest-specific linting rules
+  - Fix test titles with duplicate prefixes
+
 ## [14.0.1] - 2025-12-03
 - Migrate test suite from Mocha/Sinon/Chai/Proxyquire to Jest
   - Improves test maintainability and developer experience
