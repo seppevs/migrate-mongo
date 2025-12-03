@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [14.0.3] - 2025-12-03
+- Add comprehensive integration tests
+  - Test full migration lifecycle (init, create, up, down, status)
+  - Uses mongodb-memory-server for isolated testing
+  - Runnable with `npm run integration-test`
+- Add npm scripts for better developer experience
+  - `test:watch` - Run tests in watch mode
+  - `test:ci` - Run tests in CI mode
+  - `lint:fix` - Auto-fix linting issues
+- Add issue and PR templates for better contribution workflow
+- Add `.nvmrc` file for Node.js version management
+- Simplify test mock structure
+  - Remove all `__mocks__` directories
+  - Inline mock implementations directly in test files using Jest factory functions
+  - Improves code readability and maintainability
+
 ## [14.0.2] - 2025-12-03
 - Fix ESLint configuration after Jest migration
   - Replace eslint-plugin-mocha with eslint-plugin-jest

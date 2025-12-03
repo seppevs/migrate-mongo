@@ -9,6 +9,10 @@ module.exports = {
   testMatch: [
     '**/test/**/*.test.js',
   ],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/test/integration.test.js', // Exclude integration test from unit tests
+  ],
   coverageReporters: ['text', 'html', 'lcov'],
   clearMocks: true,
   restoreMocks: true,

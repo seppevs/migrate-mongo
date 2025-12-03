@@ -7,4 +7,4 @@ node_modules
 
 # Istanbul test coverage
 coverage
-.nyc_output
+.nyc_output.DS_Store
