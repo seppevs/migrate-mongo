@@ -1,4 +1,10 @@
-jest.mock("fs/promises");
+jest.mock("fs/promises", () => ({
+  stat: jest.fn(),
+  cp: jest.fn(),
+  mkdir: jest.fn(),
+  readdir: jest.fn(),
+  readFile: jest.fn(),
+}));
 
 const migrationsDir = require("../../lib/env/migrationsDir");
 const config = require("../../lib/env/config");

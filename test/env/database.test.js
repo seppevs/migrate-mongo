@@ -1,5 +1,15 @@
-jest.mock("mongodb");
-jest.mock("fs/promises");
+jest.mock("mongodb", () => ({
+  MongoClient: {
+    connect: jest.fn()
+  }
+}));
+jest.mock("fs/promises", () => ({
+  stat: jest.fn(),
+  cp: jest.fn(),
+  mkdir: jest.fn(),
+  readdir: jest.fn(),
+  readFile: jest.fn(),
+}));
 
 const config = require("../../lib/env/config");
 const mongodb = require("mongodb");

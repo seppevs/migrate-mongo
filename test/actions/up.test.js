@@ -1,4 +1,4 @@
-jest.mock("../../lib/actions/status");
+jest.mock("../../lib/actions/status", () => jest.fn());
 
 const migrationsDir = require("../../lib/env/migrationsDir");
 const config = require("../../lib/env/config");
