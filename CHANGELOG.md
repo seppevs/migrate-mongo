@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [14.0.6] - 2025-12-03
+- Migrate from Jest to Vitest for testing
+  - Full ESM support with native import/export
+  - Backward compatibility: migration scripts can still use CommonJS
+  - Global test functions (it, describe, expect, etc.) via setup file
+  - 100% code coverage maintained with unit tests alone
+  - Faster test execution and better developer experience
+- Switch codebase to ESM (ECMAScript Modules)
+  - Use native import/export syntax throughout
+  - Maintain full CommonJS compatibility for migration scripts
+  - Update package.json with "type": "module"
+  - Add .js extensions to all relative imports
+- Add CommonJS migration script tests to integration suite
+  - Verify backward compatibility with require/module.exports
+  - Ensure existing migration scripts continue to work
+  - Test both ESM and CommonJS migration formats
+
 ## [14.0.5] - 2025-12-03
 - Fix CI workflow to run integration tests only after successful unit tests
   - Prevent integration tests from running if unit tests fail

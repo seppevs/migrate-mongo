@@ -1,19 +1,9 @@
-jest.mock("mongodb", () => ({
-  MongoClient: {
-    connect: jest.fn()
-  }
-}));
-jest.mock("fs/promises", () => ({
-  stat: jest.fn(),
-  cp: jest.fn(),
-  mkdir: jest.fn(),
-  readdir: jest.fn(),
-  readFile: jest.fn(),
-}));
+vi.mock("mongodb");
+vi.mock("fs/promises");
 
-const config = require("../../lib/env/config");
-const mongodb = require("mongodb");
-const database = require("../../lib/env/database");
+import config from "../../lib/env/config.js";
+import mongodb from "mongodb";
+import database from "../../lib/env/database.js";
 
 describe("database", () => {
   let configObj;
@@ -34,18 +24,18 @@ describe("database", () => {
 
   function mockClient() {
     return {
-      db: jest.fn().mockReturnValue({ the: "db" }),
+      db: vi.fn().mockReturnValue({ the: "db" }),
       close: "theCloseFnFromMongoClient"
     };
   }
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    jest.restoreAllMocks();
+    vi.clearAllMocks();
+    vi.restoreAllMocks();
     configObj = createConfigObj();
     client = mockClient();
-    jest.spyOn(config, 'read').mockReturnValue(configObj);
-    mongodb.MongoClient.connect.mockResolvedValue(client);
+    vi.spyOn(config, 'read').mockReturnValue(configObj);
+    vi.spyOn(mongodb.MongoClient, "connect").mockResolvedValue(client);
   });
 
   describe("connect()", () => {
@@ -74,7 +64,7 @@ describe("database", () => {
     });
 
     it("should yield an error when unable to connect", async () => {
-      mongodb.MongoClient.connect.mockRejectedValue(new Error("Unable to connect"));
+      vi.spyOn(mongodb.MongoClient, "connect").mockRejectedValue(new Error("Unable to connect"));
       await expect(database.connect()).rejects.toThrow("Unable to connect");
     });
   });

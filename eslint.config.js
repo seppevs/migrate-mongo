@@ -1,19 +1,34 @@
-const jestPlugin = require("eslint-plugin-jest");
+import vitestPlugin from "eslint-plugin-vitest";
 
-module.exports = [
+export default [
   {
     files: ["test/**/*.js"],
-    ...jestPlugin.configs['flat/recommended'],
+    plugins: {
+      vitest: vitestPlugin,
+    },
     rules: {
-      ...jestPlugin.configs['flat/recommended'].rules,
-      'jest/prefer-expect-assertions': 'off',
-      'jest/no-conditional-expect': 'off', // We use expect in try/catch blocks
-      'jest/expect-expect': 'off', // We use expect.rejects and expect.resolves
-      'jest/valid-title': 'warn', // Allow duplicate prefixes in nested describes
-      'jest/no-disabled-tests': 'warn',
-      'jest/no-focused-tests': 'error',
-      'jest/no-identical-title': 'error',
-      'jest/valid-expect': 'error'
-    }
+      ...vitestPlugin.configs.recommended.rules,
+      'vitest/prefer-expect-assertions': 'off',
+      'vitest/no-conditional-expect': 'off', // We use expect in try/catch blocks
+      'vitest/expect-expect': 'off', // We use expect.rejects and expect.resolves
+      'vitest/valid-title': 'warn', // Allow duplicate prefixes in nested describes
+      'vitest/no-disabled-tests': 'warn',
+      'vitest/no-focused-tests': 'error',
+      'vitest/no-identical-title': 'error',
+      'vitest/valid-expect': 'error'
+    },
+    languageOptions: {
+      globals: {
+        ...vitestPlugin.environments.env.globals,
+        describe: 'readonly',
+        it: 'readonly',
+        expect: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        vi: 'readonly',
+      },
+    },
   }
 ];

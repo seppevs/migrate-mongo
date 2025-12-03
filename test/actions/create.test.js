@@ -1,29 +1,26 @@
-jest.mock("fs/promises", () => ({
-  stat: jest.fn(),
-  cp: jest.fn(),
-  mkdir: jest.fn(),
-  readdir: jest.fn(),
-  readFile: jest.fn(),
-}));
+import { fileURLToPath } from 'url';
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
-const path = require("path");
-const fs = require("fs/promises");
-const config = require("../../lib/env/config");
-const migrationsDir = require("../../lib/env/migrationsDir");
-const create = require("../../lib/actions/create");
+import path from "path";
+import fs from "fs/promises";
+import config from "../../lib/env/config.js";
+import migrationsDir from "../../lib/env/migrationsDir.js";
+import create from "../../lib/actions/create.js";
 
 describe("create", () => {
+  let cpSpy;
+
   beforeEach(() => {
-    jest.clearAllMocks();
-    jest.restoreAllMocks();
-    jest.spyOn(migrationsDir, 'shouldExist').mockResolvedValue();
-    jest.spyOn(migrationsDir, 'resolveMigrationFileExtension').mockReturnValue('.js');
-    jest.spyOn(migrationsDir, 'doesSampleMigrationExist').mockResolvedValue(false);
-    jest.spyOn(config, 'shouldExist').mockResolvedValue();
-    jest.spyOn(config, 'read').mockResolvedValue({
+    vi.clearAllMocks();
+    vi.restoreAllMocks();
+    vi.spyOn(migrationsDir, 'shouldExist').mockResolvedValue();
+    vi.spyOn(migrationsDir, 'resolveMigrationFileExtension').mockReturnValue('.js');
+    vi.spyOn(migrationsDir, 'doesSampleMigrationExist').mockResolvedValue(false);
+    vi.spyOn(config, 'shouldExist').mockResolvedValue();
+    vi.spyOn(config, 'read').mockResolvedValue({
       moduleSystem: 'commonjs',
     });
-    fs.cp.mockResolvedValue();
+    cpSpy = vi.spyOn(fs, 'cp').mockResolvedValue();
   });
 
   it("should yield an error when called without a description", async () => {
@@ -36,7 +33,7 @@ describe("create", () => {
   });
 
   it("should yield an error when the migrations directory does not exist", async () => {
-    jest.spyOn(migrationsDir, 'shouldExist').mockRejectedValue(
+    vi.spyOn(migrationsDir, 'shouldExist').mockRejectedValue(
       new Error("migrations directory does not exist")
     );
     await expect(create("my_description")).rejects.toThrow("migrations directory does not exist");
@@ -48,53 +45,47 @@ describe("create", () => {
   });
 
   it("should create a new migration file and yield the filename", async () => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date("2016-06-09T08:07:00.077Z"));
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2016-06-09T08:07:00.077Z"));
     
     const filename = await create("my_description");
     
     expect(fs.cp).toHaveBeenCalled();
-    expect(fs.cp.mock.calls[0][0]).toBe(
-      path.join(__dirname, "../../samples/commonjs/migration.js")
-    );
-    expect(fs.cp.mock.calls[0][1]).toBe(
+    expect(cpSpy).toHaveBeenCalledWith(
+      path.join(__dirname, "../../samples/commonjs/migration.js"),
       path.join(process.cwd(), "migrations", "20160609080700-my_description.js")
     );
     expect(filename).toBe("20160609080700-my_description.js");
     
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it("should create a new migration file and yield the filename with custom extension", async () => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date("2016-06-09T08:07:00.077Z"));
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2016-06-09T08:07:00.077Z"));
     
-    jest.spyOn(migrationsDir, 'resolveMigrationFileExtension').mockReturnValue('.ts');
+    vi.spyOn(migrationsDir, 'resolveMigrationFileExtension').mockReturnValue('.ts');
     const filename = await create("my_description");
     
     expect(fs.cp).toHaveBeenCalled();
-    expect(fs.cp.mock.calls[0][0]).toBe(
-      path.join(__dirname, "../../samples/commonjs/migration.js")
-    );
-    expect(fs.cp.mock.calls[0][1]).toBe(
+    expect(cpSpy).toHaveBeenCalledWith(
+      path.join(__dirname, "../../samples/commonjs/migration.js"),
       path.join(process.cwd(), "migrations", "20160609080700-my_description.ts")
     );
     expect(filename).toBe("20160609080700-my_description.ts");
     
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it("should replace spaces in the description with underscores", async () => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date("2016-06-09T08:07:00.077Z"));
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2016-06-09T08:07:00.077Z"));
     
     await create("this description contains spaces");
     
     expect(fs.cp).toHaveBeenCalled();
-    expect(fs.cp.mock.calls[0][0]).toBe(
-      path.join(__dirname, "../../samples/commonjs/migration.js")
-    );
-    expect(fs.cp.mock.calls[0][1]).toBe(
+    expect(cpSpy).toHaveBeenCalledWith(
+      path.join(__dirname, "../../samples/commonjs/migration.js"),
       path.join(
         process.cwd(),
         "migrations",
@@ -102,31 +93,29 @@ describe("create", () => {
       )
     );
     
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it("should yield errors that occurred when copying the file", async () => {
-    fs.cp.mockRejectedValue(new Error("Copy failed"));
+    vi.spyOn(fs, 'cp').mockRejectedValue(new Error("Copy failed"));
     await expect(create("my_description")).rejects.toThrow("Copy failed");
   });
 
   it("should use the sample migration file if it exists", async () => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date("2016-06-09T08:07:00.077Z"));
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2016-06-09T08:07:00.077Z"));
     
-    jest.spyOn(migrationsDir, 'doesSampleMigrationExist').mockResolvedValue(true);
+    vi.spyOn(migrationsDir, 'doesSampleMigrationExist').mockResolvedValue(true);
     const filename = await create("my_description");
     
     expect(migrationsDir.doesSampleMigrationExist).toHaveBeenCalled();
     expect(fs.cp).toHaveBeenCalled();
-    expect(fs.cp.mock.calls[0][0]).toBe(
-      path.join(process.cwd(), "migrations", "sample-migration.js")
-    );
-    expect(fs.cp.mock.calls[0][1]).toBe(
+    expect(cpSpy).toHaveBeenCalledWith(
+      path.join(process.cwd(), "migrations", "sample-migration.js"),
       path.join(process.cwd(), "migrations", "20160609080700-my_description.js")
     );
     expect(filename).toBe("20160609080700-my_description.js");
     
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 });

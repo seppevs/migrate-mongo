@@ -1,9 +1,9 @@
-jest.mock("../../lib/actions/status", () => jest.fn());
+import migrationsDir from "../../lib/env/migrationsDir.js";
+import config from "../../lib/env/config.js";
+import status from "../../lib/actions/status.js";
+import up from "../../lib/actions/up.js";
 
-const migrationsDir = require("../../lib/env/migrationsDir");
-const config = require("../../lib/env/config");
-const status = require("../../lib/actions/status");
-const up = require("../../lib/actions/up");
+vi.mock("../../lib/actions/status");
 
 describe("up", () => {
   let db;
@@ -15,14 +15,14 @@ describe("up", () => {
 
   function mockMigration() {
     const migration = {
-      up: jest.fn().mockResolvedValue()
+      up: vi.fn().mockResolvedValue()
     };
     return migration;
   }
 
   function mockDb() {
     const mock = {
-      collection: jest.fn((name) => {
+      collection: vi.fn((name) => {
         if (name === "changelog") return changelogCollection;
         if (name === "changelog_lock") return changelogLockCollection;
         return null;
@@ -37,26 +37,26 @@ describe("up", () => {
 
   function mockChangelogCollection() {
     return {
-      insertOne: jest.fn().mockResolvedValue()
+      insertOne: vi.fn().mockResolvedValue()
     };
   }
 
   function mockChangelogLockCollection() {
     const findStub = {
-      toArray: jest.fn().mockResolvedValue([])
+      toArray: vi.fn().mockResolvedValue([])
     };
 
     return {
-      insertOne: jest.fn().mockResolvedValue(),
-      createIndex: jest.fn().mockResolvedValue(),
-      find: jest.fn().mockReturnValue(findStub),
-      deleteMany: jest.fn().mockResolvedValue(),
+      insertOne: vi.fn().mockResolvedValue(),
+      createIndex: vi.fn().mockResolvedValue(),
+      find: vi.fn().mockReturnValue(findStub),
+      deleteMany: vi.fn().mockResolvedValue(),
     };
   }
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    jest.restoreAllMocks();
+    vi.clearAllMocks();
+    vi.restoreAllMocks();
 
     firstPendingMigration = mockMigration();
     secondPendingMigration = mockMigration();
@@ -84,14 +84,14 @@ describe("up", () => {
       }
     ]);
 
-    jest.spyOn(config, 'shouldExist').mockResolvedValue();
-    jest.spyOn(config, 'read').mockReturnValue({
+    vi.spyOn(config, 'shouldExist').mockResolvedValue();
+    vi.spyOn(config, 'read').mockReturnValue({
       changelogCollectionName: "changelog",
       lockCollectionName: "changelog_lock",
       lockTtl: 10
     });
 
-    jest.spyOn(migrationsDir, 'loadMigration')
+    vi.spyOn(migrationsDir, 'loadMigration')
       .mockImplementation((fileName) => {
         if (fileName === "20160607173840-first_pending_migration.js") {
           return Promise.resolve(firstPendingMigration);
@@ -112,10 +112,12 @@ describe("up", () => {
     await up(db);
     expect(migrationsDir.loadMigration).toHaveBeenCalled();
     expect(migrationsDir.loadMigration).toHaveBeenCalledTimes(2);
-    expect(migrationsDir.loadMigration.mock.calls[0][0]).toBe(
+    expect(migrationsDir.loadMigration).toHaveBeenNthCalledWith(
+      1,
       "20160607173840-first_pending_migration.js"
     );
-    expect(migrationsDir.loadMigration.mock.calls[1][0]).toBe(
+    expect(migrationsDir.loadMigration).toHaveBeenNthCalledWith(
+      2,
       "20160608060209-second_pending_migration.js"
     );
   });
@@ -124,55 +126,51 @@ describe("up", () => {
     await up(db);
     expect(firstPendingMigration.up).toHaveBeenCalled();
     expect(secondPendingMigration.up).toHaveBeenCalled();
-    // Check call order
-    const firstCallOrder = firstPendingMigration.up.mock.invocationCallOrder[0];
-    const secondCallOrder = secondPendingMigration.up.mock.invocationCallOrder[0];
-    expect(firstCallOrder).toBeLessThan(secondCallOrder);
+    // Verify second was called after first
+    expect(secondPendingMigration.up).toHaveBeenCalledAfter(firstPendingMigration.up);
   });
 
   it("should populate the changelog with info about the upgraded migrations", async () => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date("2016-06-09T08:07:00.077Z"));
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2016-06-09T08:07:00.077Z"));
     
     await up(db);
 
-    expect(changelogCollection.insertOne).toHaveBeenCalled();
     expect(changelogCollection.insertOne).toHaveBeenCalledTimes(2);
-    expect(changelogCollection.insertOne.mock.calls[0][0]).toEqual({
+    expect(changelogCollection.insertOne).toHaveBeenNthCalledWith(1, {
       appliedAt: new Date("2016-06-09T08:07:00.077Z"),
       fileName: "20160607173840-first_pending_migration.js",
       migrationBlock: 1465459620077
     });
     
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it("should populate the changelog with info about the upgraded migrations (using file hash)", async () => {
-    jest.spyOn(config, 'read').mockReturnValue({
+    vi.spyOn(config, 'read').mockReturnValue({
       changelogCollectionName: "changelog",
       lockCollectionName: "changelog_lock",
       lockTtl: 0,
       useFileHash: true,
     });
     changelogLockCollection.find.mockReturnValue({
-      toArray: jest.fn().mockResolvedValue([{ createdAt: new Date() }])
+      toArray: vi.fn().mockResolvedValue([{ createdAt: new Date() }])
     });
 
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date("2016-06-09T08:07:00.077Z"));
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2016-06-09T08:07:00.077Z"));
     
     await up(db);
 
-    expect(changelogCollection.insertOne).toHaveBeenCalled();
     expect(changelogCollection.insertOne).toHaveBeenCalledTimes(2);
-    expect(changelogCollection.insertOne.mock.calls[0][0]).toEqual({
+    expect(changelogCollection.insertOne).toHaveBeenNthCalledWith(1, {
       appliedAt: new Date("2016-06-09T08:07:00.077Z"),
       "fileHash": undefined,
       fileName: "20160607173840-first_pending_migration.js",
       migrationBlock: 1465459620077
     });
     
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it("should yield a list of upgraded migration file names", async () => {
@@ -230,13 +228,13 @@ describe("up", () => {
   });
 
   it("should ignore lock if feature is disabled", async() => {
-    jest.spyOn(config, 'read').mockReturnValue({
+    vi.spyOn(config, 'read').mockReturnValue({
       changelogCollectionName: "changelog",
       lockCollectionName: "changelog_lock",
       lockTtl: 0
     });
     changelogLockCollection.find.mockReturnValue({
-      toArray: jest.fn().mockResolvedValue([{ createdAt: new Date() }])
+      toArray: vi.fn().mockResolvedValue([{ createdAt: new Date() }])
     });
 
     await up(db);
@@ -254,7 +252,7 @@ describe("up", () => {
 
   it("should yield an error when changelog is locked", async() => {
     changelogLockCollection.find.mockReturnValue({
-      toArray: jest.fn().mockResolvedValue([{ createdAt: new Date() }])
+      toArray: vi.fn().mockResolvedValue([{ createdAt: new Date() }])
     });
     
     await expect(up(db)).rejects.toThrow("Could not migrate up, a lock is in place.");

@@ -1,9 +1,9 @@
-const { MongoMemoryServer } = require("mongodb-memory-server");
-const { MongoClient } = require("mongodb");
-const { execSync } = require("child_process");
-const fs = require("fs/promises");
-const path = require("path");
-const os = require("os");
+import { MongoMemoryServer } from "mongodb-memory-server";
+import { MongoClient } from "mongodb";
+import { execSync } from "child_process";
+import fs from "fs/promises";
+import path from "path";
+import os from "os";
 
 describe("Integration Tests", () => {
   let mongod;
@@ -1039,6 +1039,159 @@ module.exports = {
 
     it("should handle invalid commands gracefully", () => {
       const result = runMigrateMongo("invalid-command", testDir, true);
+      expect(result.error).toBe(true);
+    });
+  });
+
+  describe("CommonJS Compatibility", () => {
+    beforeEach(async () => {
+      await fs.mkdir(migrationsDir, { recursive: true });
+      await writeConfig({ moduleSystem: "commonjs" });
+    });
+
+    it("should run CommonJS migrations with module.exports", async () => {
+      await createMigration(
+        "test-commonjs",
+        "await db.collection('test').insertOne({ format: 'commonjs' });",
+        "await db.collection('test').deleteOne({ format: 'commonjs' });"
+      );
+
+      const output = runMigrateMongo("up");
+      expect(output).toContain("MIGRATED UP");
+
+      const doc = await db.collection("test").findOne({ format: "commonjs" });
+      expect(doc).toBeTruthy();
+      expect(doc.format).toBe("commonjs");
+    });
+
+    it("should rollback CommonJS migrations", async () => {
+      await createMigration(
+        "rollback-cjs",
+        "await db.collection('test').insertOne({ rollback: 'cjs' });",
+        "await db.collection('test').deleteOne({ rollback: 'cjs' });"
+      );
+
+      runMigrateMongo("up");
+      const upOutput = runMigrateMongo("down");
+      
+      expect(upOutput).toContain("MIGRATED DOWN");
+      
+      const doc = await db.collection("test").findOne({ rollback: "cjs" });
+      expect(doc).toBeNull();
+    });
+
+    it("should handle multiple CommonJS migrations", async () => {
+      await createMigration(
+        "cjs-multi-1",
+        "await db.collection('test').insertOne({ seq: 1 });",
+        "await db.collection('test').deleteOne({ seq: 1 });"
+      );
+      
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      await createMigration(
+        "cjs-multi-2",
+        "await db.collection('test').insertOne({ seq: 2 });",
+        "await db.collection('test').deleteOne({ seq: 2 });"
+      );
+
+      const output = runMigrateMongo("up");
+      expect(output).toContain("MIGRATED UP");
+
+      const count = await db.collection("test").countDocuments({ seq: { $exists: true } });
+      expect(count).toBe(2);
+    });
+
+    it("should work with CommonJS requiring external modules", async () => {
+      const migrationFile = await createMigration("placeholder", "", "");
+      const migrationPath = path.join(migrationsDir, migrationFile);
+      
+      const content = `
+const crypto = require('crypto');
+
+module.exports = {
+  async up(db, client) {
+    const hash = crypto.createHash('md5').update('test').digest('hex');
+    await db.collection('test').insertOne({ hash });
+  },
+  async down(db, client) {
+    await db.collection('test').deleteMany({});
+  }
+};`;
+      await fs.writeFile(migrationPath, content);
+
+      const output = runMigrateMongo("up");
+      expect(output).toContain("MIGRATED UP");
+
+      const doc = await db.collection("test").findOne({ hash: { $exists: true } });
+      expect(doc).toBeTruthy();
+      expect(doc.hash).toBe("098f6bcd4621d373cade4e832627b4f6");
+    });
+
+    it("should support CommonJS with complex operations", async () => {
+      const migrationFile = await createMigration("placeholder", "", "");
+      const migrationPath = path.join(migrationsDir, migrationFile);
+      
+      const content = `
+module.exports = {
+  async up(db, client) {
+    // Use client operations directly
+    const collections = await db.listCollections().toArray();
+    await db.collection('test').insertOne({ 
+      type: 'complex-cjs',
+      collectionCount: collections.length 
+    });
+  },
+  async down(db, client) {
+    await db.collection('test').deleteMany({ type: 'complex-cjs' });
+  }
+};`;
+      await fs.writeFile(migrationPath, content);
+
+      const output = runMigrateMongo("up");
+      expect(output).toContain("MIGRATED UP");
+
+      const doc = await db.collection("test").findOne({ type: "complex-cjs" });
+      expect(doc).toBeTruthy();
+      expect(typeof doc.collectionCount).toBe('number');
+    });
+
+    it("should handle CommonJS migrations with synchronous module.exports", async () => {
+      const migrationFile = await createMigration("placeholder", "", "");
+      const migrationPath = path.join(migrationsDir, migrationFile);
+      
+      const content = `
+module.exports = {
+  up: async function(db, client) {
+    await db.collection('test').insertOne({ style: 'function-keyword' });
+  },
+  down: async function(db, client) {
+    await db.collection('test').deleteOne({ style: 'function-keyword' });
+  }
+};`;
+      await fs.writeFile(migrationPath, content);
+
+      const output = runMigrateMongo("up");
+      expect(output).toContain("MIGRATED UP");
+
+      const doc = await db.collection("test").findOne({ style: "function-keyword" });
+      expect(doc).toBeTruthy();
+    });
+
+    it("should validate CommonJS migration structure", async () => {
+      const migrationFile = await createMigration("placeholder", "", "");
+      const migrationPath = path.join(migrationsDir, migrationFile);
+      
+      // Missing 'up' function
+      const invalidContent = `
+module.exports = {
+  down: async function(db, client) {
+    await db.collection('test').deleteMany({});
+  }
+};`;
+      await fs.writeFile(migrationPath, invalidContent);
+
+      const result = runMigrateMongo("up", testDir, true);
       expect(result.error).toBe(true);
     });
   });

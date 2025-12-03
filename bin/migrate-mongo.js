@@ -1,8 +1,11 @@
 #! /usr/bin/env node
 
-const { Command } = require("commander");
-const Table = require("cli-table3");
-const migrateMongo = require("../lib/migrate-mongo");
+import { Command } from "commander";
+import Table from "cli-table3";
+import { createRequire } from 'module';
+import migrateMongo from "../lib/migrate-mongo.js";
+
+const require = createRequire(import.meta.url);
 const pkgjson = require("../package.json");
 
 const program = new Command();

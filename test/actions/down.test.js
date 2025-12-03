@@ -1,9 +1,9 @@
-jest.mock("../../lib/actions/status", () => jest.fn());
+import migrationsDir from "../../lib/env/migrationsDir.js";
+import config from "../../lib/env/config.js";
+import status from "../../lib/actions/status.js";
+import down from "../../lib/actions/down.js";
 
-const migrationsDir = require("../../lib/env/migrationsDir");
-const config = require("../../lib/env/config");
-const status = require("../../lib/actions/status");
-const down = require("../../lib/actions/down");
+vi.mock("../../lib/actions/status");
 
 describe("down", () => {
   let db;
@@ -14,14 +14,14 @@ describe("down", () => {
 
   function mockMigration() {
     const theMigration = {
-      down: jest.fn().mockResolvedValue()
+      down: vi.fn().mockResolvedValue()
     };
     return theMigration;
   }
 
   function mockDb() {
     const mock = {
-      collection: jest.fn((name) => {
+      collection: vi.fn((name) => {
         if (name === "changelog") return changelogCollection;
         if (name === "changelog_lock") return changelogLockCollection;
         return null;
@@ -36,26 +36,26 @@ describe("down", () => {
 
   function mockChangelogCollection() {
     return {
-      deleteOne: jest.fn().mockResolvedValue()
+      deleteOne: vi.fn().mockResolvedValue()
     };
   }
 
   function mockChangelogLockCollection() {
     const findStub = {
-      toArray: jest.fn().mockResolvedValue([])
+      toArray: vi.fn().mockResolvedValue([])
     };
 
     return {
-      insertOne: jest.fn().mockResolvedValue(),
-      createIndex: jest.fn().mockResolvedValue(),
-      find: jest.fn().mockReturnValue(findStub),
-      deleteMany: jest.fn().mockResolvedValue(),
+      insertOne: vi.fn().mockResolvedValue(),
+      createIndex: vi.fn().mockResolvedValue(),
+      find: vi.fn().mockReturnValue(findStub),
+      deleteMany: vi.fn().mockResolvedValue(),
     };
   }
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    jest.restoreAllMocks();
+    vi.clearAllMocks();
+    vi.restoreAllMocks();
 
     migration = mockMigration();
     changelogCollection = mockChangelogCollection();
@@ -80,14 +80,14 @@ describe("down", () => {
       }
     ]);
 
-    jest.spyOn(config, 'shouldExist').mockResolvedValue();
-    jest.spyOn(config, 'read').mockReturnValue({
+    vi.spyOn(config, 'shouldExist').mockResolvedValue();
+    vi.spyOn(config, 'read').mockReturnValue({
       changelogCollectionName: "changelog",
       lockCollectionName: "changelog_lock",
       lockTtl: 10
     });
 
-    jest.spyOn(migrationsDir, 'loadMigration').mockResolvedValue(migration);
+    vi.spyOn(migrationsDir, 'loadMigration').mockResolvedValue(migration);
   });
 
   it("should fetch the status", async () => {
@@ -105,7 +105,7 @@ describe("down", () => {
 
   it("should load the last applied migration", async () => {
     await down(db);
-    expect(migrationsDir.loadMigration.mock.calls[0][0]).toBe(
+    expect(migrationsDir.loadMigration).toHaveBeenCalledWith(
       "20160609113225-last_migration.js"
     );
   });
@@ -164,13 +164,13 @@ describe("down", () => {
   });
 
   it("should ignore lock if feature is disabled", async() => {
-    jest.spyOn(config, 'read').mockReturnValue({
+    vi.spyOn(config, 'read').mockReturnValue({
       changelogCollectionName: "changelog",
       lockCollectionName: "changelog_lock",
       lockTtl: 0
     });
     changelogLockCollection.find.mockReturnValue({
-      toArray: jest.fn().mockResolvedValue([{ createdAt: new Date() }])
+      toArray: vi.fn().mockResolvedValue([{ createdAt: new Date() }])
     });
 
     await down(db);
@@ -186,7 +186,7 @@ describe("down", () => {
 
   it("should yield an error when changelog is locked", async() => {
     changelogLockCollection.find.mockReturnValue({
-      toArray: jest.fn().mockResolvedValue([{ createdAt: new Date() }])
+      toArray: vi.fn().mockResolvedValue([{ createdAt: new Date() }])
     });
 
     await expect(down(db)).rejects.toThrow("Could not migrate down, a lock is in place.");
