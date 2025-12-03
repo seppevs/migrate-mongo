@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [14.0.0] - TBD
+- **BREAKING**: Remove callback-based migration support
+  - Migrations must now use Promises or async/await
+  - The `up(db, client, callback)` and `down(db, client, callback)` signatures are no longer supported
+  - Use `async function up(db, client)` or return a Promise instead
+- Remove fn-args dependency (reduces production dependencies from 4 to 3)
+- Simplify migration execution code
+
 ## [13.0.1] - 2025-12-02
 - Remove -md from README, this option does not exist
 

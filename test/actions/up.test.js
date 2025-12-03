@@ -159,28 +159,6 @@ describe("up", () => {
     sinon.assert.callOrder(firstPendingMigration.up, secondPendingMigration.up);
   });
 
-  it("should be able to upgrade callback based migration that has both the `db` and `client` args", async () => {
-    firstPendingMigration = {
-      up(theDb, theClient, callback) {
-        return callback();
-      }
-    };
-    migrationsDir = mockMigrationsDir();
-    up = loadUpWithInjectedMocks();
-    await up(db, client);
-  });
-
-  it("should be able to upgrade callback based migration that has only the `db` arg", async () => {
-    firstPendingMigration = {
-      up(theDb, callback) {
-        return callback();
-      }
-    };
-    migrationsDir = mockMigrationsDir();
-    up = loadUpWithInjectedMocks();
-    await up(db, client);
-  });
-
   it("should populate the changelog with info about the upgraded migrations", async () => {
     const clock = sinon.useFakeTimers(
       new Date("2016-06-09T08:07:00.077Z").getTime()

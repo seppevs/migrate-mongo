@@ -27,7 +27,6 @@
   "dependencies": {
     "cli-table3": "^0.6.5",
     "commander": "^14.0.2",
-    "fn-args": "^6.0.0",
     "fs-extra": "^11.3.2"
   },
   "peerDependencies": {

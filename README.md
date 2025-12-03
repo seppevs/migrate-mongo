@@ -152,15 +152,13 @@ Edit this content so it actually performs changes to your database. Don't forget
 The ````db```` object contains [the official MongoDB db object](https://www.npmjs.com/package/mongodb)
 The ````client```` object is a [MongoClient](https://mongodb.github.io/node-mongodb-native/api/MongoClient.html) instance (which you can omit if you don't use it).
 
-There are 3 options to implement the `up` and `down` functions of your migration: 
-1. Return a Promises
-2. Use async-await 
-3. Call a callback ⚠️ **DEPRECATED - Use Promises or async/await instead**
+There are 2 ways to implement the `up` and `down` functions of your migration: 
+1. Return a Promise
+2. Use async-await (recommended)
 
 Always make sure the implementation matches the function signature:
 * `function up(db, client) { /* */ }` should return `Promise`
 * `async function up(db, client) { /* */ }` should contain `await` keyword(s) and return `Promise`
-* `function up(db, client, next) { /* */ }` should callback `next`
 
 #### Example 1: Return a Promise
 ````javascript
@@ -175,7 +173,7 @@ module.exports = {
 };
 ````
 
-#### Example 2: Use async & await
+#### Example 2: Use async & await (recommended)
 Async & await is especially useful if you want to perform multiple operations against your MongoDB in one migration.
 
 ````javascript
@@ -189,23 +187,6 @@ module.exports = {
     await db.collection('albums').updateOne({artist: 'The Doors'}, {$set: {stars: 0}});
     await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: false}});
   },
-};
-````
-
-#### Example 3: Call a callback ⚠️ DEPRECATED
-**⚠️ Callbacks are deprecated.** New migration scripts should use Promises or async/await.
-
-Callbacks are supported for backwards compatibility only. They're harder to read and write compared to modern async patterns.
-
-````javascript
-module.exports = {
-  up(db, callback) {
-    return db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: true}}, callback);
-  },
-
-  down(db, callback) {
-    return db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: false}}, callback);
-  }
 };
 ````
 
