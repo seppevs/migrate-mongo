@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [14.0.7] - 2025-12-03
+- Reorganize test mocks structure
+  - Move __mocks__ directory from project root to test directory
+  - Consolidate all test-related files under test/ for better organization
+
 ## [14.0.6] - 2025-12-03
 - Migrate from Jest to Vitest for testing
   - Full ESM support with native import/export
