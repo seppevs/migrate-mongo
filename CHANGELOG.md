@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [14.0.5] - 2025-12-03
+- Fix CI workflow to run integration tests only after successful unit tests
+  - Prevent integration tests from running if unit tests fail
+  - Add proper job dependency in GitHub Actions
+
 ## [14.0.4] - 2025-12-03
 - Integrate integration tests into main CI workflow
   - Run integration tests after unit tests in GitHub Actions

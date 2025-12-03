@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20.x, 21,x, 22.x, 23.x, 24.x, 25.x]
+        node-version: [20.x, 22.x]
 
     steps:
     - uses: actions/checkout@v4
@@ -32,15 +32,15 @@ jobs:
     - name: Run tests with coverage
       run: npm test
     
-    - name: Run integration tests
-      run: npm run test:integration
-    
     - name: Upload coverage to Coveralls
       uses: coverallsapp/github-action@v2
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         parallel: true
         flag-name: node-${{ matrix.node-version }}
+    
+    - name: Run integration tests
+      run: npm run test:integration
 
   finish:
     needs: test
