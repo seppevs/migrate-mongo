@@ -9,8 +9,8 @@ const config = {
     databaseName: "YOURDATABASENAME",
 
     options: {
-      useNewUrlParser: true, // removes a deprecation warning when connecting
-      useUnifiedTopology: true, // removes a deprecating warning when connecting
+      // useNewUrlParser: true, // (not needed anymore in mongodb driver 4.x+)
+      // useUnifiedTopology: true, // (not needed anymore in mongodb driver 4.x+)
       //   connectTimeoutMS: 3600000, // increase connection timeout to 1 hour
       //   socketTimeoutMS: 3600000, // increase socket timeout to 1 hour
     }

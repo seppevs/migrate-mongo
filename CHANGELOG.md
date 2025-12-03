@@ -11,6 +11,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
   - Use `async function up(db, client)` or return a Promise instead
 - Remove fn-args dependency (reduces production dependencies from 4 to 3)
 - Simplify migration execution code
+- Remove deprecated `useNewUrlParser` and `useUnifiedTopology` options from sample config files
+  - These options are no longer supported in MongoDB driver 4.x+ and will cause errors
+  - Generated config files now have these commented out with explanatory notes
 
 ## [13.0.1] - 2025-12-02
 - Remove -md from README, this option does not exist
