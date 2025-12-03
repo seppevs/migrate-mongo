@@ -1,12 +1,12 @@
-const { expect } = require("chai");
-const sinon = require("sinon");
-const proxyquire = require("proxyquire");
+jest.mock("mongodb");
+jest.mock("fs-extra");
+
+const config = require("../../lib/env/config");
+const mongodb = require("mongodb");
+const database = require("../../lib/env/database");
 
 describe("database", () => {
   let configObj;
-  let database;
-  let config;
-  let mongodb;
   let client;
 
   function createConfigObj() {
@@ -24,77 +24,48 @@ describe("database", () => {
 
   function mockClient() {
     return {
-      db: sinon.stub().returns({ the: "db" }),
+      db: jest.fn().mockReturnValue({ the: "db" }),
       close: "theCloseFnFromMongoClient"
     };
   }
 
-  function mockConfig() {
-    return {
-      read: sinon.stub().returns(configObj)
-    };
-  }
-
-  function mockMongodb() {
-    return {
-      MongoClient: {
-        connect: sinon.stub().returns(Promise.resolve(client))
-      }
-    };
-  }
-
   beforeEach(() => {
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
     configObj = createConfigObj();
     client = mockClient();
-    config = mockConfig();
-    mongodb = mockMongodb();
-
-    database = proxyquire("../../lib/env/database", {
-      "./config": config,
-      mongodb
-    });
+    jest.spyOn(config, 'read').mockReturnValue(configObj);
+    mongodb.MongoClient.connect.mockResolvedValue(client);
   });
 
   describe("connect()", () => {
     it("should connect MongoClient to the configured mongodb url with the configured options", async () => {
       const result = await database.connect();
-      expect(mongodb.MongoClient.connect.called).to.equal(true);
-      expect(mongodb.MongoClient.connect.getCall(0).args[0]).to.equal(
-        "mongodb://someserver:27017"
+      expect(mongodb.MongoClient.connect).toHaveBeenCalled();
+      expect(mongodb.MongoClient.connect).toHaveBeenCalledWith(
+        "mongodb://someserver:27017",
+        {
+          connectTimeoutMS: 3600000, // 1 hour
+          socketTimeoutMS: 3600000 // 1 hour
+        }
       );
 
-      expect(mongodb.MongoClient.connect.getCall(0).args[1]).to.deep.equal({
-        connectTimeoutMS: 3600000, // 1 hour
-        socketTimeoutMS: 3600000 // 1 hour
-      });
-
-      expect(client.db.getCall(0).args[0]).to.equal("testDb");
-      expect(result.db).to.deep.equal({
+      expect(client.db).toHaveBeenCalledWith("testDb");
+      expect(result.db).toEqual({
         the: "db",
         close: "theCloseFnFromMongoClient"
       });
-      expect(result.client).to.deep.equal(client);
+      expect(result.client).toEqual(client);
     });
 
     it("should yield an error when no url is defined in the config file", async () => {
       delete configObj.mongodb.url;
-      try {
-        await database.connect();
-        expect.fail("Error was not thrown");
-      } catch (err) {
-        expect(err.message).to.equal("No `url` defined in config file!");
-      }
+      await expect(database.connect()).rejects.toThrow("No `url` defined in config file!");
     });
 
     it("should yield an error when unable to connect", async () => {
-      mongodb.MongoClient.connect.returns(
-        Promise.reject(new Error("Unable to connect"))
-      );
-      try {
-        await database.connect();
-      } catch (err) {
-        expect(err.message).to.equal("Unable to connect");
-      }
+      mongodb.MongoClient.connect.mockRejectedValue(new Error("Unable to connect"));
+      await expect(database.connect()).rejects.toThrow("Unable to connect");
     });
   });
 });

@@ -1,157 +1,126 @@
-const { expect } = require("chai");
-const sinon = require("sinon");
-const path = require("path");
+jest.mock("fs-extra");
 
-const proxyquire = require("proxyquire");
+const path = require("path");
+const fs = require("fs-extra");
+const config = require("../../lib/env/config");
+const migrationsDir = require("../../lib/env/migrationsDir");
+const create = require("../../lib/actions/create");
 
 describe("create", () => {
-  let create;
-  let migrationsDir;
-  let config;
-  let fs;
-
-  function mockMigrationsDir() {
-    return {
-      shouldExist: sinon.stub().returns(Promise.resolve()),
-      resolveMigrationFileExtension: sinon.stub().returns('.js'),
-      doesSampleMigrationExist: sinon.stub().returns(Promise.resolve(false))
-    };
-  }
-
-  function mockConfig() {
-    return {
-      shouldExist: sinon.stub().returns(Promise.resolve()),
-      read: sinon.stub().returns(Promise.resolve({
-        moduleSystem: 'commonjs',
-      }))
-    };
-  }
-
-  function mockFs() {
-    return {
-      copy: sinon.stub().returns(Promise.resolve())
-    };
-  }
-
   beforeEach(() => {
-    migrationsDir = mockMigrationsDir();
-    config = mockConfig();
-    fs = mockFs();
-    create = proxyquire("../../lib/actions/create", {
-      "../env/migrationsDir": migrationsDir,
-      "../env/config": config,
-      "fs-extra": fs
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
+    jest.spyOn(migrationsDir, 'shouldExist').mockResolvedValue();
+    jest.spyOn(migrationsDir, 'resolveMigrationFileExtension').mockReturnValue('.js');
+    jest.spyOn(migrationsDir, 'doesSampleMigrationExist').mockResolvedValue(false);
+    jest.spyOn(config, 'shouldExist').mockResolvedValue();
+    jest.spyOn(config, 'read').mockResolvedValue({
+      moduleSystem: 'commonjs',
     });
+    fs.copy.mockResolvedValue();
   });
 
   it("should yield an error when called without a description", async () => {
-    try {
-      await create(null);
-      expect.fail("Error was not thrown");
-    } catch (err) {
-      expect(err.message).to.equal("Missing parameter: description");
-    }
+    await expect(create(null)).rejects.toThrow("Missing parameter: description");
   });
 
   it("should check that the migrations directory exists", async () => {
     await create("my_description");
-    expect(migrationsDir.shouldExist.called).to.equal(true);
+    expect(migrationsDir.shouldExist).toHaveBeenCalled();
   });
 
   it("should yield an error when the migrations directory does not exist", async () => {
-    migrationsDir.shouldExist.returns(
-      Promise.reject(new Error("migrations directory does not exist"))
+    jest.spyOn(migrationsDir, 'shouldExist').mockRejectedValue(
+      new Error("migrations directory does not exist")
     );
-    try {
-      await create("my_description");
-      expect.fail("Error was not thrown");
-    } catch (err) {
-      expect(err.message).to.equal("migrations directory does not exist");
-    }
+    await expect(create("my_description")).rejects.toThrow("migrations directory does not exist");
   });
 
   it("should not be necessary to have an config present", async () => {
     await create("my_description");
-    expect(config.shouldExist.called).to.equal(false);
+    expect(config.shouldExist).not.toHaveBeenCalled();
   });
 
   it("should create a new migration file and yield the filename", async () => {
-    const clock = sinon.useFakeTimers(
-      new Date("2016-06-09T08:07:00.077Z").getTime()
-    );
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2016-06-09T08:07:00.077Z"));
+    
     const filename = await create("my_description");
-    expect(fs.copy.called).to.equal(true);
-    expect(fs.copy.getCall(0).args[0]).to.equal(
+    
+    expect(fs.copy).toHaveBeenCalled();
+    expect(fs.copy.mock.calls[0][0]).toBe(
       path.join(__dirname, "../../samples/commonjs/migration.js")
     );
-    expect(fs.copy.getCall(0).args[1]).to.equal(
+    expect(fs.copy.mock.calls[0][1]).toBe(
       path.join(process.cwd(), "migrations", "20160609080700-my_description.js")
     );
-    expect(filename).to.equal("20160609080700-my_description.js");
-    clock.restore();
+    expect(filename).toBe("20160609080700-my_description.js");
+    
+    jest.useRealTimers();
   });
 
   it("should create a new migration file and yield the filename with custom extension", async () => {
-    const clock = sinon.useFakeTimers(
-      new Date("2016-06-09T08:07:00.077Z").getTime()
-    );
-    migrationsDir.resolveMigrationFileExtension.returns('.ts');
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2016-06-09T08:07:00.077Z"));
+    
+    jest.spyOn(migrationsDir, 'resolveMigrationFileExtension').mockReturnValue('.ts');
     const filename = await create("my_description");
-    expect(fs.copy.called).to.equal(true);
-    expect(fs.copy.getCall(0).args[0]).to.equal(
+    
+    expect(fs.copy).toHaveBeenCalled();
+    expect(fs.copy.mock.calls[0][0]).toBe(
       path.join(__dirname, "../../samples/commonjs/migration.js")
     );
-    expect(fs.copy.getCall(0).args[1]).to.equal(
+    expect(fs.copy.mock.calls[0][1]).toBe(
       path.join(process.cwd(), "migrations", "20160609080700-my_description.ts")
     );
-    expect(filename).to.equal("20160609080700-my_description.ts");
-    clock.restore();
+    expect(filename).toBe("20160609080700-my_description.ts");
+    
+    jest.useRealTimers();
   });
 
   it("should replace spaces in the description with underscores", async () => {
-    const clock = sinon.useFakeTimers(
-      new Date("2016-06-09T08:07:00.077Z").getTime()
-    );
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2016-06-09T08:07:00.077Z"));
+    
     await create("this description contains spaces");
-    expect(fs.copy.called).to.equal(true);
-    expect(fs.copy.getCall(0).args[0]).to.equal(
+    
+    expect(fs.copy).toHaveBeenCalled();
+    expect(fs.copy.mock.calls[0][0]).toBe(
       path.join(__dirname, "../../samples/commonjs/migration.js")
     );
-    expect(fs.copy.getCall(0).args[1]).to.equal(
+    expect(fs.copy.mock.calls[0][1]).toBe(
       path.join(
         process.cwd(),
         "migrations",
         "20160609080700-this_description_contains_spaces.js"
       )
     );
-    clock.restore();
+    
+    jest.useRealTimers();
   });
 
   it("should yield errors that occurred when copying the file", async () => {
-    fs.copy.returns(Promise.reject(new Error("Copy failed")));
-    try {
-      await create("my_description");
-      expect.fail("Error was not thrown");
-    } catch (err) {
-      expect(err.message).to.equal("Copy failed");
-    }
+    fs.copy.mockRejectedValue(new Error("Copy failed"));
+    await expect(create("my_description")).rejects.toThrow("Copy failed");
   });
 
   it("should use the sample migration file if it exists", async () => {
-    const clock = sinon.useFakeTimers(
-        new Date("2016-06-09T08:07:00.077Z").getTime()
-    );
-    migrationsDir.doesSampleMigrationExist.returns(true);
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2016-06-09T08:07:00.077Z"));
+    
+    jest.spyOn(migrationsDir, 'doesSampleMigrationExist').mockResolvedValue(true);
     const filename = await create("my_description");
-    expect(migrationsDir.doesSampleMigrationExist.called).to.equal(true);
-    expect(fs.copy.called).to.equal(true);
-    expect(fs.copy.getCall(0).args[0]).to.equal(
-        path.join(process.cwd(), "migrations", "sample-migration.js")
+    
+    expect(migrationsDir.doesSampleMigrationExist).toHaveBeenCalled();
+    expect(fs.copy).toHaveBeenCalled();
+    expect(fs.copy.mock.calls[0][0]).toBe(
+      path.join(process.cwd(), "migrations", "sample-migration.js")
     );
-    expect(fs.copy.getCall(0).args[1]).to.equal(
-        path.join(process.cwd(), "migrations", "20160609080700-my_description.js")
+    expect(fs.copy.mock.calls[0][1]).toBe(
+      path.join(process.cwd(), "migrations", "20160609080700-my_description.js")
     );
-    expect(filename).to.equal("20160609080700-my_description.js");
-    clock.restore();
+    expect(filename).toBe("20160609080700-my_description.js");
+    
+    jest.useRealTimers();
   });
 });
