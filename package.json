@@ -8,7 +8,6 @@
   },
   "scripts": {
     "test": "jest --coverage",
-    "test-coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
     "lint": "eslint lib/ test/"
   },
   "author": "Sebastian Van Sande",
@@ -32,7 +31,6 @@
     "mongodb": "^4.4.1 || ^5.0.0 || ^6.0.0  || ^7.0.0"
   },
   "devDependencies": {
-    "coveralls": "^3.1.1",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "jest": "^30.2.0"
