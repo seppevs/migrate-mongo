@@ -22,19 +22,17 @@ $ npm install -g migrate-mongo
 $ migrate-mongo
 Usage: migrate-mongo [options] [command]
 
+Options:
+  -V, --version                   output the version number
+  -h, --help                      display help for command
 
-  Commands:
-
-    init                  initialize a new migration project
-    create [description]  create a new database migration with the provided description
-    up [options]          run all unapplied database migrations
-    down [options]        undo the last applied database migration
-    status [options]      print the changelog of the database
-
-  Options:
-
-    -h, --help     output usage information
-    -V, --version  output the version number
+Commands:
+  init [options]                  initialize a new migration project
+  create [options] [description]  create a new database migration with the provided description
+  up [options]                    run all pending database migrations
+  down [options]                  undo the last applied database migration
+  status [options]                print the changelog of the database
+  help [command]                  display help for command
 ````
 
 ## Basic Usage
@@ -53,6 +51,11 @@ $ migrate-mongo init
 Initialization successful. Please edit the generated migrate-mongo-config.js file
 ````
 
+By default, this creates a CommonJS project. To use ES modules instead:
+````bash
+$ migrate-mongo init -m esm
+````
+
 The above command did two things: 
 1. create a sample 'migrate-mongo-config.js' file and 
 2. create a 'migrations' directory
@@ -61,7 +64,7 @@ Edit the migrate-mongo-config.js file. An object or promise can be returned. Mak
 ````javascript
 // In this file you can configure migrate-mongo
 
-module.exports = {
+const config = {
   mongodb: {
     // TODO Change (or review) the url to your MongoDB:
     url: "mongodb://localhost:27017",
@@ -70,7 +73,8 @@ module.exports = {
     databaseName: "YOURDATABASENAME",
 
     options: {
-      useNewUrlParser: true // removes a deprecation warning when connecting
+      // useNewUrlParser: true, // removes a deprecation warning when connecting (not needed in mongodb driver 4.x+)
+      // useUnifiedTopology: true, // removes a deprecating warning when connecting (not needed in mongodb driver 4.x+)
       //   connectTimeoutMS: 3600000, // increase connection timeout to 1 hour
       //   socketTimeoutMS: 3600000, // increase socket timeout to 1 hour
     }
@@ -82,19 +86,24 @@ module.exports = {
   // The mongodb collection where the applied changes are stored. Only edit this when really necessary.
   changelogCollectionName: "changelog",
 
-  // The file extension to create migrations and search for in migration dir 
-  migrationFileExtension: ".js",
-
-  // Enable the algorithm to create a checksum of the file contents and use that in the comparison to determin
-  // if the file should be run.  Requires that scripts are coded to be run multiple times.
-  useFileHash: false
-
   // The mongodb collection where the lock will be created.
   lockCollectionName: "changelog_lock",
 
   // The value in seconds for the TTL index that will be used for the lock. Value of 0 will disable the feature.
-  lockTtl: 0
+  lockTtl: 0,
+
+  // The file extension to create migrations and search for in migration dir 
+  migrationFileExtension: ".js",
+
+  // Enable the algorithm to create a checksum of the file contents and use that in the comparison to determine
+  // if the file should be run.  Requires that scripts are coded to be run multiple times.
+  useFileHash: false,
+
+  // Don't change this, unless you know what you're doing
+  moduleSystem: 'commonjs',
 };
+
+module.exports = config;
 ````
 
 Alternatively, you can also encode your database name in the url (and leave out the `databaseName` property):
@@ -141,12 +150,12 @@ module.exports = {
 
 Edit this content so it actually performs changes to your database. Don't forget to write the down part as well.
 The ````db```` object contains [the official MongoDB db object](https://www.npmjs.com/package/mongodb)
-The ````client```` object is a [MongoClient](https://mongodb.github.io/node-mongodb-native/3.3/api/MongoClient.html) instance (which you can omit if you don't use it).
+The ````client```` object is a [MongoClient](https://mongodb.github.io/node-mongodb-native/api/MongoClient.html) instance (which you can omit if you don't use it).
 
 There are 3 options to implement the `up` and `down` functions of your migration: 
 1. Return a Promises
 2. Use async-await 
-3. Call a callback (DEPRECATED!)
+3. Call a callback ⚠️ **DEPRECATED - Use Promises or async/await instead**
 
 Always make sure the implementation matches the function signature:
 * `function up(db, client) { /* */ }` should return `Promise`
@@ -183,9 +192,10 @@ module.exports = {
 };
 ````
 
-#### Example 3: Call a callback (deprecated)
-Callbacks are supported for backwards compatibility.
-New migration scripts should be written using Promises and/or async & await. It's easier to read and write.
+#### Example 3: Call a callback ⚠️ DEPRECATED
+**⚠️ Callbacks are deprecated.** New migration scripts should use Promises or async/await.
+
+Callbacks are supported for backwards compatibility only. They're harder to read and write compared to modern async patterns.
 
 ````javascript
 module.exports = {
@@ -459,7 +469,7 @@ const { config, up } = require('../lib/migrate-mongo');
 const myConfig = {
     mongodb: {
         url: "mongodb://localhost:27017/mydatabase",
-        options: { useNewUrlParser: true }
+        // options: { useNewUrlParser: true } // Not needed in mongodb driver 4.x+
     },
     migrationsDir: "migrations",
     changelogCollectionName: "changelog",
