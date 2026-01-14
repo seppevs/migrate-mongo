@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [Unreleased]
+- Add migration output persistence feature ([#472](https://github.com/seppevs/migrate-mongo/issues/472))
+  - Migrations can now return values that are stored in the changelog
+  - Useful for auditing (e.g., tracking modified document counts)
+  - Output available via `status()` API and in changelog collection
+
 ## [14.0.7] - 2025-12-03
 - Reorganize test mocks structure
   - Move __mocks__ directory from project root to test directory

@@ -252,4 +252,27 @@ describe("status", () => {
       }
     ]);
   });
+
+  it("should include output in status when present in changelog", async () => {
+    const outputData = { count: 42 };
+    changelogCollection.find.mockReturnValue({
+      toArray: vi.fn().mockResolvedValue([
+        {
+          fileName: "20160509113224-first_migration.js",
+          appliedAt: new Date("2016-06-03T20:10:12.123Z"),
+          output: outputData
+        }
+      ])
+    });
+
+    const statusItems = await status(db);
+
+    expect(statusItems[0].output).toEqual(outputData);
+  });
+
+  it("should have undefined output when not present in changelog", async () => {
+    const statusItems = await status(db);
+
+    expect(statusItems[0].output).toBeUndefined();
+  });
 });

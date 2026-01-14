@@ -254,7 +254,105 @@ describe("up", () => {
     changelogLockCollection.find.mockReturnValue({
       toArray: vi.fn().mockResolvedValue([{ createdAt: new Date() }])
     });
-    
+
     await expect(up(db)).rejects.toThrow("Could not migrate up, a lock is in place.");
+  });
+
+  it("should capture and store migration output in changelog", async () => {
+    const outputData = { documentsModified: 5, collectionName: "users" };
+    firstPendingMigration.up.mockResolvedValue(outputData);
+
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2016-06-09T08:07:00.077Z"));
+
+    await up(db);
+
+    expect(changelogCollection.insertOne).toHaveBeenNthCalledWith(1, {
+      appliedAt: new Date("2016-06-09T08:07:00.077Z"),
+      fileName: "20160607173840-first_pending_migration.js",
+      migrationBlock: 1465459620077,
+      output: outputData
+    });
+
+    vi.useRealTimers();
+  });
+
+  it("should not include output field when migration returns undefined", async () => {
+    firstPendingMigration.up.mockResolvedValue(undefined);
+    secondPendingMigration.up.mockResolvedValue(undefined);
+
+    await up(db);
+
+    const insertCall = changelogCollection.insertOne.mock.calls[0][0];
+    expect(insertCall).not.toHaveProperty('output');
+  });
+
+  it("should not include output field when migration returns null", async () => {
+    firstPendingMigration.up.mockResolvedValue(null);
+
+    await up(db);
+
+    const insertCall = changelogCollection.insertOne.mock.calls[0][0];
+    expect(insertCall).not.toHaveProperty('output');
+  });
+
+  it("should handle complex nested output objects", async () => {
+    const complexOutput = {
+      stats: { inserted: 10, updated: 5 },
+      ids: ["abc123", "def456"],
+      metadata: { version: "1.0" }
+    };
+    firstPendingMigration.up.mockResolvedValue(complexOutput);
+
+    await up(db);
+
+    expect(changelogCollection.insertOne).toHaveBeenNthCalledWith(1,
+      expect.objectContaining({
+        output: complexOutput
+      })
+    );
+  });
+
+  it("should store output together with fileHash when both are enabled", async () => {
+    vi.spyOn(config, 'read').mockReturnValue({
+      changelogCollectionName: "changelog",
+      lockCollectionName: "changelog_lock",
+      lockTtl: 0,
+      useFileHash: true,
+    });
+    changelogLockCollection.find.mockReturnValue({
+      toArray: vi.fn().mockResolvedValue([])
+    });
+
+    const outputData = { count: 42 };
+    firstPendingMigration.up.mockResolvedValue(outputData);
+
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2016-06-09T08:07:00.077Z"));
+
+    await up(db);
+
+    expect(changelogCollection.insertOne).toHaveBeenNthCalledWith(1, {
+      appliedAt: new Date("2016-06-09T08:07:00.077Z"),
+      fileName: "20160607173840-first_pending_migration.js",
+      fileHash: undefined,
+      migrationBlock: 1465459620077,
+      output: outputData
+    });
+
+    vi.useRealTimers();
+  });
+
+  it("should store falsy values like 0 and false as output", async () => {
+    firstPendingMigration.up.mockResolvedValue(0);
+    secondPendingMigration.up.mockResolvedValue(false);
+
+    await up(db);
+
+    const firstInsertCall = changelogCollection.insertOne.mock.calls[0][0];
+    const secondInsertCall = changelogCollection.insertOne.mock.calls[1][0];
+
+    expect(firstInsertCall.output).toBe(0);
+    expect(secondInsertCall.output).toBe(false);
   });
 });

@@ -378,6 +378,46 @@ Now the status will also include the file hash in the output
 
 ```
 
+### Capturing migration output
+Migrations can return values that will be stored in the changelog collection. This is useful for auditing and debugging purposes (e.g., tracking number of modified documents).
+
+````javascript
+module.exports = {
+  async up(db) {
+    const result = await db.collection('albums').updateMany(
+      { artist: 'The Beatles' },
+      { $set: { blacklisted: true } }
+    );
+    return { matchedCount: result.matchedCount, modifiedCount: result.modifiedCount };
+  },
+
+  async down(db) {
+    await db.collection('albums').updateMany(
+      { artist: 'The Beatles' },
+      { $set: { blacklisted: false } }
+    );
+  }
+};
+````
+
+The returned value will be stored in the `output` field of the changelog document:
+
+````json
+{
+  "fileName": "20160608155948-blacklist_the_beatles.js",
+  "appliedAt": "2016-06-08T20:13:30.415Z",
+  "output": {
+    "matchedCount": 42,
+    "modifiedCount": 42
+  }
+}
+````
+
+Notes:
+- Only `up()` output is persisted (since `down()` deletes the changelog entry)
+- Returning `undefined` or `null` will not add an `output` field
+- The returned value must be JSON-serializable
+
 ### Version
 To know which version of migrate-mongo you're running, just pass the `version` option:
 
@@ -485,14 +525,17 @@ const migratedDown = await down(db, client);
 migratedDown.forEach(fileName => console.log('Migrated Down:', fileName));
 ```
 
-### `status(MongoDb) → Promise<Array<{ fileName, appliedAt }>>`
+### `status(MongoDb) → Promise<Array<{ fileName, appliedAt, output? }>>`
 
-Check which migrations are applied (or not.
+Check which migrations are applied (or not).
 
 ```javascript
 const { db } = await database.connect();
 const migrationStatus = await status(db);
-migrationStatus.forEach(({ fileName, appliedAt }) => console.log(fileName, ':', appliedAt));
+migrationStatus.forEach(({ fileName, appliedAt, output }) => {
+  console.log(fileName, ':', appliedAt);
+  if (output) console.log('  Output:', output);
+});
 ```
 
 ### `client.close() → Promise`
