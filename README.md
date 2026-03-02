@@ -358,6 +358,50 @@ module.exports = {
 };
 ````
 
+### Using the locking feature to prevent concurrent migrations
+
+migrate-mongo can use a lock collection to ensure that only one migration process runs at a time. This is useful in environments where multiple instances of your application may start up simultaneously and all attempt to run migrations.
+
+#### How it works
+
+When `up` or `down` is called, migrate-mongo atomically acquires a lock against the lock collection. Because this is a single atomic operation, only one concurrent caller will succeed — the first one gets the lock, and all others are immediately rejected with an error.
+
+Once migrations finish, the lock is released automatically.
+
+#### Configuration
+
+Two config options control this feature:
+
+```javascript
+// The mongodb collection where the lock will be stored.
+lockCollectionName: "changelog_lock",
+
+// TTL in seconds for the lock document. This acts as a safety net to
+// automatically expire stale locks left behind by a crashed process.
+lockTtl: 60,
+```
+
+#### Enabling / disabling the locking feature
+
+Set the `lockCollectionName` and set the `lockTtl` to a positive number to enable the locking feature. If the `lockCollectionName` is not set, or the `lockTtl` is not a positive number, locking is disabled.
+
+#### Errors
+
+If a lock is already in place when `up` or `down` is called, an error is thrown:
+
+```
+Could not migrate up, a lock is in place.
+```
+```
+Could not migrate down, a lock is in place.
+```
+
+If the lock collection itself cannot be written to, the error will be:
+
+```
+Could not create a lock: <reason>
+```
+
 ### Using a file hash algorithm to enable re-running updated files
 There are use cases where it may make sense to not treat scripts as immutable items.  An example would be a simple collection with lookup values where you just can wipe and recreate the entire collection all at the same time.
 

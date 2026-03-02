@@ -41,15 +41,10 @@ describe("down", () => {
   }
 
   function mockChangelogLockCollection() {
-    const findStub = {
-      toArray: vi.fn().mockResolvedValue([])
-    };
-
     return {
-      insertOne: vi.fn().mockResolvedValue(),
+      updateOne: vi.fn().mockResolvedValue({ upsertedCount: 1 }),
       createIndex: vi.fn().mockResolvedValue(),
-      find: vi.fn().mockReturnValue(findStub),
-      deleteMany: vi.fn().mockResolvedValue(),
+      deleteOne: vi.fn().mockResolvedValue(),
     };
   }
 
@@ -158,9 +153,8 @@ describe("down", () => {
   it("should lock if feature is enabled", async() => {
     await down(db);
     expect(changelogLockCollection.createIndex).toHaveBeenCalled();
-    expect(changelogLockCollection.find).toHaveBeenCalled();
-    expect(changelogLockCollection.insertOne).toHaveBeenCalled();
-    expect(changelogLockCollection.deleteMany).toHaveBeenCalled();
+    expect(changelogLockCollection.updateOne).toHaveBeenCalled();
+    expect(changelogLockCollection.deleteOne).toHaveBeenCalled();
   });
 
   it("should ignore lock if feature is disabled", async() => {
@@ -169,25 +163,29 @@ describe("down", () => {
       lockCollectionName: "changelog_lock",
       lockTtl: 0
     });
-    changelogLockCollection.find.mockReturnValue({
-      toArray: vi.fn().mockResolvedValue([{ createdAt: new Date() }])
-    });
 
     await down(db);
     expect(changelogLockCollection.createIndex).not.toHaveBeenCalled();
-    expect(changelogLockCollection.find).not.toHaveBeenCalled();
+    expect(changelogLockCollection.updateOne).not.toHaveBeenCalled();
+    expect(changelogLockCollection.deleteOne).not.toHaveBeenCalled();
   });
 
   it("should yield an error when unable to create a lock", async() => {
-    changelogLockCollection.insertOne.mockRejectedValue(new Error("Kernel panic"));
+    changelogLockCollection.updateOne.mockRejectedValue(new Error("Kernel panic"));
 
     await expect(down(db)).rejects.toThrow("Could not create a lock: Kernel panic");
   });
 
   it("should yield an error when changelog is locked", async() => {
-    changelogLockCollection.find.mockReturnValue({
-      toArray: vi.fn().mockResolvedValue([{ createdAt: new Date() }])
-    });
+    changelogLockCollection.updateOne.mockResolvedValue({ upsertedCount: 0 });
+
+    await expect(down(db)).rejects.toThrow("Could not migrate down, a lock is in place.");
+  });
+
+  it("should yield an error when changelog is locked due to a concurrent acquire (E11000)", async() => {
+    const dupKeyError = new Error("E11000 duplicate key error");
+    dupKeyError.code = 11000;
+    changelogLockCollection.updateOne.mockRejectedValue(dupKeyError);
 
     await expect(down(db)).rejects.toThrow("Could not migrate down, a lock is in place.");
   });

@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [Unreleased]
+- Make migration lock acquisition atomic
+  - Replace separate existence-check + activate steps with a single atomic `acquire` operation
+  - Eliminates the race condition where concurrent processes could both pass the lock check and run migrations simultaneously
+  - Update README with documentation on the locking feature, configuration options, and error messages
+
 ## [14.0.7] - 2025-12-03
 - Reorganize test mocks structure
   - Move __mocks__ directory from project root to test directory
