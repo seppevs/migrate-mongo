@@ -1,7 +1,7 @@
 {
-  "name": "migrate-mongo",
-  "version": "14.0.7",
-  "description": "A database migration tool for MongoDB in Node",
+  "name": "@pedrocamata/migrate-mongo",
+  "version": "1.0.4",
+  "description": "Migrate-mongo with extra features. Forked from https://github.com/seppevs/migrate-mongo",
   "type": "module",
   "main": "lib/migrate-mongo.js",
   "exports": {
@@ -21,14 +21,14 @@
     "lint": "eslint lib/ test/",
     "lint:fix": "eslint lib/ test/ --fix"
   },
-  "author": "Sebastian Van Sande",
+  "author": "Pedro Camata Andreon",
   "license": "MIT",
   "keywords": [
     "migrate mongo mongodb migrations database"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/seppevs/migrate-mongo.git"
+    "url": "https://github.com/PedroCamata/migrate-mongo"
   },
   "engines": {
     "node": ">=20.0.0"

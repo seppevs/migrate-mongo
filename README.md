@@ -1,11 +1,4 @@
-<p align="center">
-    <img src="/migrate-mongo-logo.png" alt="migrate-mongo database migration tool for Node.js"/>
-
-[![Coverage Status](https://coveralls.io/repos/github/seppevs/migrate-mongo/badge.svg?branch=master)](https://coveralls.io/r/seppevs/migrate-mongo) [![NPM](https://img.shields.io/npm/v/migrate-mongo.svg?style=flat)](https://www.npmjs.org/package/migrate-mongo) [![Downloads](https://img.shields.io/npm/dm/migrate-mongo.svg?style=flat)](https://www.npmjs.org/package/migrate-mongo) [![Known Vulnerabilities](https://snyk.io/test/github/seppevs/migrate-mongo/badge.svg)](https://snyk.io/test/github/seppevs/migrate-mongo)
-
-migrate-mongo is a database migration tool for MongoDB running in Node.js
-
-</p>
+This project is forked from https://github.com/seppevs/migrate-mongo which is a database migration tool for MongoDB running in Node.js
 
 ## Requirements
 
@@ -99,6 +92,9 @@ const config = {
   // if the file should be run.  Requires that scripts are coded to be run multiple times.
   useFileHash: false,
 
+  // Collection to store rollback operations
+  autoRollbackCollectionName: "auto_rollback_migrations",
+
   // Don't change this, unless you know what you're doing
   moduleSystem: 'commonjs',
 };
@@ -186,6 +182,34 @@ module.exports = {
   async down(db) {
     await db.collection('albums').updateOne({artist: 'The Doors'}, {$set: {stars: 0}});
     await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: false}});
+  },
+};
+````
+
+#### Example 3: auto generate rollback function
+For simple migrations, you can enable the `autoRollbackEnabled` option to let migrate-mongo automatically generate the rollback logic for you.
+
+This can save time and reduce boilerplate when performing straightforward update operations.
+
+⚠️ This feature is currently in BETA and is not recommended for complex migrations.
+
+````javascript
+module.exports = {
+  async up(db) {
+    // Enable auto-rollback from this point onward
+    db.autoRollbackEnabled = true;
+
+    await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: true}});
+    await db.collection('albums').updateOne({artist: 'The Doors'}, {$set: {stars: 5}});
+  },
+
+  async down(db) {
+    // Automatically rolls back all tracked operations in reverse order
+    await db.autoRollback();
+
+    // Rollback execution order:
+    // 1. Revert "The Doors" update
+    // 2. Revert "The Beatles" update
   },
 };
 ````
